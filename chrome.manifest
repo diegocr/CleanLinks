@@ -1,0 +1,6 @@
+content	cleanlinks	chrome/content/
+content	cleanlinks	chrome/content/ contentaccessible=yes
+overlay	chrome://browser/content/browser.xul chrome://cleanlinks/content/browser.xul
+overlay	chrome://navigator/content/navigatorOverlay.xul	chrome://cleanlinks/content/browser.xul
+skin	cleanlinks	classic/1.0	chrome/skin/
+style	chrome://global/content/customizeToolbar.xul	chrome://cleanlinks/skin/skin.css
