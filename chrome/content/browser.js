@@ -1,33 +1,14 @@
 /* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
+ * 
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/
+ * 
  * The Original Code is CleanLinks Mozilla Extension.
- *
+ * 
  * The Initial Developer of the Original Code is
- * Copyright (C)2011 Diego Casorran <dcasorran@gmail.com>
+ * Copyright (C)2012 Diego Casorran <dcasorran@gmail.com>
  * All Rights Reserved.
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -35,24 +16,26 @@
 	const Cc = Components.classes;
 	const Ci = Components.interfaces;
 	const cleanlinks = {
-		pkg : 'CleanLinks v1.0',
-		tag_b : '__cleaned_links',
+		pkg : 'CleanLinks v2.0',
+		tag_b : 'data-cleanedlinks',
+		tag_l : 'data-cleanedlink',
 		tag_t : "\n \n- CleanLinks Touch!",
-		tag_l : 'CleanedLink',
-		tag_h : '#cl-privacy',
+		tag_h : '#',
 		op : null,
 		ps : null,
-		a : function (ev) {
+		handleEvent : function (ev) {
 			window.removeEventListener(ev.type, arguments.callee, false);
-			const t = cleanlinks;
+			let t = cleanlinks;
 			switch (ev.type) {
 			case 'load':
 				t.ps = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService).getBranch('extensions.cleanlinks.');
-				t.ps.QueryInterface(Ci.nsIPrefBranch2);
+				if ("nsIPrefBranch2" in Ci)
+					t.ps.QueryInterface(Ci.nsIPrefBranch2);
 				t.op = {};
-				for each(var k in t.ps.getChildList("", {})) {
+				for each(let k in t.ps.getChildList("", {})) {
 					t.op[k] = t.g(k);
 				}
+				t.pp();
 				if (t.l(!!t.op.enabled)) {
 					gBrowser.addEventListener('DOMContentLoaded', t.b, false);
 					gBrowser.tabContainer.addEventListener("TabSelect", t.b4, false);
@@ -70,12 +53,12 @@
 			}
 		},
 		b : function (ev) {
-			if (!(ev.originalTarget instanceof HTMLDocument))
-				return;
-			cleanlinks.b2(ev.originalTarget);
+			if (ev.originalTarget instanceof HTMLDocument) {
+				cleanlinks.b2(ev.originalTarget);
+			}
 		},
 		b2 : function (d, x) {
-			var a,
+			let a,
 			b = 0,
 			c,
 			e = 7;
@@ -87,8 +70,7 @@
 				}
 			if (!d.body)
 				return;
-			while (--e && (a = this.c(d)))
-				b += a;
+			b = this.c(d);
 			if (x) {
 				e = d.getElementsByTagName('iframe');
 				c = e.length;
@@ -104,11 +86,11 @@
 				d = d.defaultView.top.document;
 			}
 			if (d.body) {
-				if (d.body.hasAttribute(cleanlinks.tag_b))
-					b += parseInt(d.body.getAttribute(cleanlinks.tag_b));
-				d.body.setAttribute(cleanlinks.tag_b, b);
+				if (d.body.hasAttribute(this.tag_b))
+					b += parseInt(d.body.getAttribute(this.tag_b));
+				d.body.setAttribute(this.tag_b, b);
 			}
-			this.b5(d);
+			this.b5(d, b);
 			return b;
 		},
 		b3 : function (d, x) {
@@ -120,97 +102,111 @@
 				}
 			if (!d.body)
 				return;
-			var l = d.getElementsByTagName('a'),
+			let l = d.getElementsByTagName('a'),
 			c = l.length;
 			while (c--) {
 				if (l[c].hasAttribute(this.tag_l)) {
 					l[c].setAttribute('href', l[c].getAttribute(this.tag_l));
-					l[c].setAttribute('title', l[c].getAttribute('title').replace(this.tag_t, ''));
+					l[c].setAttribute('title', l[c].getAttribute('title').replace(this.tag_t.replace(/^\s+/, ''), '').replace(/\s+$/, ''));
 					l[c].style.setProperty('border-bottom', '0px', 'important');
+					if (this.op.highlight)
+						l[c].style.background = l[c].style.color = null;
 				}
 			}
 			l = d.getElementsByTagName('iframe');
 			c = l.length;
 			while (c--) {
-				var a = l[c].contentWindow.document;
+				let a = l[c].contentWindow.document;
 				if (a instanceof HTMLDocument)
 					this.b3(a, 2);
 			}
 			if (x)
 				return;
-			d.body.setAttribute(cleanlinks.tag_b, 0);
+			d.body.setAttribute(this.tag_b, 0);
 			this.b5(d);
 		},
 		b4 : function (ev) {
 			if (!(ev.originalTarget instanceof XULElement))
 				return;
-			const t = cleanlinks;
+			let t = cleanlinks;
 			if (!t.op.enabled)
 				t.b3();
 			else
 				t.b2();
 		},
-		b5 : function (d) {
+		b5 : function (d, c) {
 			if (!d)
 				try {
 					d = gBrowser.contentDocument;
 				} catch (e) {
 					d = this.wd() || window.content.document;
 				}
-			var activeWin = Application.activeWindow;
+			let activeWin = Application.activeWindow;
 			if (activeWin.activeTab.document != d) {
 				return;
 			}
 			if (!(d = d.body))
 				return;
-			d = parseInt(d.getAttribute(this.tag_b));
-			var ni = 'chrome://cleanlinks/skin/icon16' + (d ? '!' : '') + '.png';
-			document.getElementById('cleanlinks-status-bar-icon').src = ni;
+			d = c || parseInt(d.getAttribute(this.tag_b));
+			let ni = 'chrome://cleanlinks/skin/icon16' + (d ? '!' : '') + '.png';
 			try {
 				document.getElementById('cleanlinks-toolbar-button').style.setProperty('list-style-image', 'url("' + ni + '")', 'important');
 			} catch (e) {}
-
+			
 		},
 		c : function (d) {
-			var t = 0,
+			let t = 0,
 			l = d.getElementsByTagName('a'),
-			c = l.length;
+			c = l.length,
+			skipwhen = this.op.skipwhen,
+			removem = this.op.remove;
 			while (c--) {
-				var h = l[c].href,
-				x = t;
-				if (h.indexOf('share') != -1 || h.indexOf('translate') != -1)
+				let h = l[c].href,
+				lmt = 4,
+				s = 0,
+				p,
+				ht = null;
+				if (skipwhen && skipwhen.test(h))
 					continue;
-				if (/(aHR0[A-Z0-9+=/] + )
-					 / gi.test(h))h = '=' + decodeURIComponent(atob(RegExp.$1));
-				if (/[\/\?\=]([hft]+tps?)/gi.test(h)) {
-					var p = decodeURIComponent(h).lastIndexOf('://');
-					h = h.substr(++p);
-					if (h.charAt(0) == '3')
-						h = h.substr(2);
-					if ((p = h.indexOf('&')) != -1)
-						h = h.substr(0, p);
-					h = RegExp.$1 + ':' + decodeURIComponent(h);
-					if ((p = h.indexOf('html&')) != -1 || (p = h.indexOf('html%')) != -1)
-						h = h.substr(0, p) + 'html';
-					else if ((p = h.indexOf('/&')) != -1 || (p = h.indexOf('/%')) != -1)
-						h = h.substr(0, p);
-					if (h.indexOf('/', 8) == -1)
-						h += '/';
-					if (h.indexOf('#') == -1)
-						h += this.tag_h;
-					t++;
-				}
-				if (x != t) {
-					h = h.replace(/&amp;/g, '&').replace(/ref=/g, 'ref=fail');
-					if (!(l[c].hasAttribute(this.tag_l))) {
-						l[c].setAttribute(this.tag_l, l[c].href);
-						var m = l[c].hasAttribute('title') ? l[c].getAttribute('title') : '';
-						m += this.tag_t;
-						l[c].setAttribute('title', m);
+				h.replace(/^javascript:.+(["'])(https?(?:\:|%3a).+?)\1/gi, function (a, b, c)(++s, h = c));
+					if (/((?:aHR0|d3d3)[A-Z0-9+=\/]+)/gi.test(h))
+						try {
+							h = '=' + decodeURIComponent(atob(RegExp.$1));
+						} catch (e) {}
+						
+					while (--lmt && (/[\/\?\=\(]([hft]+tps?(?:\:|%3a).+)$/i.test(h) || /(?:[\?\=]|[^\/]\/)(www\..+)$/i.test(h))) {
+						h = RegExp.$1;
+						if (~(p = h.indexOf('&')))
+							h = h.substr(0, p);
+						h = decodeURIComponent(h);
+						if (~(p = h.indexOf('html&')) || ~(p = h.indexOf('html%')))
+							h = h.substr(0, p + 4);
+						else if (~(p = h.indexOf('/&')) || ~(p = h.indexOf('/%')))
+							h = h.substr(0, p);
+						if (!/^http/.test(h))
+							h = 'http://' + h;
+						if (h.indexOf('/', 8) == -1)
+							h += '/';
+						++s;
 					}
-					l[c].setAttribute('href', h);
-					l[c].style.setProperty('border-bottom', '1px dotted #9f9f8e', 'important');
-				}
+					if (s || removem.test(h)) {
+						++t;
+						if (~(p = h.indexOf('#')))
+							(ht = h.substr(p), h = h.substr(0, p));
+						h = h.replace('&amp;', '&', 'g').replace(removem, '').replace(/[?&]$/, '') + (ht || this.tag_h);
+						if (!(l[c].hasAttribute(this.tag_l))) {
+							l[c].setAttribute(this.tag_l, l[c].href);
+							let m = l[c].hasAttribute('title') ? l[c].getAttribute('title') : '';
+							m += this.tag_t;
+							l[c].setAttribute('title', m.replace(/^\s+/, ''));
+						}
+						l[c].setAttribute('href', h);
+						l[c].style.setProperty('border-bottom', '1px dotted #9f9f8e', 'important');
+						if (this.op.highlight) {
+							l[c].style.setProperty('background', 'rgba(255,255,0,0.7)', 'important');
+							l[c].style.setProperty('color', '#000', 'important');
+						}
+					}
 			}
 			return t;
 		},
@@ -218,9 +214,9 @@
 			Cc['@mozilla.org/consoleservice;1'].getService(Ci.nsIConsoleService).logStringMessage(this.pkg + ': ' + m);
 		},
 		g : function (n, v) {
-			const p = this.ps;
+			let p = this.ps;
 			if (typeof v == 'undefined') {
-				const s = Ci.nsIPrefBranch;
+				let s = Ci.nsIPrefBranch;
 				n = n || 'enabled';
 				try {
 					switch (p.getPrefType(n)) {
@@ -232,7 +228,7 @@
 						return p.getBoolPref(n);
 					}
 				} catch (e) {}
-
+				
 			} else {
 				try {
 					switch (typeof(v)) {
@@ -247,19 +243,19 @@
 						break;
 					}
 				} catch (e) {}
-
+				
 			}
 		},
 		l : function (s) {
 			if (typeof s == 'object') {
-				const t = cleanlinks,
+				let t = cleanlinks,
 				e = s.target;
 				if (e.hasChildNodes()) {
-					var l = e.childNodes.length;
+					let l = e.childNodes.length;
 					while (l--)
 						e.removeChild(e.childNodes[l]);
 				}
-				var re;
+				let re;
 				try {
 					re = parseInt(t.wd().body.getAttribute(cleanlinks.tag_b));
 					if (isNaN(re))
@@ -297,12 +293,13 @@
 				return true;
 			}
 			this.g('enabled', s = (typeof s != 'undefined' ? !!s : !this.g()));
-			var ni = 'chrome://cleanlinks/skin/icon16' + (s ? '' : '-') + '.png';
-			document.getElementById('cleanlinks-status-bar-icon').src = ni;
-			try {
-				document.getElementById('cleanlinks-toolbar-button').style.setProperty('list-style-image', 'url("' + ni + '")', 'important');
-			} catch (e) {}
-
+			if (!s) {
+				let ni = 'chrome://cleanlinks/skin/icon16-.png';
+				try {
+					document.getElementById('cleanlinks-toolbar-button').style.setProperty('list-style-image', 'url("' + ni + '")', 'important');
+				} catch (e) {}
+				
+			}
 			return s;
 		},
 		observe : function (s, t, d) {
@@ -319,6 +316,8 @@
 						gBrowser.tabContainer.removeEventListener("TabSelect", this.b4, false);
 						this.b3();
 					}
+				} else if (~['skipwhen', 'remove'].indexOf(d)) {
+					this.pp();
 				}
 			default:
 				break;
@@ -330,14 +329,28 @@
 			if (!e)
 				return null;
 			if (a)
-				for (x in a) {
+				for (let x in a) {
 					e.setAttribute(x, a[x]);
 				}
 			return e;
 		},
+		pp : function () {
+			for each(let p in['skipwhen', 'remove']) {
+				if (this.op[p] && typeof this.op[p] == 'string')
+					try {
+						if (p == 'remove')
+							this.op[p] = new RegExp('\\b(' + this.op[p] + ')=.+?(&|$)', 'g');
+						else
+							this.op[p] = new RegExp(this.op[p]);
+					} catch (e) {
+						alert('Error Processing CleanLinks Pattern "' + p + '": ' + e.message);
+						this.op[p] = null;
+					}
+			}
+		},
 		w : function (m) {
 			try {
-				var wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator).getMostRecentWindow("navigator:browser");
+				let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator).getMostRecentWindow("navigator:browser");
 				if (m)
 					return wm;
 				return wm.getBrowser();
@@ -360,7 +373,9 @@
 			}
 		},
 	};
-	window.cleanlinks = cleanlinks;
-	window.addEventListener('unload', cleanlinks.a, false);
-	window.addEventListener('load', cleanlinks.a, false);
+	if (!("diegocr" in window))
+		window.diegocr = {};
+	window.diegocr.cleanlinks = cleanlinks;
+	window.addEventListener('unload', cleanlinks, false);
+	window.addEventListener('load', cleanlinks, false);
 })();

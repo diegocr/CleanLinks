@@ -3,12 +3,12 @@
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 	<script type="application/x-javascript" src="chrome://cleanlinks/content/browser.js" />
 	<popupset id="mainPopupSet">
-		<tooltip id="cleanlinks-tooltip" orient="vertical" onpopupshowing="return cleanlinks.l(event);" />
+		<tooltip id="cleanlinks-tooltip" orient="vertical" onpopupshowing="return window.diegocr.cleanlinks.l(event);" />
 	</popupset>
 	<toolbarpalette id="BrowserToolbarPalette">
-		<toolbarbutton id="cleanlinks-toolbar-button" label="CleanLinks" class="toolbarbutton-1" tooltip="cleanlinks-tooltip" oncommand="cleanlinks.l()"/>
+		<toolbarbutton id="cleanlinks-toolbar-button" label="CleanLinks" class="toolbarbutton-1" tooltip="cleanlinks-tooltip" oncommand="window.diegocr.cleanlinks.l()"/>
 	</toolbarpalette>
-	<statusbar id="status-bar">
-		<statusbarpanel id="cleanlinks-status-bar-icon" class="statusbarpanel-iconic" src="chrome://cleanlinks/skin/icon16.png" tooltip="cleanlinks-tooltip" onclick="cleanlinks.l()" />
-	</statusbar>
+	<!--statusbar id="status-bar">
+		<statusbarpanel id="cleanlinks-status-bar-icon" class="statusbarpanel-iconic" src="chrome://cleanlinks/skin/icon16.png" tooltip="cleanlinks-tooltip" onclick="window.diegocr.cleanlinks.l()" />
+	</statusbar-->
 </overlay>
