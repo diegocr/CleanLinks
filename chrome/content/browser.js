@@ -16,7 +16,7 @@
 	const Cc = Components.classes;
 	const Ci = Components.interfaces;
 	const cleanlinks = {
-		pkg : 'CleanLinks v2.0',
+		pkg : 'CleanLinks v2.1',
 		tag_b : 'data-cleanedlinks',
 		tag_l : 'data-cleanedlink',
 		tag_t : "\n \n- CleanLinks Touch!",
@@ -37,25 +37,22 @@
 				}
 				t.pp();
 				if (t.l(!!t.op.enabled)) {
-					gBrowser.addEventListener('DOMContentLoaded', t.b, false);
-					gBrowser.tabContainer.addEventListener("TabSelect", t.b4, false);
+					t.de();
 				}
 				t.ps.addObserver("", t, false);
 				break;
 			case 'unload':
 				t.ps.removeObserver("", t);
 				if (t.op.enabled) {
-					gBrowser.tabContainer.removeEventListener("TabSelect", t.b4, false);
-					gBrowser.removeEventListener('DOMContentLoaded', t.b, false);
+					t.dd();
 				}
 			default:
 				break;
 			}
 		},
 		b : function (ev) {
-			if (ev.originalTarget instanceof HTMLDocument) {
+			if (ev.originalTarget instanceof HTMLDocument)
 				cleanlinks.b2(ev.originalTarget);
-			}
 		},
 		b2 : function (d, x) {
 			let a,
@@ -63,27 +60,21 @@
 			c,
 			e = 7;
 			if (!d)
-				try {
-					d = gBrowser.contentDocument;
-				} catch (e) {
-					d = this.wd() || window.content.document;
-				}
+				d = this.gd();
 			if (!d.body)
-				return;
+				return 0;
 			b = this.c(d);
 			if (x) {
-				e = d.getElementsByTagName('iframe');
+				e = d.defaultView.frames;
 				c = e.length;
 				while (c--) {
-					a = e[c].contentWindow.document;
-					if (a instanceof HTMLDocument)
-						b += this.b2(a, 2);
+					b += this.b2(e[c].document, 2);
 				}
 				if (x == 2)
 					return b;
 			}
 			while (d.defaultView.frameElement) {
-				d = d.defaultView.top.document;
+				d = d.defaultView.frameElement.ownerDocument;
 			}
 			if (d.body) {
 				if (d.body.hasAttribute(this.tag_b))
@@ -95,11 +86,7 @@
 		},
 		b3 : function (d, x) {
 			if (!d)
-				try {
-					d = gBrowser.contentDocument;
-				} catch (e) {
-					d = this.wd() || window.content.document;
-				}
+				d = this.gd();
 			if (!d.body)
 				return;
 			let l = d.getElementsByTagName('a'),
@@ -113,12 +100,10 @@
 						l[c].style.background = l[c].style.color = null;
 				}
 			}
-			l = d.getElementsByTagName('iframe');
+			l = d.defaultView.frames;
 			c = l.length;
 			while (c--) {
-				let a = l[c].contentWindow.document;
-				if (a instanceof HTMLDocument)
-					this.b3(a, 2);
+				this.b3(l[c].document, 2);
 			}
 			if (x)
 				return;
@@ -135,83 +120,142 @@
 				t.b2();
 		},
 		b5 : function (d, c) {
+			let tb = document.getElementById('cleanlinks-toolbar-button');
+			if (!tb)
+				return;
 			if (!d)
-				try {
-					d = gBrowser.contentDocument;
-				} catch (e) {
-					d = this.wd() || window.content.document;
-				}
-			let activeWin = Application.activeWindow;
-			if (activeWin.activeTab.document != d) {
+				d = this.gd();
+			try {
+				let activeWin = Application.activeWindow;
+				if (activeWin.activeTab.document != d || !(d = d.body))
+					return;
+			} catch (e) {
 				return;
 			}
-			if (!(d = d.body))
-				return;
 			d = c || parseInt(d.getAttribute(this.tag_b));
-			let ni = 'chrome://cleanlinks/skin/icon16' + (d ? '!' : '') + '.png';
-			try {
-				document.getElementById('cleanlinks-toolbar-button').style.setProperty('list-style-image', 'url("' + ni + '")', 'important');
-			} catch (e) {}
-			
+			tb.style.setProperty('list-style-image', 'url("chrome://cleanlinks/skin/icon16' + (d ? '!' : '') + '.png")', 'important');
 		},
 		c : function (d) {
 			let t = 0,
 			l = d.getElementsByTagName('a'),
-			c = l.length,
-			skipwhen = this.op.skipwhen,
-			removem = this.op.remove;
+			c = l.length;
 			while (c--) {
-				let h = l[c].href,
-				lmt = 4,
-				s = 0,
-				p,
-				ht = null;
-				if (skipwhen && skipwhen.test(h))
-					continue;
-				h.replace(/^javascript:.+(["'])(https?(?:\:|%3a).+?)\1/gi, function (a, b, c)(++s, h = c));
-					if (/((?:aHR0|d3d3)[A-Z0-9+=\/]+)/gi.test(h))
-						try {
-							h = '=' + decodeURIComponent(atob(RegExp.$1));
-						} catch (e) {}
-						
-					while (--lmt && (/[\/\?\=\(]([hft]+tps?(?:\:|%3a).+)$/i.test(h) || /(?:[\?\=]|[^\/]\/)(www\..+)$/i.test(h))) {
-						h = RegExp.$1;
-						if (~(p = h.indexOf('&')))
-							h = h.substr(0, p);
-						h = decodeURIComponent(h);
-						if (~(p = h.indexOf('html&')) || ~(p = h.indexOf('html%')))
-							h = h.substr(0, p + 4);
-						else if (~(p = h.indexOf('/&')) || ~(p = h.indexOf('/%')))
-							h = h.substr(0, p);
-						if (!/^http/.test(h))
-							h = 'http://' + h;
-						if (h.indexOf('/', 8) == -1)
-							h += '/';
-						++s;
+				let h1 = l[c].href,
+				h2 = this.cl(h1);
+				if (h1 != h2) {
+					++t;
+					if (!(l[c].hasAttribute(this.tag_l))) {
+						l[c].setAttribute(this.tag_l, l[c].href);
+						let m = l[c].hasAttribute('title') ? l[c].getAttribute('title') : '';
+						m += this.tag_t;
+						l[c].setAttribute('title', m.replace(/^\s+/, ''));
 					}
-					if (s || removem.test(h)) {
-						++t;
-						if (~(p = h.indexOf('#')))
-							(ht = h.substr(p), h = h.substr(0, p));
-						h = h.replace('&amp;', '&', 'g').replace(removem, '').replace(/[?&]$/, '') + (ht || this.tag_h);
-						if (!(l[c].hasAttribute(this.tag_l))) {
-							l[c].setAttribute(this.tag_l, l[c].href);
-							let m = l[c].hasAttribute('title') ? l[c].getAttribute('title') : '';
-							m += this.tag_t;
-							l[c].setAttribute('title', m.replace(/^\s+/, ''));
-						}
-						l[c].setAttribute('href', h);
-						l[c].style.setProperty('border-bottom', '1px dotted #9f9f8e', 'important');
-						if (this.op.highlight) {
-							l[c].style.setProperty('background', 'rgba(255,255,0,0.7)', 'important');
-							l[c].style.setProperty('color', '#000', 'important');
-						}
+					l[c].setAttribute('href', h2);
+					l[c].style.setProperty('border-bottom', '1px dotted #9f9f8e', 'important');
+					if (this.op.highlight) {
+						this.hl(l[c]);
 					}
+				}
 			}
 			return t;
 		},
+		cl : function (h) {
+			let lmt = 4,
+			s = 0,
+			p,
+			ht = null,
+			rp = this.op.remove;
+			if (this.op.skipwhen && this.op.skipwhen.test(h))
+				return h;
+			h.replace(/^javascript:.+(["'])(https?(?:\:|%3a).+?)\1/gi, function (a, b, c)(++s, h = c));
+				if (/((?:aHR0|d3d3)[A-Z0-9+=\/]+)/gi.test(h))
+					try {
+						h = '=' + decodeURIComponent(atob(RegExp.$1));
+					} catch (e) {}
+					
+				while (--lmt && (/[\/\?\=\(]([hft]+tps?(?:\:|%3a).+)$/i.test(h) || /(?:[\?\=]|[^\/]\/)(www\..+)$/i.test(h))) {
+					h = RegExp.$1;
+					if (~(p = h.indexOf('&')))
+						h = h.substr(0, p);
+					h = decodeURIComponent(h);
+					if (~(p = h.indexOf('html&')) || ~(p = h.indexOf('html%')))
+						h = h.substr(0, p + 4);
+					else if (~(p = h.indexOf('/&')) || ~(p = h.indexOf('/%')))
+						h = h.substr(0, p);
+					if (!/^http/.test(h))
+						h = 'http://' + h;
+					if (h.indexOf('/', 8) == -1)
+						h += '/';
+					++s;
+				}
+				if (s || rp.test(h)) {
+					if (~(p = h.indexOf('#')))
+						(ht = h.substr(p), h = h.substr(0, p));
+					h = h.replace('&amp;', '&', 'g').replace(rp, '').replace(/[?&]$/, '') + (ht && /^[\w\/#-]+$/.test(ht) ? ht : this.tag_h);
+				}
+				return h;
+		},
 		d : function (m) {
 			Cc['@mozilla.org/consoleservice;1'].getService(Ci.nsIConsoleService).logStringMessage(this.pkg + ': ' + m);
+		},
+		de : function () {
+			this.dd();
+			if (this.op.evdm) {
+				document.documentElement.addEventListener('click', this.edl, true);
+				this.evdm = true;
+				let tb = document.getElementById('cleanlinks-toolbar-button');
+				if (tb)
+					tb.style.setProperty('list-style-image', 'url("chrome://cleanlinks/skin/icon16~.png")', 'important');
+			} else {
+				gBrowser.addEventListener('DOMContentLoaded', this.b, false);
+				gBrowser.tabContainer.addEventListener("TabSelect", this.b4, false);
+				this.domWay = true;
+				this.b5();
+			}
+		},
+		dd : function () {
+			if (this.domWay) {
+				gBrowser.removeEventListener('DOMContentLoaded', this.b, false);
+				gBrowser.tabContainer.removeEventListener("TabSelect", this.b4, false);
+				delete this.domWay;
+			} else if (this.evdm) {
+				document.documentElement.removeEventListener('click', this.edl, true);
+				delete this.evdm;
+			}
+		},
+		edl : function (ev) {
+			if (ev.button != 2 && !(ev.target instanceof XULElement)) {
+				let n = ev.target;
+				if (n.nodeName != 'A')
+					do {
+						n = n.parentNode;
+					} while (n && n.nodeName != 'A' && n.nodeName != 'BODY');
+				if (n && n.nodeName == 'A') {
+					let t = cleanlinks,
+					z = n.href,
+					x = t.cl(z);
+					if (z != x) {
+						n.setAttribute('href', x);
+						if (t.op.highlight) {
+							t.hl(n);
+						}
+						if (window.MutationObserver) {
+							new MutationObserver(function (mns) {
+								mns.forEach(function (m)(m.type == 'attributes' && m.attributeName == 'href' && m.target.href != x && m.target.setAttribute('href', x)));
+							}).observe(n, {
+								attributes : true
+							});
+						} else
+							n.addEventListener('DOMAttrModified', function (ev)(ev.attrName == 'href' && this.href != x && this.setAttribute('href', x)), false);
+								if ((n = document.getElementById('urlbar'))) {
+									z = n.style.background;
+									n.style.background = 'rgba(245,240,0,0.6)';
+									window.setTimeout(function ()n.style.background = z, 300);
+								}
+					}
+				}
+			}
+			ev = null;
 		},
 		g : function (n, v) {
 			let p = this.ps;
@@ -245,6 +289,11 @@
 				} catch (e) {}
 				
 			}
+			return null;
+		},
+		hl : function (o) {
+			o.style.setProperty('background-color', 'rgba(252,252,0,0.7)', 'important');
+			o.style.setProperty('color', '#000', 'important');
 		},
 		l : function (s) {
 			if (typeof s == 'object') {
@@ -275,9 +324,10 @@
 					e.appendChild(t.oc('label', {
 							value : 'Status: ' + (t.g() ? 'Enabled' : 'Disabled')
 						}));
-					e.appendChild(t.oc('label', {
-							value : 'Cleaned Links: ' + re
-						}));
+					if (!t.evdm)
+						e.appendChild(t.oc('label', {
+								value : 'Cleaned Links: ' + re
+							}));
 					e.appendChild(t.oc('separator', {
 							height : 1,
 							style : 'background-color:#333;margin-bottom:3px'
@@ -293,12 +343,9 @@
 				return true;
 			}
 			this.g('enabled', s = (typeof s != 'undefined' ? !!s : !this.g()));
-			if (!s) {
-				let ni = 'chrome://cleanlinks/skin/icon16-.png';
-				try {
-					document.getElementById('cleanlinks-toolbar-button').style.setProperty('list-style-image', 'url("' + ni + '")', 'important');
-				} catch (e) {}
-				
+			let tb = document.getElementById('cleanlinks-toolbar-button');
+			if (tb && (!s || this.evdm)) {
+				tb.style.setProperty('list-style-image', 'url("chrome://cleanlinks/skin/icon16' + (!s ? '-' : '~') + '.png")', 'important');
 			}
 			return s;
 		},
@@ -306,18 +353,26 @@
 			switch (t) {
 			case 'nsPref:changed':
 				this.op[d] = this.g(d);
-				if (d == 'enabled') {
+				switch (d) {
+				case 'enabled':
 					if (this.l(!!this.op[d])) {
-						gBrowser.addEventListener('DOMContentLoaded', this.b, false);
-						gBrowser.tabContainer.addEventListener("TabSelect", this.b4, false);
-						this.b2(0, 1);
+						this.de();
+						if (!this.op.evdm)
+							this.b2(0, 1);
 					} else {
-						gBrowser.removeEventListener('DOMContentLoaded', this.b, false);
-						gBrowser.tabContainer.removeEventListener("TabSelect", this.b4, false);
-						this.b3();
+						this.dd();
+						if (!this.op.evdm)
+							this.b3();
 					}
-				} else if (~['skipwhen', 'remove'].indexOf(d)) {
+					break;
+				case 'skipwhen':
+				case 'remove':
 					this.pp();
+					break;
+				case 'evdm':
+					if (this.op.enabled)
+						this.de();
+					break;
 				}
 			default:
 				break;
@@ -346,6 +401,13 @@
 						alert('Error Processing CleanLinks Pattern "' + p + '": ' + e.message);
 						this.op[p] = null;
 					}
+			}
+		},
+		gd : function () {
+			try {
+				return gBrowser.contentDocument;
+			} catch (e) {
+				return this.wd() || window.content.document;
 			}
 		},
 		w : function (m) {
