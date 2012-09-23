@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	<setting pref="extensions.cleanlinks.skipwhen" type="string" title="Skip Links matching with:"
+		tooltiptext="This is a REGEXP Pattern urls will be checked against so that links to sharing platforms and such will not get broken."></setting>
+	<setting pref="extensions.cleanlinks.remove" type="string" title="Remove From Links:"
+		tooltiptext="This is a regexp pattern which will be applied over links to remove tracking tags and such."></setting>
+	<setting pref="extensions.cleanlinks.highlight" type="bool" title="Highlight Cleaned Links?"></setting>
+	<setting pref="extensions.cleanlinks.evdm" type="bool" title="Event Delegation Mode?"
+		tooltiptext="This is a less intrusive mode by just listening to click events. Note that real-time highlighting and counters will not work then, even though the performance should be much better."></setting>
+</vbox>

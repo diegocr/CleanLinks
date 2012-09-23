@@ -1,11 +1,11 @@
 /* ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/
- * 
+ *
  * The Original Code is CleanLinks Mozilla Extension.
- * 
+ *
  * The Initial Developer of the Original Code is
  * Copyright (C)2012 Diego Casorran <dcasorran@gmail.com>
  * All Rights Reserved.
@@ -16,7 +16,7 @@
 	const Cc = Components.classes;
 	const Ci = Components.interfaces;
 	const cleanlinks = {
-		pkg : 'CleanLinks v2.1',
+		pkg : 'CleanLinks v2.2',
 		tag_b : 'data-cleanedlinks',
 		tag_l : 'data-cleanedlink',
 		tag_t : "\n \n- CleanLinks Touch!",
@@ -229,29 +229,35 @@
 				if (n.nodeName != 'A')
 					do {
 						n = n.parentNode;
-					} while (n && n.nodeName != 'A' && n.nodeName != 'BODY');
+					} while (n && !~['A', 'DIV', 'BODY'].indexOf(n.nodeName));
 				if (n && n.nodeName == 'A') {
 					let t = cleanlinks,
 					z = n.href,
 					x = t.cl(z);
 					if (z != x) {
-						n.setAttribute('href', x);
 						if (t.op.highlight) {
 							t.hl(n);
 						}
-						if (window.MutationObserver) {
-							new MutationObserver(function (mns) {
-								mns.forEach(function (m)(m.type == 'attributes' && m.attributeName == 'href' && m.target.href != x && m.target.setAttribute('href', x)));
-							}).observe(n, {
-								attributes : true
-							});
-						} else
-							n.addEventListener('DOMAttrModified', function (ev)(ev.attrName == 'href' && this.href != x && this.setAttribute('href', x)), false);
-								if ((n = document.getElementById('urlbar'))) {
-									z = n.style.background;
-									n.style.background = 'rgba(245,240,0,0.6)';
-									window.setTimeout(function ()n.style.background = z, 300);
-								}
+						if (ev.button == 0) {
+							ev.stopPropagation();
+							ev.preventDefault();
+							window.content.location = x;
+						} else {
+							n.setAttribute('href', x);
+							if (window.MutationObserver) {
+								new MutationObserver(function (mns) {
+									mns.forEach(function (m)(m.type == 'attributes' && m.attributeName == 'href' && m.target.href != x && m.target.setAttribute('href', x)));
+								}).observe(n, {
+									attributes : true
+								});
+							} else
+								n.addEventListener('DOMAttrModified', function (ev)(ev.attrName == 'href' && this.href != x && this.setAttribute('href', x)), false);
+						}
+						if ((n = document.getElementById('urlbar'))) {
+							z = n.style.background;
+							n.style.background = 'rgba(245,240,0,0.6)';
+							window.setTimeout(function ()n.style.background = z, 300);
+						}
 					}
 				}
 			}
