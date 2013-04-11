@@ -1,4 +1,4 @@
-####Mozilla Firefox Extension designed to convert "obfuscated" and/or nested links to genuine/normal plain clean links####
+**Mozilla Firefox Extension designed to convert "obfuscated" and/or nested links to genuine/normal plain clean links.**
 
 _Eg:_
 
