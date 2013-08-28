@@ -26,8 +26,8 @@ const cleanlinks = {
 	op:null,
 	ps:null,
 	handleEvent: function(ev) {
-		window.removeEventListener(ev.type, arguments.callee, false);
 		let t = cleanlinks;
+		window.removeEventListener(ev.type, t, false);
 		t.pkg = t.addon.name + ' v' + t.addon.version;
 		switch(ev.type) {
 			case 'load':
