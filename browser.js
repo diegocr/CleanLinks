@@ -256,8 +256,23 @@ const cleanlinks = {
 					if(t.op.highlight) {
 						t.hl(n);
 					}
-					// XXX: temporal fix...
-					if(ev.button == 0) {
+					ev.stopPropagation();
+					ev.preventDefault();
+					
+					switch(ev.button) {
+						case 0:
+							if(!(ev.ctrlKey || ev.metaKey)) {
+								window.loadURI(x);
+								break;
+							}
+						case 1:
+							let bTab = Cc["@mozilla.org/preferences-service;1"]
+								.getService(Ci.nsIPrefService)
+								.getBoolPref('browser.tabs.loadInBackground');
+							gBrowser.loadOneTab(x,null,null,null,bTab,true);
+					}
+					
+				/*	if(ev.button == 0) {
 						ev.stopPropagation();
 						ev.preventDefault();
 						window.content.location = x;
@@ -274,7 +289,7 @@ const cleanlinks = {
 						else n.addEventListener('DOMAttrModified',function(ev) (
 							ev.attrName == 'href' && this.href != x && this.setAttribute('href',x)
 						), false);
-					}
+					}*/
 					
 					if((n = document.getElementById('urlbar'))) {
 						z = n.style.background;

@@ -197,9 +197,9 @@ function startup(data) {
 		for(let [k,v] in Iterator({
 			enabled   : !0,
 			skipwhen  : 'docs\\.google\\.com|ServiceLogin|imgres\\?|/watch%3Fv|'
-				+ 'share|translate|tweet|(timeline|like(box)?|landing|bookmark'
-				+ ')\.php|submit\\?(url|phase)=|\\+1',
-			remove    : 'ref\\w*|utm_\\w+|(aff(iliate)?|merchant|programme|media)ID',
+				+ 'share|translate|tweet|(?:timeline|like(?:box)?|landing|bookmark'
+				+ ')\.php|submit\\?(?:url|phase)=|\\+1|signup',
+			remove    : '(?:ref|aff)\\w*|utm_\\w+|(?:aff(?:iliate)?|merchant|programme|media)ID',
 			highlight : !0,
 			evdm      : !0
 		})) {
