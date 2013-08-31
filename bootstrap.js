@@ -73,28 +73,31 @@ function loadIntoWindow(window) {
 	
 	let gNavToolbox = window.gNavToolbox || $('navigator-toolbox');
 	if(gNavToolbox && gNavToolbox.palette.id == 'BrowserToolbarPalette') {
-		let m = addon.tag+'-toolbar-button';
+		let m=addon.tag+'-toolbar-button', nv=$('nav-bar');
 		gNavToolbox.palette.appendChild(e('toolbarbutton',{
 			id:m,label:addon.name,class:'toolbarbutton-1',
 			tooltiptext:addon.name,image:rsc('icon16.png')
 		})).addEventListener('command', wmsData.TBBHandler, !1);
 		
-		if(!addon.branch.getPrefType("version")) {
-			let nBar = $('nav-bar');
-			if(nBar) {
-				nBar.insertItem(m, null, null, false);
-				nBar.setAttribute("currentset", nBar.currentSet);
-				window.document.persist('nav-bar', "currentset");
+		if( nv ) {
+			if(!addon.branch.getPrefType("version")) {
+				nv.insertItem(m, null, null, false);
+				nv.setAttribute("currentset", nv.currentSet);
+				window.document.persist(nv.id, "currentset");
+			} else {
+				[].some.call(window.document.querySelectorAll("toolbar[currentset]"),
+					function(tb) {
+						let cs = tb.getAttribute("currentset").split(","),
+							bp = cs.indexOf(m) + 1;
+						
+						if(bp) {
+							let at = null;
+							cs.splice(bp).some(function(id) at = $(id));
+							nv.insertItem(m, at, null, false);
+							return true;
+						}
+					});
 			}
-		} else {
-			for each(let toolbar in window.document.querySelectorAll("toolbar[currentset]")) try {
-				let cSet = toolbar.getAttribute("currentset") || '';
-				if(cSet.split(",").some(function(x) x == m, this)) {
-					toolbar.currentSet = cSet;
-					window.BrowserToolboxCustomizeDone(true);
-					break;
-				}
-			} catch(e) {}
 		}
 		
 		let (mps = $('mainPopupSet')) {
@@ -196,10 +199,10 @@ function startup(data) {
 		
 		for(let [k,v] in Iterator({
 			enabled   : !0,
-			skipwhen  : 'docs\\.google\\.com|ServiceLogin|imgres\\?|/watch%3Fv|'
+			skipwhen  : 'docs\\.google\\.com|ServiceLogin|imgres\\?|watch%3Fv|'
 				+ 'share|translate|tweet|(?:timeline|like(?:box)?|landing|bookmark'
 				+ ')\.php|submit\\?(?:url|phase)=|\\+1|signup',
-			remove    : '(?:ref|aff)\\w*|utm_\\w+|(?:aff(?:iliate)?|merchant|programme|media)ID',
+			remove    : '(?:ref|aff)\\w*|utm_\\w+|(?:merchant|programme|media)ID',
 			highlight : !0,
 			evdm      : !0
 		})) {

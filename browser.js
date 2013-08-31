@@ -417,7 +417,7 @@ const cleanlinks = {
 		for each(let p in ['skipwhen','remove']) {
 			if(this.op[p] && typeof this.op[p] == 'string') try {
 				if(p == 'remove')
-					this.op[p] = new RegExp('\\b(?:'+this.op[p]+')=.+?(?:[&;]|$|(?=\\?))','g');
+					this.op[p] = new RegExp('\\b(?:'+this.op[p]+')=.+?(?:[&;]|$|(?=\\?))','gi');
 				else
 					this.op[p] = new RegExp(this.op[p]);
 			} catch(e) {
