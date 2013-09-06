@@ -7,6 +7,6 @@
 	<setting pref="extensions.cleanlinks.highlight" type="bool" title="Highlight Cleaned Links?"></setting>
 	<setting pref="extensions.cleanlinks.evdm" type="bool" title="Event Delegation Mode?"
 		tooltiptext="This is a less intrusive mode by just listening to click events. Note that real-time highlighting and counters will not work then, even though the performance should be much better."></setting>
-	<setting pref="extensions.cleanlinks.progltr" type="bool" title="Use Progress Listener?"
-		tooltiptext='Set up a "progress listener" instance to listen for changes in the url/location-bar, so that links from redirections are cleared as well. Re-enable the add-on when switching this option for the change to take effect.'></setting>
+	<setting pref="extensions.cleanlinks.progltr" type="bool" title="Use Location Watcher?"
+		tooltiptext="Set up a HTTP Observer to catch &amp; clean redirected links. Re-enable the add-on when switching this option for the change to take effect."></setting>
 </vbox>
