@@ -11,7 +11,8 @@
 
 let {classes:Cc,interfaces:Ci,utils:Cu,results:Cr} = Components,addon;
 
-Cu.import("resource://gre/modules/Services.jsm")
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+Cu.import("resource://gre/modules/Services.jsm");
 
 function rsc(n) 'resource://' + addon.tag + '/' + n;
 function LOG(m) (m = addon.name + ' Message @ '
@@ -19,15 +20,64 @@ function LOG(m) (m = addon.name + ' Message @ '
 		dump(m + "\n"), Services.console.logStringMessage(m));
 
 let isMobile = ~['{aa3c5121-dab2-40e2-81ca-7ea25febc110}',
-	'{a23983c0-fd0e-11dc-95ff-0800200c9a66}'].indexOf(Services.appinfo.ID);
+	'{a23983c0-fd0e-11dc-95ff-0800200c9a66}'].indexOf(Services.appinfo.ID),
+	VOID = function() {};
 
 let i$ = {
+	QueryInterface: XPCOMUtils.generateQI([
+		Ci.nsISupports,
+		Ci.nsIWebProgressListener,
+		Ci.nsISupportsWeakReference]),
+	
+	handleEvent: function(ev) {
+		switch(ev.type) {
+			case 'TabOpen':
+				ev.target.addProgressListener(this);
+				break;
+			case 'TabClose':
+				ev.target.removeProgressListener(this);
+			default:
+				break;
+		}
+	},
+	onStateChange   : VOID,
+	onStatusChange  : VOID,
+	onProgressChange: VOID,
+	onSecurityChange: VOID,
+	onLocationChange: function(w,r,l) {
+		
+		try {
+			
+			if(l.schemeIs("http") || l.schemeIs("https")) {
+				let win = w.DOMWindow.QueryInterface(Ci.nsIInterfaceRequestor)
+					.getInterface(Ci.nsIWebNavigation)
+					.QueryInterface(Ci.nsIDocShell)
+					.QueryInterface(Ci.nsIDocShellTreeItem).rootTreeItem
+					.QueryInterface(Ci.nsIInterfaceRequestor)
+					.getInterface(Ci.nsIDOMWindow)
+					.window, bro = win.diegocr[addon.tag];
+				
+				let c = bro.cl(l.spec);
+				
+				if(l.spec != c) {
+					r.cancel(Cr.NS_BINDING_REDIRECTED);
+					w.DOMWindow.location = c;
+					bro.blink(win);
+					
+					LOG('onLocationChange: ' + l.spec + "\n-> " + c);
+				}
+			}
+			
+		} catch(e) {
+			Cu.reportError(e);
+		}
+	},
 	onOpenWindow: function(aWindow) {
 		let domWindow = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindow);
 		loadIntoWindowStub(domWindow);
 	},
-	onCloseWindow: function() {},
-	onWindowTitleChange: function() {}
+	onCloseWindow: VOID,
+	onWindowTitleChange: VOID
 };
 
 (function(global) global.loadSubScript = function(file,scope)
@@ -57,9 +107,6 @@ function loadIntoWindow(window) {
 	window.diegocr[addon.tag].LOG = LOG;
 	window.diegocr[addon.tag].rsc = rsc;
 	
-	if(isMobile)
-		return;
-	
 	let wmsData = {
 		TBBHandler: function(ev) {
 			
@@ -70,6 +117,24 @@ function loadIntoWindow(window) {
 			}
 		}
 	};
+	
+	if(addon.branch.getBoolPref('progltr')) {
+		wmsData.progltr = !0;
+		
+		if(isMobile) {
+			let BrowserApp = window.BrowserApp;
+			BrowserApp.tabs.forEach(function(tab) {
+				tab.browser.addProgressListener(i$);
+			});
+			BrowserApp.deck.addEventListener("TabOpen", i$, false);
+			BrowserApp.deck.addEventListener("TabClose", i$, false);
+		} else {
+			getBrowser(window).addProgressListener(i$);
+		}
+	}
+	
+	if(isMobile)
+		return;
 	
 	let gNavToolbox = window.gNavToolbox || $('navigator-toolbox');
 	if(gNavToolbox && gNavToolbox.palette.id == 'BrowserToolbarPalette') {
@@ -147,9 +212,6 @@ function unloadFromWindow(window) {
 		Cu.reportError(e);
 	}
 	
-	if(isMobile)
-		return;
-	
 	if(addon.wms.has(window)) {
 		let wmsData = addon.wms.get(window);
 		
@@ -160,8 +222,22 @@ function unloadFromWindow(window) {
 			let tt = $(addon.tag+'-tooltip');
 			if(tt) tt.removeEventListener('popupshowing', wmsData.popupshowing, !1);
 		}
+		if(wmsData.progltr) {
+			if(isMobile) {
+				window.BrowserApp.deck.removeEventListener("TabOpen", i$, false);
+				window.BrowserApp.deck.removeEventListener("TabClose", i$, false);
+				window.BrowserApp.tabs.forEach(function(tab) {
+					tab.browser.removeProgressListener(i$);
+				});
+			} else {
+				getBrowser(window).removeProgressListener(i$);
+			}
+		}
 		addon.wms.delete(window);
 	}
+	
+	if(isMobile)
+		return;
 	
 	if(btn) {
 		btn.parentNode.removeChild(btn);
@@ -180,6 +256,14 @@ function unloadFromWindow(window) {
 	let n;
 	if((n = $(addon.tag+'-tooltip')))
 		n.parentNode.removeChild(n);
+}
+
+function getBrowser(w) {
+	try {
+		return w.getBrowser();
+	} catch(e) {
+		return w.gBrowser;
+	}
 }
 
 function startup(data) {
@@ -204,7 +288,8 @@ function startup(data) {
 				+ ')\.php|submit\\?(?:url|phase)=|\\+1|signup',
 			remove    : '(?:ref|aff)\\w*|utm_\\w+|(?:merchant|programme|media)ID',
 			highlight : !0,
-			evdm      : !0
+			evdm      : !0,
+			progltr   : !1
 		})) {
 			if(!addon.branch.getPrefType(k)) {
 				switch(typeof v) {

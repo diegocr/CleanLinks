@@ -291,15 +291,21 @@ const cleanlinks = {
 						), false);
 					}*/
 					
-					if((n = document.getElementById('urlbar'))) {
-						z = n.style.background;
-						n.style.background = 'rgba(245,240,0,0.6)';
-						window.setTimeout(function() n.style.background = z,300);
-					}
+					t.blink(window);
 				}
 			}
 		}
 		ev = null;
+	},
+	
+	blink: function(window) {
+		if(this.op.highlight) {
+			if((n = window.document.getElementById('urlbar'))) {
+				let z = n.style.background;
+				n.style.background = 'rgba(245,240,0,0.6)';
+				window.setTimeout(function() n.style.background = z,300);
+			}
+		}
 	},
 	
 	g: function(n,v) {
