@@ -32,8 +32,6 @@ const cleanlinks = {
 		switch(ev.type) {
 			case 'load':
 				t.ps = t.addon.branch;
-				if("nsIPrefBranch2" in Ci)
-					t.ps.QueryInterface(Ci.nsIPrefBranch2);
 				t.op = {};
 				for each(let k in t.ps.getChildList("", {})) {
 					t.op[k] = t.g(k);

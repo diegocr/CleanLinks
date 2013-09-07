@@ -8,5 +8,5 @@
 	<setting pref="extensions.cleanlinks.evdm" type="bool" title="Event Delegation Mode?"
 		tooltiptext="This is a less intrusive mode by just listening to click events. Note that real-time highlighting and counters will not work then, even though the performance should be much better."></setting>
 	<setting pref="extensions.cleanlinks.progltr" type="bool" title="Use Location Watcher?"
-		tooltiptext="Set up a HTTP Observer to catch &amp; clean redirected links. Re-enable the add-on when switching this option for the change to take effect."></setting>
+		tooltiptext="Set up a HTTP Observer to catch redirections. For example, this should make possible to clear links hidden behind shortened URLs."></setting>
 </vbox>

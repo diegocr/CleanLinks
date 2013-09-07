@@ -22,6 +22,18 @@ let isMobile = ~['{aa3c5121-dab2-40e2-81ca-7ea25febc110}',
 	'{a23983c0-fd0e-11dc-95ff-0800200c9a66}'].indexOf(Services.appinfo.ID);
 
 let i$ = {
+	addHTTPObserver: function() {
+		if(!addon.obson && addon.progltr && addon.enabled) {
+			Services.obs.addObserver(i$, 'http-on-examine-response', false);
+			addon.obson = !0;
+		}
+	},
+	removeHTTPObserver: function() {
+		if(addon.obson) {
+			Services.obs.removeObserver(i$, 'http-on-examine-response', false);
+			delete addon.obson;
+		}
+	},
 	getLink: function(win,link) {
 		win = win.QueryInterface(Ci.nsIInterfaceRequestor)
 			.getInterface(Ci.nsIWebNavigation)
@@ -34,11 +46,29 @@ let i$ = {
 		let bro = win.diegocr[addon.tag],
 			clt = bro.cl(link);
 		
+		LOG(link+'\n> '+clt);
 		return (clt != link) ? (bro.blink(win), clt) : null;
 	},
 	observe: function(s,t,d) {
-		
 		switch(t) {
+			case 'nsPref:changed':
+				switch(d) {
+					case 'enabled':
+					case 'progltr':
+						let v = addon.branch.getBoolPref(d);
+						
+						addon[d] = v;
+						if(v === true) {
+							
+							this.addHTTPObserver();
+						} else {
+							
+							this.removeHTTPObserver();
+						}
+						break;
+				}
+				break;
+			
 			case 'http-on-examine-response': {
 				let c = s.QueryInterface(Ci.nsIHttpChannel);
 				
@@ -237,12 +267,14 @@ function startup(data) {
 			wms: new WeakMap()
 		};
 		addon.branch = Services.prefs.getBranch('extensions.'+addon.tag+'.');
+		if("nsIPrefBranch2" in Ci)
+			addon.branch.QueryInterface(Ci.nsIPrefBranch2);
 		
 		for(let [k,v] in Iterator({
 			enabled   : !0,
 			skipwhen  : 'docs\\.google\\.com|ServiceLogin|imgres\\?|watch%3Fv|'
 				+ 'share|translate|tweet|(?:timeline|like(?:box)?|landing|bookmark'
-				+ ')\.php|submit\\?(?:url|phase)=|\\+1|signup',
+				+ ')\.php|submit\\?(?:url|phase)=|\\+1|signup|openid\\.ns',
 			remove    : '(?:ref|aff)\\w*|utm_\\w+|(?:merchant|programme|media)ID',
 			highlight : !0,
 			evdm      : !0,
@@ -256,6 +288,7 @@ function startup(data) {
 				}
 			}
 		}
+		addon.branch.addObserver("", i$, false);
 		
 		io.getProtocolHandler("resource")
 			.QueryInterface(Ci.nsIResProtocolHandler)
@@ -269,11 +302,9 @@ function startup(data) {
 		}
 		wm.addListener(i$);
 		
-		if(addon.branch.getBoolPref('progltr')) {
-			addon.progltr = !0;
-			
-			Services.obs.addObserver(i$, 'http-on-examine-response', false);
-		}
+		['enabled','progltr'].forEach(function(p)
+			addon[p] = addon.branch.getBoolPref(p));
+		i$.addHTTPObserver();
 		
 		// i$.startup();
 		addon.branch.setCharPref('version', addon.version);
@@ -285,9 +316,9 @@ function shutdown(data, reason) {
 	if(reason == APP_SHUTDOWN)
 		return;
 	
-	if(addon.progltr) {
-		Services.obs.removeObserver(i$, 'http-on-examine-response', false);
-	}
+	addon.branch.removeObserver("", i$);
+	
+	i$.removeHTTPObserver();
 	// i$.shutdown();
 	
 	Services.wm.removeListener(i$);
