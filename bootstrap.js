@@ -104,6 +104,33 @@ let i$ = {
 (function(global) global.loadSubScript = function(file,scope)
 	Services.scriptloader.loadSubScript(file,scope||global))(this);
 
+function copyLinkController(window) {
+	let clipboardHelper = Cc["@mozilla.org/widget/clipboardhelper;1"]
+		.getService(Ci.nsIClipboardHelper);
+	
+	let { goDoCommand } = window;
+	window.goDoCommand = function(aCommand) {
+		if(aCommand === 'cmd_copyLink' && addon.enabled) {
+			
+			let { gContextMenu } = window;
+			if(gContextMenu && gContextMenu.onLink) {
+				
+				let link = i$.getLink(window,gContextMenu.linkURL);
+				
+				if(link) {
+					clipboardHelper.copyString(link);
+					return;
+				}
+			}
+		}
+		goDoCommand(aCommand);
+	};
+	
+	this.shutdown = function() {
+		window.goDoCommand = goDoCommand;
+	};
+}
+
 function loadIntoWindow(window) {
 	if(!(/^chrome:\/\/(browser|navigator)\/content\/\1\.xul$/.test(window&&window.location)))
 		return;
@@ -139,7 +166,8 @@ function loadIntoWindow(window) {
 			} catch(e) {
 				Cu.reportError(e);
 			}
-		}
+		},
+		controller: new copyLinkController(window)
 	};
 	
 	let gNavToolbox = window.gNavToolbox || $('navigator-toolbox');
@@ -231,6 +259,9 @@ function unloadFromWindow(window) {
 			let tt = $(addon.tag+'-tooltip');
 			if(tt) tt.removeEventListener('popupshowing', wmsData.popupshowing, !1);
 		}
+		if(wmsData.controller) {
+			wmsData.controller.shutdown();
+		}
 		addon.wms.delete(window);
 	}
 	
@@ -273,8 +304,9 @@ function startup(data) {
 		for(let [k,v] in Iterator({
 			enabled   : !0,
 			skipwhen  : 'docs\\.google\\.com|ServiceLogin|imgres\\?|watch%3Fv|'
-				+ 'share|translate|tweet|(?:timeline|like(?:box)?|landing|bookmark'
-				+ ')\.php|submit\\?(?:url|phase)=|\\+1|signup|openid\\.ns',
+				+ 'share|translate|tweet|(?:timeline|like(?:box)?|landing|bookmark|'
+				+ 'arbiter)\\.php|submit\\?(?:url|phase)=|\\+1|signup|openid\\.ns|'
+				+ 'auth\\?client_id|\\.mcstatic\\.com|sVidLoc|return=',
 			remove    : '(?:ref|aff)\\w*|utm_\\w+|(?:merchant|programme|media)ID',
 			highlight : !0,
 			evdm      : !0,
