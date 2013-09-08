@@ -41,6 +41,8 @@ const cleanlinks = {
 					t.de();
 				}
 				t.ps.addObserver("", t, false);
+				t.ios = Cc["@mozilla.org/network/io-service;1"]
+					.getService(Ci.nsIIOService);
 				break;
 			case 'unload':
 				t.ps.removeObserver("", t);
@@ -167,12 +169,21 @@ const cleanlinks = {
 		return t;
 	},
 	
-	cl: function(h) {
-		let lmt = 4, s = 0, p, ht = null, rp = this.op.remove;
-		
+	cl: function(h,b) {
 		if(this.op.skipwhen && this.op.skipwhen.test(h))
 			return h;
 		
+		if(this.op.skipdoms) try {
+			let uri = this.nu(h,b);
+			
+			if(~this.op.skipdoms.indexOf(uri.host))
+				return h;
+			
+		} catch(e) {
+			this.d(e);
+		}
+		
+		let lmt = 4, s = 0, p, ht = null, rp = this.op.remove;
 		h.replace(/^javascript:.+(["'])(https?(?:\:|%3a).+?)\1/gi,function(a,b,c)(++s,h=c));
 		
 		if(/((?:aHR0|d3d3)[A-Z0-9+=\/]+)/gi.test(h)) try {
@@ -201,7 +212,8 @@ const cleanlinks = {
 		if( s || rp.test(h)) {
 			if(~(p = h.indexOf('#'))) (ht = h.substr(p), h = h.substr(0,p));
 			
-			h = h.replace('&amp;','&','g').replace(rp,'').replace(/[?&]$/,'') + (ht && /^[\w\/#-]+$/.test(ht) ? ht : this.tag_h);
+			h = h.replace('&amp;','&','g').replace(rp,'').replace(/[?&]$/,'')
+				+ (ht && /^[\w\/#-]+$/.test(ht) ? ht : (this.evdm ? '':this.tag_h));
 			
 			// this.d('Cleaned link '+s+' "'+l[c].href+'" -> "'+h+'"');
 		}
@@ -377,6 +389,13 @@ const cleanlinks = {
 		return s;
 	},
 	
+	nu: function(u,b) {
+		if(typeof b === 'string') {
+			b = this.nu(b);
+		}
+		return this.ios.newURI(u,null,b||null);
+	},
+	
 	observe: function(s, t, d) {
 		switch(t) {
 			case 'nsPref:changed':
@@ -396,6 +415,9 @@ const cleanlinks = {
 					case 'skipwhen':
 					case 'remove':
 						this.pp();
+						break;
+					case 'skipdoms':
+						this.op[d] = this.op[d] && this.op[d].split(",");
 						break;
 					case 'evdm':
 						if(this.op.enabled)

@@ -34,7 +34,7 @@ let i$ = {
 			delete addon.obson;
 		}
 	},
-	getLink: function(win,link) {
+	getLink: function(win,link,base) {
 		win = win.QueryInterface(Ci.nsIInterfaceRequestor)
 			.getInterface(Ci.nsIWebNavigation)
 			.QueryInterface(Ci.nsIDocShell)
@@ -44,7 +44,7 @@ let i$ = {
 			.window;
 		
 		let bro = win.diegocr[addon.tag],
-			clt = bro.cl(link);
+			clt = bro.cl(link,base);
 		
 		LOG(link+'\n> '+clt);
 		return (clt != link) ? (bro.blink(win), clt) : null;
@@ -80,7 +80,7 @@ let i$ = {
 								var w = s.loadGroup.notificationCallbacks.getInterface(Ci.nsIDOMWindow);
 							} catch(e) {}
 							
-							if(w && (l = this.getLink(w,l))) {
+							if(w && (l = this.getLink(w,l,c.URI))) {
 								
 								c.setResponseHeader('Location', l, false);
 							}
@@ -303,11 +303,11 @@ function startup(data) {
 		
 		for(let [k,v] in Iterator({
 			enabled   : !0,
-			skipwhen  : 'docs\\.google\\.com|ServiceLogin|imgres\\?|watch%3Fv|'
-				+ 'share|translate|tweet|(?:timeline|like(?:box)?|landing|bookmark|'
-				+ 'arbiter)\\.php|submit\\?(?:url|phase)=|\\+1|signup|openid\\.ns|'
-				+ 'auth\\?client_id|\\.mcstatic\\.com|sVidLoc|return=',
+			skipwhen  : 'ServiceLogin|imgres\\?|watch%3Fv|auth\\?client_id|signup|'
+				+ 'openid\\.ns|\\.mcstatic\\.com|sVidLoc|[Ll]ogout|submit\\?url=',
 			remove    : '(?:ref|aff)\\w*|utm_\\w+|(?:merchant|programme|media)ID',
+			skipdoms  : 'accounts.google.com,docs.google.com,translate.google.com,'
+				+ 'login.live.com,plus.google.com,www.facebook.com,twitter.com',
 			highlight : !0,
 			evdm      : !0,
 			progltr   : !1
