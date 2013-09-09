@@ -43,12 +43,15 @@ const cleanlinks = {
 				t.ps.addObserver("", t, false);
 				t.ios = Cc["@mozilla.org/network/io-service;1"]
 					.getService(Ci.nsIIOService);
+				t.observe(null,'nsPref:changed','skipdoms');
 				break;
 			case 'unload':
 				t.ps.removeObserver("", t);
 				if(t.op.enabled) {
 					t.dd();
 				}
+				for(let m in t)
+					delete t[m];
 			default:break;
 		}
 	},
@@ -180,7 +183,7 @@ const cleanlinks = {
 				return h;
 			
 		} catch(e) {
-			this.d(e);
+			this.d(e+' '+h);
 		}
 		
 		let lmt = 4, s = 0, p, ht = null, rp = this.op.remove;
@@ -311,9 +314,13 @@ const cleanlinks = {
 	blink: function(window) {
 		if(this.op.highlight) {
 			if((n = window.document.getElementById('urlbar'))) {
-				let z = n.style.background;
+				if(!("ubg" in this))
+					this.ubg = n.style.background;
+				let z = this.ubg;
 				n.style.background = 'rgba(245,240,0,0.6)';
-				window.setTimeout(function() n.style.background = z,300);
+				if(this.ubgt)
+					window.clearTimeout(this.ubgt);
+				this.ubgt = window.setTimeout(function() n.style.background = z,300);
 			}
 		}
 	},
@@ -417,7 +424,10 @@ const cleanlinks = {
 						this.pp();
 						break;
 					case 'skipdoms':
-						this.op[d] = this.op[d] && this.op[d].split(",");
+						this.op[d] = this.op[d]
+							&& this.op[d].split(",")
+								.map(String.trim)
+								.filter(String);
 						break;
 					case 'evdm':
 						if(this.op.enabled)

@@ -81,8 +81,9 @@ let i$ = {
 							} catch(e) {}
 							
 							if(w && (l = this.getLink(w,l,c.URI))) {
-								
-								c.setResponseHeader('Location', l, false);
+								// Check for The page isn't redirecting properly...
+								if(l !== c.originalURI.spec || !(c.loadFlags & Ci.nsIChannel.LOAD_REPLACE))
+									c.setResponseHeader('Location', l, false);
 							}
 						}
 					}
@@ -307,7 +308,8 @@ function startup(data) {
 				+ 'openid\\.ns|\\.mcstatic\\.com|sVidLoc|[Ll]ogout|submit\\?url=',
 			remove    : '(?:ref|aff)\\w*|utm_\\w+|(?:merchant|programme|media)ID',
 			skipdoms  : 'accounts.google.com,docs.google.com,translate.google.com,'
-				+ 'login.live.com,plus.google.com,www.facebook.com,twitter.com',
+				+ 'login.live.com,plus.google.com,www.facebook.com,twitter.com,'
+				+ 'static.ak.facebook.com',
 			highlight : !0,
 			evdm      : !0,
 			progltr   : !1
