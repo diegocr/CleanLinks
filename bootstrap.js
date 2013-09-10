@@ -78,9 +78,10 @@ let i$ = {
 						if(l) {
 							try {
 								var w = s.loadGroup.notificationCallbacks.getInterface(Ci.nsIDOMWindow);
-							} catch(e) {}
+							} catch(e) {LOG("Error: "+e+"\n-- "+l);}
 							
 							if(w && (l = this.getLink(w,l,c.URI))) {
+								LOG(c.originalURI.spec+' '+c.loadFlags+' '+(c.loadFlags & Ci.nsIChannel.LOAD_REPLACE))
 								// Check for The page isn't redirecting properly...
 								if(l !== c.originalURI.spec || !(c.loadFlags & Ci.nsIChannel.LOAD_REPLACE))
 									c.setResponseHeader('Location', l, false);
@@ -99,7 +100,7 @@ let i$ = {
 		loadIntoWindowStub(domWindow);
 	},
 	onCloseWindow: function() {},
-	onWindowTitleChange: function() {}
+	onWindowTitleChange: function(aWindow) {}
 };
 
 (function(global) global.loadSubScript = function(file,scope)
@@ -168,6 +169,22 @@ function loadIntoWindow(window) {
 				Cu.reportError(e);
 			}
 		},
+		getCleanLink: function(ev) {
+			let node = ev.target,
+				url = node.getAttribute('url');
+			
+			node.setAttribute('url', i$.getLink(window,url) || url);
+			ev.stopPropagation();
+		},
+		domload: function(ev) {
+			let doc = ev.originalTarget;
+			
+			if(doc instanceof Ci.nsIDOMHTMLDocument) {
+				
+				doc.addEventListener('getCleanLink',this.getCleanLink,true);
+				loadSubScript(rsc('content.js'),doc.defaultView);
+			}
+		},
 		controller: new copyLinkController(window)
 	};
 	
@@ -220,8 +237,19 @@ function loadIntoWindow(window) {
 		}
 	}
 	
+	getBrowser(window).addEventListener('DOMContentLoaded', wmsData.domload, false);
+	
 	addon.wms.set(window,wmsData);
 	gNavToolbox = null;
+}
+
+function getBrowser(w) {
+	
+	try {
+		return w.getBrowser();
+	} catch(e) {
+		return w.gBrowser;
+	}
 }
 
 function loadIntoWindowStub(domWindow) {
@@ -262,6 +290,30 @@ function unloadFromWindow(window) {
 		}
 		if(wmsData.controller) {
 			wmsData.controller.shutdown();
+		}
+		if(wmsData.domload) {
+			let gBrowser = getBrowser(window);
+			gBrowser.removeEventListener('DOMContentLoaded', wmsData.domload, false);
+			
+			let detach = function(doc) {
+				if(doc instanceof Ci.nsIDOMHTMLDocument) try {
+					
+					doc.removeEventListener('getCleanLink',wmsData.getCleanLink,true);
+					
+					let l = doc.defaultView.frames,
+						c = l.length;
+					while(c--) {
+						detach(l[c].document);
+					}
+				} catch(e) {
+					Cu.reportError(e);
+				}
+			};
+			
+			let l = gBrowser.browsers.length;
+			while(l--) {
+				detach(gBrowser.getBrowserAtIndex(l).contentDocument);
+			}
 		}
 		addon.wms.delete(window);
 	}
@@ -309,7 +361,7 @@ function startup(data) {
 			remove    : '(?:ref|aff)\\w*|utm_\\w+|(?:merchant|programme|media)ID',
 			skipdoms  : 'accounts.google.com,docs.google.com,translate.google.com,'
 				+ 'login.live.com,plus.google.com,www.facebook.com,twitter.com,'
-				+ 'static.ak.facebook.com',
+				+ 'static.ak.facebook.com,www.linkedin.com',
 			highlight : !0,
 			evdm      : !0,
 			progltr   : !1
