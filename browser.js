@@ -183,7 +183,7 @@ const cleanlinks = {
 				return h;
 			
 		} catch(e) {
-			this.d(e+' '+h);
+			this.d(e+' '+h+' '+b);
 		}
 		
 		let lmt = 4, s = 0, p, ht = null, rp = this.op.remove;
@@ -194,7 +194,7 @@ const cleanlinks = {
 			if(d) h='='+d;
 		}catch(e){}
 		
-		while(--lmt && (/[\/\?\=\(]([hft]+tps?(?:\:|%3a).+)$/i.test(h) || /(?:[\?\=]|[^\/]\/)(www\..+)$/i.test(h))) {
+		while(--lmt && (/.\b([a-z]+(?:\:|%3a)(?:\/|%2f).+)$/i.test(h) || /(?:[?=]|[^\/]\/)(www\..+)$/i.test(h))) {
 			h = RegExp.$1;
 			if(~(p = h.indexOf('&')))
 				h = h.substr(0,p);
@@ -204,7 +204,7 @@ const cleanlinks = {
 				h = h.substr(0,p+4);
 			else if(~(p = h.indexOf('/&')) || ~(p = h.indexOf('/%')))
 				h = h.substr(0,p);
-			if(!/^http/.test(h))
+			if(h.indexOf('://') == -1)
 				h = 'http://' + h;
 			if(h.indexOf('/',8) == -1)
 				h += '/';

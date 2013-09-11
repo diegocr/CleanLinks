@@ -106,46 +106,24 @@ let i$ = {
 			callback(domWindow);
 		}
 	},
-	bcForeach: function(window,callback) {
-		let gBrowser = getBrowser(window);
-		let l = gBrowser.browsers.length;
+	gBForeach: function(gBrowser,callback) {
+		let wrapper = function(doc) {
+			if(doc instanceof Ci.nsIDOMHTMLDocument) try {
+				
+				callback(doc);
+				
+				let l = doc.defaultView.frames,
+					c = l.length;
+				while(c--) {
+					wrapper(l[c].document);
+				}
+			} catch(e) {
+				Cu.reportError(e);
+			}
+		}, l = gBrowser.browsers.length;
+		
 		while(l--) {
-			callback(gBrowser.getBrowserAtIndex(l).contentDocument);
-		}
-	},
-	gCLDetach: function(window,wmsData) {
-		wmsData = wmsData || addon.wms.get(window);
-		this.bcForeach(window,function detach(doc) {
-			if(doc instanceof Ci.nsIDOMHTMLDocument) try {
-				LOG('detaching from ' + doc.location.href);
-				
-				doc.removeEventListener('getCleanLink',wmsData.getCleanLink,true);
-				i$.wFrameForeach(doc,detach);
-				
-			} catch(e) {
-				Cu.reportError(e);
-			}
-		});
-	},
-	gCLAttach: function(window,wmsData) {
-		wmsData = wmsData || addon.wms.get(window);
-		this.bcForeach(window,function attach(doc) {
-			if(doc instanceof Ci.nsIDOMHTMLDocument) try {
-				LOG('attaching to ' + doc.location.href);
-				
-				i$.putc(doc,wmsData.getCleanLink);
-				i$.wFrameForeach(doc,attach);
-				
-			} catch(e) {
-				Cu.reportError(e);
-			}
-		});
-	},
-	wFrameForeach: function(doc,callback) {
-		let l = doc.defaultView.frames,
-			c = l.length;
-		while(c--) {
-			callback(l[c].document);
+			wrapper(gBrowser.getBrowserAtIndex(l).contentDocument);
 		}
 	},
 	putc: function(doc,dsp) {
@@ -154,13 +132,21 @@ let i$ = {
 	},
 	DetachDOMLoad: function(window,wmsData) {
 		wmsData = wmsData || addon.wms.get(window);
-		getBrowser(window).removeEventListener('DOMContentLoaded', wmsData.domload, false);
-		i$.gCLDetach(window,wmsData);
+		let gBrowser = getBrowser(window);
+		gBrowser.removeEventListener('DOMContentLoaded', wmsData.domload, false);
+		this.gBForeach(gBrowser,function(doc) {
+			LOG('detaching from ' + doc.location.href);
+			doc.removeEventListener('getCleanLink',wmsData.getCleanLink,true);
+		});
 	},
 	AttachDOMLoad: function(window,wmsData) {
 		wmsData = wmsData || addon.wms.get(window);
-		getBrowser(window).addEventListener('DOMContentLoaded', wmsData.domload, false);
-		i$.gCLAttach(window,wmsData);
+		let gBrowser = getBrowser(window);
+		gBrowser.addEventListener('DOMContentLoaded', wmsData.domload, false);
+		this.gBForeach(gBrowser,function(doc) {
+			LOG('attaching to ' + doc.location.href);
+			i$.putc(doc,wmsData.getCleanLink);
+		});
 	},
 	onOpenWindow: function(aWindow) {
 		let domWindow = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindow);
@@ -240,7 +226,7 @@ function loadIntoWindow(window) {
 			let node = ev.target,
 				url = node.getAttribute('url');
 			
-			node.setAttribute('url', i$.getLink(window,url) || url);
+			node.setAttribute('url', i$.getLink(window,url,node.baseURI) || url);
 			ev.stopPropagation();
 		},
 		domload: function(ev) {
@@ -248,7 +234,7 @@ function loadIntoWindow(window) {
 			
 			if(doc instanceof Ci.nsIDOMHTMLDocument) {
 				
-				i$.putc(doc,this.getCleanLink);
+				i$.putc(doc,wmsData.getCleanLink);
 			}
 		},
 		controller: new copyLinkController(window)
@@ -311,11 +297,13 @@ function loadIntoWindow(window) {
 
 function getBrowser(w) {
 	
-	try {
+	if(typeof w.getBrowser === 'function')
 		return w.getBrowser();
-	} catch(e) {
+	
+	if("gBrowser" in w)
 		return w.gBrowser;
-	}
+	
+	return w.BrowserApp.deck;
 }
 
 function loadIntoWindowStub(domWindow) {
