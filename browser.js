@@ -237,7 +237,7 @@ const cleanlinks = {
 			let tb = document.getElementById('cleanlinks-toolbar-button');
 			if(tb) tb.setAttribute('image',this.rsc('icon16~.png'));
 		} else {
-			(this.mob ? BrowserApp.deck:gBrowser).addEventListener(this.mob?'load':'DOMContentLoaded', this.b, false);
+			(this.mob ? BrowserApp.deck:gBrowser).addEventListener('DOMContentLoaded', this.b, false);
 			(this.mob ? BrowserApp.deck:gBrowser.tabContainer).addEventListener("TabSelect", this.b4, false);
 			this.domWay = true;
 			this.b5();
@@ -246,7 +246,7 @@ const cleanlinks = {
 	
 	dd: function() {
 		if(this.domWay) {
-			(this.mob ? BrowserApp.deck:gBrowser).removeEventListener(this.mob?'load':'DOMContentLoaded', this.b, false);
+			(this.mob ? BrowserApp.deck:gBrowser).removeEventListener('DOMContentLoaded', this.b, false);
 			(this.mob ? BrowserApp.deck:gBrowser.tabContainer).removeEventListener("TabSelect", this.b4, false);
 			delete this.domWay;
 		} else if(this.evdm) {
@@ -272,7 +272,10 @@ const cleanlinks = {
 					ev.stopPropagation();
 					ev.preventDefault();
 					
-					switch(ev.button) {
+					if(t.mob) {
+						window.content.location = x;
+					}
+					else switch(ev.button) {
 						case 0:
 							if(!(ev.ctrlKey || ev.metaKey)) {
 								window.loadURI(x);
@@ -284,25 +287,6 @@ const cleanlinks = {
 								.getBoolPref('browser.tabs.loadInBackground');
 							gBrowser.loadOneTab(x,null,null,null,bTab,true);
 					}
-					
-				/*	if(ev.button == 0) {
-						ev.stopPropagation();
-						ev.preventDefault();
-						window.content.location = x;
-					} else {
-						n.setAttribute('href',x);
-						if(window.MutationObserver) {
-							new MutationObserver(function(mns) {
-								mns.forEach(function(m) (
-									m.type == 'attributes' && m.attributeName == 'href'
-										&& m.target.href != x && m.target.setAttribute('href',x)
-								));
-							}).observe(n,{attributes:true});
-						}
-						else n.addEventListener('DOMAttrModified',function(ev) (
-							ev.attrName == 'href' && this.href != x && this.setAttribute('href',x)
-						), false);
-					}*/
 					
 					t.blink(window);
 				}

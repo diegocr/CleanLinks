@@ -120,10 +120,22 @@ let i$ = {
 			} catch(e) {
 				Cu.reportError(e);
 			}
-		}, l = gBrowser.browsers.length;
+		};
 		
-		while(l--) {
-			wrapper(gBrowser.getBrowserAtIndex(l).contentDocument);
+		if(typeof gBrowser.getBrowserAtIndex === 'function') {
+			let l = gBrowser.browsers.length;
+			
+			while(l--) {
+				wrapper(gBrowser.getBrowserAtIndex(l).contentDocument);
+			}
+		} else if(gBrowser.nodeName === 'deck') {
+			let l = gBrowser.childNodes.length;
+			
+			while(l--) {
+				wrapper(gBrowser.childNodes[l].contentDocument);
+			}
+		} else {
+			throw new Error('Unknown gBrowser instance.');
 		}
 	},
 	putc: function(doc,dsp) {
@@ -186,6 +198,24 @@ function copyLinkController(window) {
 	};
 }
 
+function copyLinkMobile(window) {
+	
+	let { _getLinkURL } = window.NativeWindow.contextmenus;
+	window.NativeWindow.contextmenus._getLinkURL = function(aLink) {
+		aLink = _getLinkURL.call(window.NativeWindow.contextmenus,aLink);
+		
+		if(aLink) {
+			aLink = i$.getLink(window,aLink) || aLink;
+		}
+		
+		return aLink;
+	};
+	
+	this.shutdown = function() {
+		window.NativeWindow.contextmenus._getLinkURL = _getLinkURL;
+	};
+}
+
 function loadIntoWindow(window) {
 	if(!(/^chrome:\/\/(browser|navigator)\/content\/\1\.xul$/.test(window&&window.location)))
 		return;
@@ -210,8 +240,8 @@ function loadIntoWindow(window) {
 	window.diegocr[addon.tag].LOG = LOG;
 	window.diegocr[addon.tag].rsc = rsc;
 	
-	if(isMobile)
-		return;
+	// if(isMobile)
+		// return;
 	
 	let wmsData = {
 		TBBHandler: function(ev) {
@@ -237,7 +267,8 @@ function loadIntoWindow(window) {
 				i$.putc(doc,wmsData.getCleanLink);
 			}
 		},
-		controller: new copyLinkController(window)
+		controller: isMobile ? new copyLinkMobile(window)
+			: new copyLinkController(window)
 	};
 	
 	let gNavToolbox = window.gNavToolbox || $('navigator-toolbox');
@@ -329,8 +360,8 @@ function unloadFromWindow(window) {
 		Cu.reportError(e);
 	}
 	
-	if(isMobile)
-		return;
+	// if(isMobile)
+		// return;
 	
 	if(addon.wms.has(window)) {
 		let wmsData = addon.wms.get(window);
@@ -387,6 +418,9 @@ function startup(data) {
 		if("nsIPrefBranch2" in Ci)
 			addon.branch.QueryInterface(Ci.nsIPrefBranch2);
 		
+		let Reset = !addon.branch.getPrefType('version')
+			|| addon.branch.getCharPref('version') !== addon.version;
+		
 		for(let [k,v] in Iterator({
 			enabled   : !0,
 			skipwhen  : 'ServiceLogin|imgres\\?|watch%3Fv|auth\\?client_id|signup|'
@@ -399,7 +433,7 @@ function startup(data) {
 			evdm      : !0,
 			progltr   : !1
 		})) {
-			if(!addon.branch.getPrefType(k)) {
+			if(!addon.branch.getPrefType(k) || Reset) {
 				switch(typeof v) {
 					case 'boolean': addon.branch.setBoolPref (k,v); break;
 					case 'number':  addon.branch.setIntPref  (k,v); break;

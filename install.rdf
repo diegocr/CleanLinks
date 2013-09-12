@@ -4,7 +4,7 @@
 		<em:id>{158d7cb3-7039-4a75-8e0b-3bd0a464edd2}</em:id>
 		<em:type>2</em:type>
 		<em:name>Clean Links</em:name>
-		<em:version>2.4a2</em:version>
+		<em:version>2.4a3</em:version>
 		<em:creator>Diego Casorran</em:creator>
 		<em:description>Converts obfuscated/nested links to genuine clean links</em:description>
 		<em:bootstrap>true</em:bootstrap>
