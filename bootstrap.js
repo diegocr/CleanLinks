@@ -46,7 +46,7 @@ let i$ = {
 		let bro = win.diegocr[addon.tag],
 			clt = bro.cl(link,base);
 		
-		LOG(link+'\n> '+clt);
+		// LOG(link+'\n> '+clt);
 		return (clt != link) ? (bro.blink(win), clt) : null;
 	},
 	observe: function(s,t,d) {
@@ -82,10 +82,9 @@ let i$ = {
 						if(l) {
 							try {
 								var w = s.loadGroup.notificationCallbacks.getInterface(Ci.nsIDOMWindow);
-							} catch(e) {LOG("Error: "+e+"\n-- "+l);}
+							} catch(e) {}
 							
 							if(w && (l = this.getLink(w,l,c.URI))) {
-								LOG(c.originalURI.spec+' '+c.loadFlags+' '+(c.loadFlags & Ci.nsIChannel.LOAD_REPLACE))
 								// Check for The page isn't redirecting properly...
 								if(l !== c.originalURI.spec || !(c.loadFlags & Ci.nsIChannel.LOAD_REPLACE))
 									c.setResponseHeader('Location', l, false);
@@ -147,7 +146,7 @@ let i$ = {
 		let gBrowser = getBrowser(window);
 		gBrowser.removeEventListener('DOMContentLoaded', wmsData.domload, false);
 		this.gBForeach(gBrowser,function(doc) {
-			LOG('detaching from ' + doc.location.href);
+			// LOG('detaching from ' + doc.location.href);
 			doc.removeEventListener('getCleanLink',wmsData.getCleanLink,true);
 		});
 	},
@@ -156,7 +155,7 @@ let i$ = {
 		let gBrowser = getBrowser(window);
 		gBrowser.addEventListener('DOMContentLoaded', wmsData.domload, false);
 		this.gBForeach(gBrowser,function(doc) {
-			LOG('attaching to ' + doc.location.href);
+			// LOG('attaching to ' + doc.location.href);
 			i$.putc(doc,wmsData.getCleanLink);
 		});
 	},
@@ -199,10 +198,11 @@ function copyLinkController(window) {
 }
 
 function copyLinkMobile(window) {
+	let nwndcm = window.NativeWindow.contextmenus;
 	
-	let { _getLinkURL } = window.NativeWindow.contextmenus;
-	window.NativeWindow.contextmenus._getLinkURL = function(aLink) {
-		aLink = _getLinkURL.call(window.NativeWindow.contextmenus,aLink);
+	let { _getLinkURL } = nwndcm;
+	nwndcm._getLinkURL = function(aLink) {
+		aLink = _getLinkURL.call(nwndcm,aLink);
 		
 		if(aLink) {
 			aLink = i$.getLink(window,aLink) || aLink;
@@ -212,7 +212,7 @@ function copyLinkMobile(window) {
 	};
 	
 	this.shutdown = function() {
-		window.NativeWindow.contextmenus._getLinkURL = _getLinkURL;
+		nwndcm._getLinkURL = _getLinkURL;
 	};
 }
 
@@ -267,7 +267,8 @@ function loadIntoWindow(window) {
 				i$.putc(doc,wmsData.getCleanLink);
 			}
 		},
-		controller: isMobile ? new copyLinkMobile(window)
+		controller: isMobile
+			? new copyLinkMobile(window)
 			: new copyLinkController(window)
 	};
 	

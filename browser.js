@@ -182,9 +182,7 @@ const cleanlinks = {
 			if(~this.op.skipdoms.indexOf(uri.host))
 				return h;
 			
-		} catch(e) {
-			this.d(e+' '+h+' '+b);
-		}
+		} catch(e) {}
 		
 		let lmt = 4, s = 0, p, ht = null, rp = this.op.remove;
 		h.replace(/^javascript:.+(["'])(https?(?:\:|%3a).+?)\1/gi,function(a,b,c)(++s,h=c));
