@@ -14,8 +14,7 @@
 
 (function(){
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+let {classes:Cc,interfaces:Ci,utils:Cu,results:Cr} = Components;
 
 const cleanlinks = {
 	pkg:'CleanLinks',
@@ -184,7 +183,7 @@ const cleanlinks = {
 			
 		} catch(e) {}
 		
-		let lmt = 4, s = 0, p, ht = null, rp = this.op.remove;
+		let lmt = 4, s = 0, p, ht = null, rp = this.op.remove, l = h;
 		h.replace(/^javascript:.+(["'])(https?(?:\:|%3a).+?)\1/gi,function(a,b,c)(++s,h=c));
 		
 		if(/((?:aHR0|d3d3)[A-Z0-9+=\/]+)/gi.test(h)) try {
@@ -207,6 +206,17 @@ const cleanlinks = {
 			if(h.indexOf('/',8) == -1)
 				h += '/';
 			++s;
+		}
+		
+		try {
+			// Check if the protocol can be handled...
+			this.ios.newChannel(h,null,null);
+		} catch(e) {
+			if(e.result == Cr.NS_ERROR_UNKNOWN_PROTOCOL) {
+				h = l;
+			} else {
+				Cu.reportError(e);
+			}
 		}
 		
 		rp.lastIndex = 0;

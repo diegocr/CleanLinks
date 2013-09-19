@@ -274,31 +274,32 @@ function loadIntoWindow(window) {
 	
 	let gNavToolbox = window.gNavToolbox || $('navigator-toolbox');
 	if(gNavToolbox && gNavToolbox.palette.id == 'BrowserToolbarPalette') {
-		let m=addon.tag+'-toolbar-button', nv=$('nav-bar');
+		let m = addon.tag+'-toolbar-button';
 		gNavToolbox.palette.appendChild(e('toolbarbutton',{
 			id:m,label:addon.name,class:'toolbarbutton-1',
 			tooltiptext:addon.name,image:rsc('icon16.png')
 		})).addEventListener('command', wmsData.TBBHandler, !1);
 		
-		if( nv ) {
-			if(!addon.branch.getPrefType("version")) {
+		if(!addon.branch.getPrefType("version")) {
+			let nv = $('nav-bar') || $('addon-bar');
+			if( nv ) {
 				nv.insertItem(m, null, null, false);
 				nv.setAttribute("currentset", nv.currentSet);
 				window.document.persist(nv.id, "currentset");
-			} else {
-				[].some.call(window.document.querySelectorAll("toolbar[currentset]"),
-					function(tb) {
-						let cs = tb.getAttribute("currentset").split(","),
-							bp = cs.indexOf(m) + 1;
-						
-						if(bp) {
-							let at = null;
-							cs.splice(bp).some(function(id) at = $(id));
-							nv.insertItem(m, at, null, false);
-							return true;
-						}
-					});
 			}
+		} else {
+			[].some.call(window.document.querySelectorAll("toolbar[currentset]"),
+				function(tb) {
+					let cs = tb.getAttribute("currentset").split(","),
+						bp = cs.indexOf(m) + 1;
+					
+					if(bp) {
+						let at = null;
+						cs.splice(bp).some(function(id) at = $(id));
+						tb.insertItem(m, at, null, false);
+						return true;
+					}
+				});
 		}
 		
 		let (mps = $('mainPopupSet')) {
