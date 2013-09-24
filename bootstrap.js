@@ -18,8 +18,9 @@ function LOG(m) (m = addon.name + ' Message @ '
 	+ (new Date()).toISOString() + "\n> " + m,
 		dump(m + "\n"), Services.console.logStringMessage(m));
 
-let isMobile = ~['{aa3c5121-dab2-40e2-81ca-7ea25febc110}',
-	'{a23983c0-fd0e-11dc-95ff-0800200c9a66}'].indexOf(Services.appinfo.ID);
+let ia = Services.appinfo.ID[3],
+	wt = 5==ia?'mail:3pane'
+		:'navigator:browser';
 
 let i$ = {
 	addHTTPObserver: function() {
@@ -99,7 +100,7 @@ let i$ = {
 		}
 	},
 	wmForeach: function(callback) {
-		let windows = Services.wm.getEnumerator("navigator:browser");
+		let windows = Services.wm.getEnumerator(wt);
 		while(windows.hasMoreElements()) {
 			let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
 			callback(domWindow);
@@ -217,7 +218,7 @@ function copyLinkMobile(window) {
 }
 
 function loadIntoWindow(window) {
-	if(!(/^chrome:\/\/(browser|navigator)\/content\/\1\.xul$/.test(window&&window.location)))
+	if(wt!=window.document.documentElement.getAttribute("windowtype"))
 		return;
 	
 	function c(n) window.document.createElement(n);
@@ -235,13 +236,10 @@ function loadIntoWindow(window) {
 	}
 	
 	loadSubScript(rsc('browser.js'), window);
-	window.diegocr[addon.tag].mob = isMobile;
+	window.diegocr[addon.tag].mob = 3==ia;
 	window.diegocr[addon.tag].addon = addon;
 	window.diegocr[addon.tag].LOG = LOG;
 	window.diegocr[addon.tag].rsc = rsc;
-	
-	// if(isMobile)
-		// return;
 	
 	let wmsData = {
 		TBBHandler: function(ev) {
@@ -267,21 +265,21 @@ function loadIntoWindow(window) {
 				i$.putc(doc,wmsData.getCleanLink);
 			}
 		},
-		controller: isMobile
+		controller: 3==ia
 			? new copyLinkMobile(window)
 			: new copyLinkController(window)
 	};
 	
-	let gNavToolbox = window.gNavToolbox || $('navigator-toolbox');
-	if(gNavToolbox && gNavToolbox.palette.id == 'BrowserToolbarPalette') {
+	let gNavToolbox = window.gNavToolbox || $("mail-toolbox");
+	if(gNavToolbox && gNavToolbox.palette) {
 		let m = addon.tag+'-toolbar-button';
 		gNavToolbox.palette.appendChild(e('toolbarbutton',{
 			id:m,label:addon.name,class:'toolbarbutton-1',
-			tooltiptext:addon.name,image:rsc('icon16.png')
+			image:rsc('icon16.png')
 		})).addEventListener('command', wmsData.TBBHandler, !1);
 		
 		if(!addon.branch.getPrefType("version")) {
-			let nv = $('nav-bar') || $('addon-bar');
+			let nv = $('nav-bar') || $('mail-bar3');
 			if( nv ) {
 				nv.insertItem(m, null, null, false);
 				nv.setAttribute("currentset", nv.currentSet);
@@ -302,23 +300,19 @@ function loadIntoWindow(window) {
 				});
 		}
 		
-		let (mps = $('mainPopupSet')) {
-			try {
-				e('tooltip',{id:addon.tag+'-tooltip',orient:'vertical'},0,mps)
-					.addEventListener('popupshowing', wmsData.popupshowing = function(ev) {
-						try {
-							return window.diegocr[addon.tag].l(ev);
-						} catch(e) {
-							Cu.reportError(e);
-						}
-					}, !0);
-				
-				let (p = $(m)) {
-					p.setAttribute('tooltip',addon.tag+'-tooltip');
-				}
-			} catch(e) {
-				LOG(e);
-			}
+		try {
+			e('tooltip',{id:addon.tag+'-tooltip'},0,$('mainPopupSet'))
+				.addEventListener('popupshowing', wmsData.popupshowing = function(ev) {
+					try {
+						return window.diegocr[addon.tag].l(ev);
+					} catch(e) {
+						Cu.reportError(e);
+					}
+				}, !0);
+			
+			$(m).setAttribute('tooltip',addon.tag+'-tooltip');
+		} catch(e) {
+			Cu.reportError(e);
 		}
 	}
 	
@@ -344,7 +338,7 @@ function loadIntoWindowStub(domWindow) {
 	if(domWindow.document.readyState == "complete") {
 		loadIntoWindow(domWindow);
 	} else {
-		domWindow.addEventListener(isMobile? "UIReady":"load", function(ev) {
+		domWindow.addEventListener(3==ia? "UIReady":"load", function(ev) {
 			domWindow.removeEventListener(ev.type, arguments.callee, false);
 			loadIntoWindow(domWindow);
 		}, false);
@@ -361,9 +355,6 @@ function unloadFromWindow(window) {
 	} catch(e) {
 		Cu.reportError(e);
 	}
-	
-	// if(isMobile)
-		// return;
 	
 	if(addon.wms.has(window)) {
 		let wmsData = addon.wms.get(window);
@@ -387,8 +378,8 @@ function unloadFromWindow(window) {
 	if(btn) {
 		btn.parentNode.removeChild(btn);
 	} else {
-		let gNavToolbox = window.gNavToolbox || $('navigator-toolbox');
-		if(gNavToolbox && gNavToolbox.palette.id == 'BrowserToolbarPalette') {
+		let gNavToolbox = window.gNavToolbox || $('mail-toolbox');
+		if(gNavToolbox && gNavToolbox.palette) {
 			for each(let node in gNavToolbox.palette) {
 				if(node && node.id == btnId) {
 					gNavToolbox.palette.removeChild(node);
@@ -421,7 +412,7 @@ function startup(data) {
 			addon.branch.QueryInterface(Ci.nsIPrefBranch2);
 		
 		let Reset = !addon.branch.getPrefType('version')
-			|| addon.branch.getCharPref('version') !== addon.version;
+			|| Services.vc.compare(addon.branch.getCharPref('version'),'2.4') < 0;
 		
 		for(let [k,v] in Iterator({
 			enabled   : !0,
@@ -443,7 +434,11 @@ function startup(data) {
 				}
 			}
 		}
-		addon.branch.addObserver("", i$, false);
+		if(5!=ia) {
+			addon.branch.addObserver("", i$, false);
+		} else {
+			['At','De'].forEach((i)=>i$[i+'tachDOMLoad']=rsc);
+		}
 		
 		io.getProtocolHandler("resource")
 			.QueryInterface(Ci.nsIResProtocolHandler)

@@ -148,7 +148,7 @@ const cleanlinks = {
 		
 		while(c--) {
 			
-			let h1 = l[c].href, h2 = this.cl(h1);
+			let h1 = l[c].href, h2 = this.cl(h1,l[c].baseURI);
 			
 			if( h1 != h2 ) {
 				++t;
@@ -172,7 +172,7 @@ const cleanlinks = {
 	},
 	
 	cl: function(h,b) {
-		if(this.op.skipwhen && this.op.skipwhen.test(h))
+		if(!h||(this.op.skipwhen && this.op.skipwhen.test(h)))
 			return h;
 		
 		if(this.op.skipdoms) try {
@@ -215,7 +215,7 @@ const cleanlinks = {
 			if(e.result == Cr.NS_ERROR_UNKNOWN_PROTOCOL) {
 				h = l;
 			} else {
-				Cu.reportError(e);
+				this.d('Unhandled error for "'+h+'" at "'+b+'": ' + e);
 			}
 		}
 		
@@ -272,7 +272,7 @@ const cleanlinks = {
 			} while(n && !~['A','DIV','BODY'].indexOf(n.nodeName));
 			
 			if(n&&n.nodeName == 'A') {
-				let t = cleanlinks,z = n.href, x = t.cl(z);
+				let t = cleanlinks,z = n.href, x = t.cl(z,n.baseURI);
 				if(z != x) {
 					if(t.op.highlight) {
 						t.hl(n);
@@ -282,6 +282,10 @@ const cleanlinks = {
 					
 					if(t.mob) {
 						window.content.location = x;
+					}
+					else if(typeof window.loadURI !== 'function') {
+						n.setAttribute('href', x);
+						n.click();
 					}
 					else switch(ev.button) {
 						case 0:
@@ -353,7 +357,8 @@ const cleanlinks = {
 		if(typeof s == 'object') {
 			let t = cleanlinks,
 				e = s.target,
-				r = 0;
+				r = 0,
+				b = t.g();
 			
 			while(e.firstChild)
 				e.removeChild(e.firstChild);
@@ -365,12 +370,14 @@ const cleanlinks = {
 			} catch(e) {}
 			
 			try {
-				e.appendChild(t.oc('label',{value:t.pkg,style:'text-align:center;color:red;font:italic 16px Serif,Georiga;font-weight:bold'}));
-				e.appendChild(t.oc('separator',{height:1,style:'background-color:#333;margin-bottom:3px'}));
-				e.appendChild(t.oc('label',{value:'Status: '+(t.g() ? 'Enabled':'Disabled')}));
-				if(!t.evdm) e.appendChild(t.oc('label',{value:'Cleaned Links: '+r}));
-				e.appendChild(t.oc('separator',{height:1,style:'background-color:#333;margin-bottom:3px'}));
-				e.appendChild(t.oc('label',{value:'Click the icon to '+(t.g() ? 'Disable':'Enable'),style:'color:#8e9f9f;font:12px Georgia'}));
+				e = e.appendChild(t.oc('vbox',{style:'margin:3px 5px;padding:5px 9px;'
+					+ 'border:1px solid rgba(20,20,30,0.4);box-shadow:inset 0 0 3px 0 rgba(0,0,0,0.6);'
+					+ 'border-radius:6px;background-color:#e4e5e0;text-align:center'}));
+				e.appendChild(t.oc('label',{value:t.pkg,style:'color:#00adef;font:11pt "message-box"'}));
+				e.appendChild(t.oc('label',{value:'Status: '+(b ? 'Enabled':'Disabled')}));
+				if(!t.evdm && b) e.appendChild(t.oc('label',{value:'Cleaned Links: '+r}));
+				e.appendChild(t.oc('label',{value:'Click the icon to '
+					+(b ? 'Disable':'Enable'),style:'color:#8e9f9f;font:12px Georgia'}));
 			}catch(e){
 				alert(e);
 				return false;
