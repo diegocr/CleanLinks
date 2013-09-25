@@ -43,6 +43,22 @@ const cleanlinks = {
 				t.ios = Cc["@mozilla.org/network/io-service;1"]
 					.getService(Ci.nsIIOService);
 				t.observe(null,'nsPref:changed','skipdoms');
+				t.edc = t.mob ? (function(a) window.content.location = a)
+					: (typeof window.loadURI !== 'function')
+					? function(a,b) (b.setAttribute('href', a), b.click())
+					: function(a,b,c) {
+						switch(c.button) {
+						case 0:
+							if(!(c.ctrlKey || c.metaKey)) {
+								window.loadURI(a);
+								break;
+							}
+						case 1:
+							let bTab = Cc["@mozilla.org/preferences-service;1"]
+								.getService(Ci.nsIPrefService)
+								.getBoolPref('browser.tabs.loadInBackground');
+							gBrowser.loadOneTab(a,null,null,null,bTab,true)}
+					};
 				break;
 			case 'unload':
 				t.ps.removeObserver("", t);
@@ -53,6 +69,7 @@ const cleanlinks = {
 					delete t[m];
 			default:break;
 		}
+		ev = t = undefined;
 	},
 	b: function(ev) {
 		if(ev.originalTarget instanceof HTMLDocument)
@@ -101,7 +118,7 @@ const cleanlinks = {
 				l[c].setAttribute('title',l[c].getAttribute('title').replace(this.tag_t.replace(/^\s+/,''),'').replace(/\s+$/,''));
 				l[c].style.setProperty('border-bottom','0px','important');
 				if(this.op.highlight)
-					l[c].style.background = l[c].style.color = null;
+					this.hl(l[c],1);
 			}
 		}
 		
@@ -215,7 +232,8 @@ const cleanlinks = {
 			if(e.result == Cr.NS_ERROR_UNKNOWN_PROTOCOL) {
 				h = l;
 			} else {
-				this.d('Unhandled error for "'+h+'" at "'+b+'": ' + e);
+				Cu.reportError(e);
+				this.d('^^ Unhandled error for "'+h+'" at "'+b+'"');
 			}
 		}
 		
@@ -269,7 +287,7 @@ const cleanlinks = {
 			
 			if(n.nodeName != 'A') do {
 				n = n.parentNode;
-			} while(n && !~['A','DIV','BODY'].indexOf(n.nodeName));
+			} while(n && !~['A','BODY','HTML'].indexOf(n.nodeName));
 			
 			if(n&&n.nodeName == 'A') {
 				let t = cleanlinks,z = n.href, x = t.cl(z,n.baseURI);
@@ -280,26 +298,7 @@ const cleanlinks = {
 					ev.stopPropagation();
 					ev.preventDefault();
 					
-					if(t.mob) {
-						window.content.location = x;
-					}
-					else if(typeof window.loadURI !== 'function') {
-						n.setAttribute('href', x);
-						n.click();
-					}
-					else switch(ev.button) {
-						case 0:
-							if(!(ev.ctrlKey || ev.metaKey)) {
-								window.loadURI(x);
-								break;
-							}
-						case 1:
-							let bTab = Cc["@mozilla.org/preferences-service;1"]
-								.getService(Ci.nsIPrefService)
-								.getBoolPref('browser.tabs.loadInBackground');
-							gBrowser.loadOneTab(x,null,null,null,bTab,true);
-					}
-					
+					t.edc(x,n,ev);
 					t.blink(window);
 				}
 			}
@@ -346,9 +345,11 @@ const cleanlinks = {
 		return null;
 	},
 	
-	hl: function(o) {
-		o.style.setProperty('background-color','rgba(252,252,0,0.7)','important');
-		o.style.setProperty('color','#000','important');
+	hl: function(o,d) {
+		(''+this.op.hlstyle).split(';').forEach(function(r) {
+			let [k,v] = r.split(':').map(String.trim);
+			o.style.setProperty(k,d?'':v,'important');
+		});
 	},
 	
 	l: function(s) {
