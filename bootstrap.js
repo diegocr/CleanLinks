@@ -423,6 +423,7 @@ function startup(data) {
 				+ 'login.live.com,plus.google.com,www.facebook.com,twitter.com,'
 				+ 'static.ak.facebook.com,www.linkedin.com',
 			highlight : !0,
+			hlstyle   : 'background:rgba(252,252,0,0.6); color: #000',
 			evdm      : !0,
 			progltr   : !1
 		})) {
