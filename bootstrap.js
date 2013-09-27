@@ -15,8 +15,9 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 function rsc(n) 'resource://' + addon.tag + '/' + n;
 function LOG(m) (m = addon.name + ' Message @ '
-	+ (new Date()).toISOString() + "\n> " + m,
-		dump(m + "\n"), Services.console.logStringMessage(m));
+	+ (new Date()).toISOString() + "\n> "
+	+ (Array.isArray(m) ? m.join("\n> "):m),
+	dump(m + "\n"), Services.console.logStringMessage(m));
 
 let ia = Services.appinfo.ID[3],
 	wt = 5==ia?'mail:3pane'
@@ -87,7 +88,7 @@ let i$ = {
 							
 							if(w && (l = this.getLink(w,l,c.URI))) {
 								// Check for The page isn't redirecting properly...
-								if(l !== c.originalURI.spec || !(c.loadFlags & Ci.nsIChannel.LOAD_REPLACE))
+								if(l !== c.URI.spec || !(c.loadFlags & Ci.nsIChannel.LOAD_REPLACE))
 									c.setResponseHeader('Location', l, false);
 							}
 						}
