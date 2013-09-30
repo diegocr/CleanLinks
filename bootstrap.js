@@ -55,9 +55,28 @@ let i$ = {
 		switch(t) {
 			case 'nsPref:changed':
 				switch(d) {
+					case 'cbc':
 					case 'enabled':
 					case 'progltr':
 						let v = addon.branch.getBoolPref(d);
+						
+						if(d === 'cbc') {
+							this.wmForeach(function(w){
+								if(addon.wms.has(w)) {
+									let d = addon.wms.get(w);
+									
+									if(v === true) {
+										d.controller=3==ia
+											? new copyLinkMobile(w)
+											: new copyLinkController(w);
+									} else if(d.controller) {
+										d.controller.shutdown();
+										delete d.controller;
+									}
+								}
+							});
+							break;
+						}
 						
 						addon[d] = v;
 						if(v === true) {
@@ -265,11 +284,14 @@ function loadIntoWindow(window) {
 				
 				i$.putc(doc,wmsData.getCleanLink);
 			}
-		},
-		controller: 3==ia
-			? new copyLinkMobile(window)
-			: new copyLinkController(window)
+		}
 	};
+	
+	if(addon.branch.getBoolPref('cbc')) {
+		wmsData.controller=3==ia
+			? new copyLinkMobile(window)
+			: new copyLinkController(window);
+	}
 	
 	let gNavToolbox = window.gNavToolbox || $("mail-toolbox");
 	if(gNavToolbox && gNavToolbox.palette) {
@@ -426,7 +448,8 @@ function startup(data) {
 			highlight : !0,
 			hlstyle   : 'background:rgba(252,252,0,0.6); color: #000',
 			evdm      : !0,
-			progltr   : !1
+			progltr   : !1,
+			cbc       : !0
 		})) {
 			if(!addon.branch.getPrefType(k) || Reset) {
 				switch(typeof v) {
@@ -439,7 +462,7 @@ function startup(data) {
 		if(5!=ia) {
 			addon.branch.addObserver("", i$, false);
 		} else {
-			['At','De'].forEach((i)=>i$[i+'tachDOMLoad']=rsc);
+			['At','De'].forEach(function(i)i$[i+'tachDOMLoad']=rsc);
 		}
 		
 		io.getProtocolHandler("resource")
