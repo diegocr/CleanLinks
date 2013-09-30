@@ -4,7 +4,7 @@
 		<em:id>{158d7cb3-7039-4a75-8e0b-3bd0a464edd2}</em:id>
 		<em:type>2</em:type>
 		<em:name>Clean Links</em:name>
-		<em:version>2.4.2a4</em:version>
+		<em:version>2.4.2</em:version>
 		<em:creator>Diego Casorran</em:creator>
 		<em:description>Converts obfuscated/nested links to genuine clean links</em:description>
 		<em:bootstrap>true</em:bootstrap>
@@ -21,7 +21,7 @@
 				<!-- SeaMonkey -->
 				<em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
 				<em:minVersion>2.3</em:minVersion>
-				<em:maxVersion>2.20</em:maxVersion>
+				<em:maxVersion>2.24</em:maxVersion>
 			</Description>
 		</em:targetApplication>
 		<em:targetApplication>
@@ -29,7 +29,7 @@
 				<!-- Fennec -->
 				<em:id>{a23983c0-fd0e-11dc-95ff-0800200c9a66}</em:id>
 				<em:minVersion>10.0a1</em:minVersion>
-				<em:maxVersion>26.0</em:maxVersion>
+				<em:maxVersion>26.*</em:maxVersion>
 			</Description>
 		</em:targetApplication>
 		<em:targetApplication>
