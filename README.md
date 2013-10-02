@@ -4,11 +4,9 @@ This Extension is designed to convert obfuscated/nested links to genuine/normal 
 
 _Eg:_
 
-- <http://www.foobar.com/goto=https://www.yoursite.com> ➠ <https://www.yoursite.com/>
+- <http://www.foobar.com/track=ftp://gnu.org> ➠ <ftp://gnu.org/>
 
 - <http://example.com/aHR0cDovL3d3dy5nb29nbGUuY29t> ➠ <http://www.google.com>
-
-- <http://www3.dumbsite.com/external/hit/to/www.foobar.com> ➠ <http://www.foobar.com/>
 
 - javascript:window.open('http://somesite.com') ➠ <http://somesite.com/>
 
