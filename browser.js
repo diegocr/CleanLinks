@@ -44,21 +44,12 @@ const cleanlinks = {
 					.getService(Ci.nsIIOService);
 				t.observe(null,'nsPref:changed','skipdoms');
 				t.edc = t.mob ? (function(a) window.content.location = a)
-					: (typeof window.loadURI !== 'function')
+					: (typeof window.openUILink !== 'function')
 					? function(a,b) (b.setAttribute('href', a), b.click())
-					: function(a,b,c) {
-						switch(c.button) {
-						case 0:
-							if(!(c.ctrlKey || c.metaKey)) {
-								window.loadURI(a);
-								break;
-							}
-						case 1:
-							let bTab = Cc["@mozilla.org/preferences-service;1"]
-								.getService(Ci.nsIPrefService)
-								.getBoolPref('browser.tabs.loadInBackground');
-							gBrowser.loadOneTab(a,null,null,null,bTab,true)}
-					};
+					: function(a,b,c) openUILink(a,c,{
+							inBackground: gPrefService
+								.getBoolPref('browser.tabs.loadInBackground'),
+							relatedToCurrent: true});
 				break;
 			case 'unload':
 				t.ps.removeObserver("", t);

@@ -440,7 +440,7 @@ function startup(data) {
 		for(let [k,v] in Iterator({
 			enabled   : !0,
 			skipwhen  : 'ServiceLogin|imgres\\?|watch%3Fv|auth\\?client_id|signup|'
-				+ 'openid\\.ns|\\.mcstatic\\.com|sVidLoc|[Ll]ogout|submit\\?url=',
+				+ 'oauth|openid\\.ns|\\.mcstatic\\.com|sVidLoc|[Ll]ogout|submit\\?url=',
 			remove    : '(?:ref|aff)\\w*|utm_\\w+|(?:merchant|programme|media)ID',
 			skipdoms  : 'accounts.google.com,docs.google.com,translate.google.com,'
 				+ 'login.live.com,plus.google.com,www.facebook.com,twitter.com,'
