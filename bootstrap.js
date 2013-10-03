@@ -45,6 +45,13 @@ let i$ = {
 			.getInterface(Ci.nsIDOMWindow)
 			.window;
 		
+		/**
+		 * We might get a redirection from a non-browser window
+		 * Eg, Chatzilla loading remote fonts from CSS motif
+		 */
+		if(!win.diegocr)
+			return null;
+		
 		let bro = win.diegocr[addon.tag],
 			clt = bro.cl(link,base);
 		
