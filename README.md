@@ -1,4 +1,4 @@
-##CleanLinks Mozilla Firefox Extension##
+##CleanLinks Mozilla Firefox Extension [![Stories in Ready](https://badge.waffle.io/diegocr/cleanlinks.png?label=ready)](https://waffle.io/diegocr/cleanlinks)  
 
 This Extension is designed to convert obfuscated/nested links to genuine/normal plain clean links.
 
