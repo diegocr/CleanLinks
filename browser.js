@@ -183,6 +183,9 @@ const cleanlinks = {
 		if(!h||(this.op.skipwhen && this.op.skipwhen.test(h)))
 			return h;
 		
+		if(typeof b === 'string')
+			b = this.nu(b);
+		
 		if(this.op.skipdoms) try {
 			let uri = this.nu(h,b);
 			
@@ -211,20 +214,23 @@ const cleanlinks = {
 				h = h.substr(0,p);
 			if(h.indexOf('://') == -1)
 				h = 'http://' + h;
-			if(h.indexOf('/',8) == -1)
+			if(h.indexOf('/',h.indexOf(':')+2) == -1)
 				h += '/';
 			++s;
 		}
 		
 		try {
 			// Check if the protocol can be handled...
-			this.ios.newChannel(h,null,null);
+			this.ios.newChannel(h,null,b||null);
 		} catch(e) {
 			if(e.result == Cr.NS_ERROR_UNKNOWN_PROTOCOL) {
 				h = l;
 			} else {
-				Cu.reportError(e);
-				this.d('^^ Unhandled error for "'+h+'" at "'+b+'"');
+				if(h.split(':').pop().length < 3) h = l;
+				else {
+					Cu.reportError(e);
+					this.d('^^ Unhandled error for "'+h+'" at "'+(b&&b.spec)+'"');
+				}
 			}
 		}
 		
