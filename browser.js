@@ -14,7 +14,8 @@
 
 (function(){
 
-let {classes:Cc,interfaces:Ci,utils:Cu,results:Cr} = Components;
+let {classes:Cc, interfaces:Ci, utils:Cu, results:Cr} = Components,
+	{Services}=Cu.import("resource://gre/modules/Services.jsm",{});
 
 const cleanlinks = {
 	pkg:'CleanLinks',
@@ -47,9 +48,10 @@ const cleanlinks = {
 					: (typeof window.openUILink !== 'function')
 					? function(a,b) (b.setAttribute('href', a), b.click())
 					: function(a,b,c) openUILink(a,c,{
-							inBackground: gPrefService
-								.getBoolPref('browser.tabs.loadInBackground'),
-							relatedToCurrent: true});
+						relatedToCurrent: true,
+						inBackground: (function(p,n) p.getPrefType(n)
+						&&	p.getBoolPref(n))(Services.prefs,
+							'browser.tabs.loadInBackground')});
 				break;
 			case 'unload':
 				t.ps.removeObserver("", t);
@@ -202,7 +204,7 @@ const cleanlinks = {
 			if(d) h='='+d;
 		}catch(e){}
 		
-		while(--lmt && (/.\b([a-z]+(?:\:|%3a)(?:\/|%2f).+)$/i.test(h) || /(?:[?=]|[^\/]\/)(www\..+)$/i.test(h))) {
+		while(--lmt && (/.\b([a-z]{2,}(?:\:|%3a)(?:\/|%2f).+)$/i.test(h) || /(?:[?=]|[^\/]\/)(www\..+)$/i.test(h))) {
 			h = RegExp.$1;
 			if(~(p = h.indexOf('&')))
 				h = h.substr(0,p);
