@@ -344,7 +344,12 @@ function loadIntoWindow(window) {
 					}
 				}, !0);
 			
-			$(m).setAttribute('tooltip',addon.tag+'-tooltip');
+			let sTT = function() {
+				let n = $(m);
+				n&&n.setAttribute('tooltip',addon.tag+'-tooltip');
+				return !!n;
+			};
+			sTT() || window.addEventListener('aftercustomization',sTT,false);
 		} catch(e) {
 			Cu.reportError(e);
 		}
@@ -353,7 +358,7 @@ function loadIntoWindow(window) {
 	i$.AttachDOMLoad(window,wmsData);
 	
 	addon.wms.set(window,wmsData);
-	gNavToolbox = null;
+	gNavToolbox=wmsData=undefined;
 }
 
 function getBrowser(w) {
