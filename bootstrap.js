@@ -289,7 +289,7 @@ function loadIntoWindow(window) {
 			
 			if(doc instanceof Ci.nsIDOMHTMLDocument) {
 				
-				i$.putc(doc,wmsData.getCleanLink);
+				i$.putc(doc,this.getCleanLink);
 			}
 		}
 	};
