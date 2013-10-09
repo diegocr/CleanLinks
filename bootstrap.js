@@ -293,6 +293,7 @@ function loadIntoWindow(window) {
 			}
 		}
 	};
+	wmsData.domload = wmsData.domload.bind(wmsData);
 	
 	if(addon.branch.getBoolPref('cbc')) {
 		wmsData.controller=3==ia
