@@ -182,7 +182,8 @@ const cleanlinks = {
 	},
 	
 	cl: function(h,b) {
-		if(!h||(this.op.skipwhen && this.op.skipwhen.test(h)))
+		if(!h || h.startsWith("view-source:")
+		|| (this.op.skipwhen && this.op.skipwhen.test(h)))
 			return h;
 		
 		if(typeof b === 'string')
