@@ -201,9 +201,14 @@ const cleanlinks = {
 		h.replace(/^javascript:.+(["'])(https?(?:\:|%3a).+?)\1/gi,function(a,b,c)(++s,h=c));
 		
 		if(/((?:aHR0|d3d3)[A-Z0-9+=\/]+)/gi.test(h)) try {
-			let d = decodeURIComponent(atob(RegExp.$1));
+			let r = RegExp.$1;
+			if(/\.yahoo.com$/.test(b.asciiHost))
+				r = r.replace(/\/RS.*$/,'');
+			let d = decodeURIComponent(atob(r));
 			if(d) h='='+d;
-		}catch(e){}
+		} catch(e) {
+			Cu.reportError('Invalid base64 data for "'+h+'" at "'+(b&&b.spec)+'"\n> '+e);
+		}
 		
 		while(--lmt && (/.\b([a-z]{2,}(?:\:|%3a)(?:\/|%2f).+)$/i.test(h) || /(?:[?=]|[^\/]\/)(www\..+)$/i.test(h))) {
 			h = RegExp.$1;
