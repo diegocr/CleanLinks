@@ -247,7 +247,7 @@ const cleanlinks = {
 			if(~(p = h.indexOf('#'))) (ht = h.substr(p), h = h.substr(0,p));
 			
 			h = h.replace('&amp;','&','g').replace(rp,'').replace(/[?&]$/,'')
-				+ (ht && /^[\w\/#-]+$/.test(ht) ? ht : (this.evdm ? '':this.tag_h));
+				+ (ht && /^[\w\/#!-]+$/.test(ht) ? ht : (this.evdm ? '':this.tag_h));
 			
 			// this.d('Cleaned link '+s+' "'+l[c].href+'" -> "'+h+'"');
 		}
