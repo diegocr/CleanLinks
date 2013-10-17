@@ -248,9 +248,9 @@ const cleanlinks = {
 			
 			h = h.replace('&amp;','&','g').replace(rp,'').replace(/[?&]$/,'')
 				+ (ht && /^[\w\/#!-]+$/.test(ht) ? ht : (this.evdm ? '':this.tag_h));
-			
-			// this.d('Cleaned link '+s+' "'+l[c].href+'" -> "'+h+'"');
 		}
+		
+		if(l != h) this.d([l,h]);
 		
 		return h;
 	},

@@ -55,7 +55,7 @@ let i$ = {
 		let bro = win.diegocr[addon.tag],
 			clt = bro.cl(link,base);
 		
-		// LOG(link+'\n> '+clt);
+		LOG([link,clt]);
 		return (clt != link) ? (bro.blink(win), clt) : null;
 	},
 	observe: function(s,t,d) {
@@ -112,10 +112,26 @@ let i$ = {
 								var w = s.loadGroup.notificationCallbacks.getInterface(Ci.nsIDOMWindow);
 							} catch(e) {}
 							
+							LOG([w&&w.location,c.originalURI.spec,c.URI.spec,l,
+								c.loadFlags & Ci.nsIChannel.LOAD_REPLACE,
+								c instanceof Ci.nsIWritablePropertyBag]);
+							
 							if(w && (l = this.getLink(w,l,c.URI))) {
 								// Check for The page isn't redirecting properly...
-								if(l !== c.URI.spec || !(c.loadFlags & Ci.nsIChannel.LOAD_REPLACE))
+								if(l !== c.URI.spec || !(c.loadFlags & Ci.nsIChannel.LOAD_REPLACE)) {
+									
+									if(c instanceof Ci.nsIWritablePropertyBag) try {
+										
+										let r = c.getProperty(addon.tag);
+										if(r == l) break;
+										
+									} catch(e) {}
+									
 									c.setResponseHeader('Location', l, false);
+									
+									if(c instanceof Ci.nsIWritablePropertyBag)
+										c.setProperty(addon.tag, l);
+								}
 							}
 						}
 					}
@@ -461,7 +477,8 @@ function startup(data) {
 			remove    : '(?:ref|aff)\\w*|utm_\\w+|(?:merchant|programme|media)ID',
 			skipdoms  : 'accounts.google.com,docs.google.com,translate.google.com,'
 				+ 'login.live.com,plus.google.com,www.facebook.com,twitter.com,'
-				+ 'static.ak.facebook.com,www.linkedin.com,www.virustotal.com',
+				+ 'static.ak.facebook.com,www.linkedin.com,www.virustotal.com,'
+				+ 'account.live.com',
 			highlight : !0,
 			hlstyle   : 'background:rgba(252,252,0,0.6); color: #000',
 			evdm      : !0,
