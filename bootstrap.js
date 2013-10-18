@@ -101,6 +101,9 @@ let i$ = {
 				}
 				break;
 			
+			case 'cleanlinks-resetoptions':
+				return setOptions(!0);
+			
 			case 'http-on-examine-response': {
 				let c = s.QueryInterface(Ci.nsIHttpChannel);
 				
@@ -450,6 +453,32 @@ function unloadFromWindow(window) {
 		n.parentNode.removeChild(n);
 }
 
+function setOptions(Reset) {
+	for(let [k,v] in Iterator({
+		enabled   : !0,
+		skipwhen  : 'ServiceLogin|imgres\\?|watch%3Fv|auth\\?client_id|signup|'
+			+ 'oauth|openid\\.ns|\\.mcstatic\\.com|sVidLoc|[Ll]ogout|submit\\?url=',
+		remove    : '(?:ref|aff)\\w*|utm_\\w+|(?:merchant|programme|media)ID',
+		skipdoms  : 'accounts.google.com,docs.google.com,translate.google.com,'
+			+ 'login.live.com,plus.google.com,www.facebook.com,twitter.com,'
+			+ 'static.ak.facebook.com,www.linkedin.com,www.virustotal.com,'
+			+ 'account.live.com',
+		highlight : !0,
+		hlstyle   : 'background:rgba(252,252,0,0.6); color: #000',
+		evdm      : !0,
+		progltr   : !1,
+		cbc       : !0
+	})) {
+		if(!addon.branch.getPrefType(k) || Reset) {
+			switch(typeof v) {
+				case 'boolean': addon.branch.setBoolPref (k,v); break;
+				case 'number':  addon.branch.setIntPref  (k,v); break;
+				case 'string':  addon.branch.setCharPref (k,v); break;
+			}
+		}
+	}
+}
+
 function startup(data) {
 	let tmp = {};
 	Cu.import("resource://gre/modules/AddonManager.jsm", tmp);
@@ -470,29 +499,8 @@ function startup(data) {
 		let Reset = !addon.branch.getPrefType('version')
 			|| Services.vc.compare(addon.branch.getCharPref('version'),'2.4') < 0;
 		
-		for(let [k,v] in Iterator({
-			enabled   : !0,
-			skipwhen  : 'ServiceLogin|imgres\\?|watch%3Fv|auth\\?client_id|signup|'
-				+ 'oauth|openid\\.ns|\\.mcstatic\\.com|sVidLoc|[Ll]ogout|submit\\?url=',
-			remove    : '(?:ref|aff)\\w*|utm_\\w+|(?:merchant|programme|media)ID',
-			skipdoms  : 'accounts.google.com,docs.google.com,translate.google.com,'
-				+ 'login.live.com,plus.google.com,www.facebook.com,twitter.com,'
-				+ 'static.ak.facebook.com,www.linkedin.com,www.virustotal.com,'
-				+ 'account.live.com',
-			highlight : !0,
-			hlstyle   : 'background:rgba(252,252,0,0.6); color: #000',
-			evdm      : !0,
-			progltr   : !1,
-			cbc       : !0
-		})) {
-			if(!addon.branch.getPrefType(k) || Reset) {
-				switch(typeof v) {
-					case 'boolean': addon.branch.setBoolPref (k,v); break;
-					case 'number':  addon.branch.setIntPref  (k,v); break;
-					case 'string':  addon.branch.setCharPref (k,v); break;
-				}
-			}
-		}
+		setOptions(Reset);
+		
 		if(5!=ia) {
 			addon.branch.addObserver("", i$, false);
 		} else {
@@ -511,6 +519,8 @@ function startup(data) {
 			addon[p] = addon.branch.getBoolPref(p));
 		i$.addHTTPObserver();
 		
+		Services.obs.addObserver(i$,'cleanlinks-resetoptions', false);
+		
 		// i$.startup();
 		addon.branch.setCharPref('version', addon.version);
 	});
@@ -521,6 +531,7 @@ function shutdown(data, reason) {
 	if(reason == APP_SHUTDOWN)
 		return;
 	
+	Services.obs.removeObserver(i$,'cleanlinks-resetoptions');
 	addon.branch.removeObserver("", i$);
 	
 	i$.removeHTTPObserver();
