@@ -250,7 +250,7 @@ const cleanlinks = {
 				+ (ht && /^[\w\/#!-]+$/.test(ht) ? ht : (this.evdm ? '':this.tag_h));
 		}
 		
-		if(l != h) this.d([l,h]);
+		// if(l != h) this.d([l,h]);
 		
 		return h;
 	},

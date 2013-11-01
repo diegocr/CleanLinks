@@ -55,7 +55,7 @@ let i$ = {
 		let bro = win.diegocr[addon.tag],
 			clt = bro.cl(link,base);
 		
-		LOG([link,clt]);
+		// LOG([link,clt]);
 		return (clt != link) ? (bro.blink(win), clt) : null;
 	},
 	observe: function(s,t,d) {
@@ -115,9 +115,9 @@ let i$ = {
 								var w = s.loadGroup.notificationCallbacks.getInterface(Ci.nsIDOMWindow);
 							} catch(e) {}
 							
-							LOG([w&&w.location,c.originalURI.spec,c.URI.spec,l,
-								c.loadFlags & Ci.nsIChannel.LOAD_REPLACE,
-								c instanceof Ci.nsIWritablePropertyBag]);
+							// LOG([w&&w.location,c.originalURI.spec,c.URI.spec,l,
+								// c.loadFlags & Ci.nsIChannel.LOAD_REPLACE,
+								// c instanceof Ci.nsIWritablePropertyBag]);
 							
 							if(w && (l = this.getLink(w,l,c.URI))) {
 								// Check for The page isn't redirecting properly...
@@ -192,7 +192,7 @@ let i$ = {
 		wmsData = wmsData || addon.wms.get(window);
 		let gBrowser = getBrowser(window);
 		gBrowser.removeEventListener('DOMContentLoaded', wmsData.domload, false);
-		this.gBForeach(gBrowser,function(doc) {
+		i$.gBForeach(gBrowser,function(doc) {
 			// LOG('detaching from ' + doc.location.href);
 			doc.removeEventListener('getCleanLink',wmsData.getCleanLink,true);
 		});
@@ -201,7 +201,7 @@ let i$ = {
 		wmsData = wmsData || addon.wms.get(window);
 		let gBrowser = getBrowser(window);
 		gBrowser.addEventListener('DOMContentLoaded', wmsData.domload, false);
-		this.gBForeach(gBrowser,function(doc) {
+		i$.gBForeach(gBrowser,function(doc) {
 			// LOG('attaching to ' + doc.location.href);
 			i$.putc(doc,wmsData.getCleanLink);
 		});
@@ -223,7 +223,7 @@ function copyLinkController(window) {
 	
 	let { goDoCommand } = window;
 	window.goDoCommand = function(aCommand) {
-		if(aCommand === 'cmd_copyLink' && addon.enabled) {
+		if(aCommand === 'cmd_copyLink' && addon.enabled) try {
 			
 			let { gContextMenu } = window;
 			if(gContextMenu && gContextMenu.onLink) {
@@ -235,6 +235,8 @@ function copyLinkController(window) {
 					return;
 				}
 			}
+		} catch(e) {
+			Cu.reportError(e);
 		}
 		goDoCommand(aCommand);
 	};
@@ -249,12 +251,15 @@ function copyLinkMobile(window) {
 	
 	let { _getLinkURL } = nwndcm;
 	nwndcm._getLinkURL = function(aLink) {
-		aLink = _getLinkURL.call(nwndcm,aLink);
-		
-		if(aLink) {
-			aLink = i$.getLink(window,aLink) || aLink;
+		try {
+			aLink = _getLinkURL.call(nwndcm,aLink);
+			
+			if(aLink) {
+				aLink = i$.getLink(window,aLink) || aLink;
+			}
+		} catch(e) {
+			Cu.reportError(e);
 		}
-		
 		return aLink;
 	};
 	
