@@ -55,7 +55,7 @@ let i$ = {
 		let bro = win.diegocr[addon.tag],
 			clt = bro.cl(link,base);
 		
-		// LOG([link,clt]);
+		LOG([link,clt]);
 		return (clt != link) ? (bro.blink(win), clt) : null;
 	},
 	observe: function(s,t,d) {
@@ -115,9 +115,9 @@ let i$ = {
 								var w = s.loadGroup.notificationCallbacks.getInterface(Ci.nsIDOMWindow);
 							} catch(e) {}
 							
-							// LOG([w&&w.location,c.originalURI.spec,c.URI.spec,l,
-								// c.loadFlags & Ci.nsIChannel.LOAD_REPLACE,
-								// c instanceof Ci.nsIWritablePropertyBag]);
+							LOG([w&&w.location,c.originalURI.spec,c.URI.spec,l,
+								c.loadFlags & Ci.nsIChannel.LOAD_REPLACE,
+								c instanceof Ci.nsIWritablePropertyBag]);
 							
 							if(w && (l = this.getLink(w,l,c.URI))) {
 								// Check for The page isn't redirecting properly...
@@ -467,7 +467,7 @@ function setOptions(Reset) {
 		skipdoms  : 'accounts.google.com,docs.google.com,translate.google.com,'
 			+ 'login.live.com,plus.google.com,www.facebook.com,twitter.com,'
 			+ 'static.ak.facebook.com,www.linkedin.com,www.virustotal.com,'
-			+ 'account.live.com',
+			+ 'account.live.com,admin.brightcove.com',
 		highlight : !0,
 		hlstyle   : 'background:rgba(252,252,0,0.6); color: #000',
 		evdm      : !0,
