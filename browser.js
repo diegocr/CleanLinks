@@ -237,7 +237,7 @@ const cleanlinks = {
 			
 		} catch(e) {}
 		
-		if(b.asciiHost == 'www.google.com' && /[?&]q=https?:/i.test(h))
+		if(/\.google\.[a-z.]+\/search\?(?:.+&)?q=http/i.test(h))
 			return h;
 		
 		let lmt = 4, s = 0, p, ht = null, rp = this.op.remove, l = h;
