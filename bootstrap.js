@@ -472,7 +472,8 @@ function setOptions(Reset) {
 		hlstyle   : 'background:rgba(252,252,0,0.6); color: #000',
 		evdm      : !0,
 		progltr   : !1,
-		cbc       : !0
+		cbc       : !0,
+		gotarget  : !1
 	})) {
 		if(!addon.branch.getPrefType(k) || Reset) {
 			switch(typeof v) {

@@ -16,6 +16,8 @@
 		tooltiptext="This installs a cmd_copyLink controller to catch context-menu's Copy Link Location calls to clear links before being copied to the clipboard."></setting>
 	<setting pref="extensions.cleanlinks.progltr" type="bool" title="Use Redirect Watcher?"
 		tooltiptext="Set up a HTTP Observer to catch 3xx redirections. For example, this should make possible to clear links hidden behind shortened URLs."></setting>
+	<setting pref="extensions.cleanlinks.gotarget" type="bool" title="Follow Target Attribute?"
+		tooltiptext="Whether the target attribute on links should be checked and respected."></setting>
 	<setting title="" type="control" tooltiptext="Reset options to their default values.">
 		<button label="Reset Options" oncommand="Cc['@mozilla.org/observer-service;1'].getService(Ci.nsIObserverService).notifyObservers(null,'cleanlinks-resetoptions',null);"/>
 	</setting>

@@ -47,11 +47,39 @@ const cleanlinks = {
 				t.edc = t.mob ? (function(a) window.content.location = a)
 					: (typeof window.openUILink !== 'function')
 					? function(a,b) (b.setAttribute('href', a), b.click())
-					: function(a,b,c) openUILink(a,c,{
-						relatedToCurrent: true,
-						inBackground: (function(p,n) p.getPrefType(n)
-						&&	p.getBoolPref(n))(Services.prefs,
-							'browser.tabs.loadInBackground')});
+					: function(a,b,c) {
+						if(this.op.gotarget && 0 == c.button && !(c.shiftKey || c.ctrlKey || c.metaKey || c.altKey)) {
+							let t = b.hasAttribute('target') && b.getAttribute('target') || '_self';
+							if("_blank" == t) c.button = 1;
+							else {
+								let wnd = b.ownerDocument.defaultView,
+									wfr = content.frames;
+								
+								switch(t) {
+									case '_top'    : wnd = wnd.top;    break;
+									case '_parent' : wnd = wnd.parent; break;
+									case '_self'   :
+										if(!wfr.length)
+											wnd = null;
+										break;
+									default:
+										[].some.call(wfr,function(f) f.name == t && (wnd=f));
+								}
+								
+								if(wnd) try {
+									wnd.location = a;
+									return;
+								} catch(e) {
+									Cu.reportError(e);
+								}
+							}
+						}
+						openUILink(a,c,{
+							relatedToCurrent: true,
+							inBackground: (function(p,n) p.getPrefType(n)
+							&&	p.getBoolPref(n))(Services.prefs,
+								'browser.tabs.loadInBackground')});
+					}.bind(t);
 				break;
 			case 'unload':
 				t.ps.removeObserver("", t);
