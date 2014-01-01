@@ -93,15 +93,27 @@ const cleanlinks = {
 		ev = t = undefined;
 	},
 	b: function(ev) {
-		if(ev.originalTarget instanceof HTMLDocument)
-			cleanlinks.b2(ev.originalTarget);
+		if(ev.originalTarget instanceof HTMLDocument) {
+			let doc = ev.originalTarget, t=cleanlinks;
+			t.b2(doc);
+			if(t.op.repdelay) {
+				doc.defaultView.addEventListener('click', function(ev) {
+					// Just the worst way ever to handle ajax...
+					setTimeout(t.b2.bind(t,doc,0), t.op.repdelay*1000);
+				}, true);
+			}
+		}
 	},
 	b2: function(d,x) {
 		let a,b = 0, c, e = 7;
 		
 		if(!d) d = this.gd();
-		if(!d.body)
+		try {
+			if(!d.body)
+				throw 0xBADF;
+		} catch(e) {
 			return 0;
+		}
 		
 		// while(--e && (a=this.c(d))) b += a;
 		b = this.c(d);

@@ -10,6 +10,8 @@
 	<setting pref="extensions.cleanlinks.hlstyle" type="string" emptytext="E.g. background:rgba(252,252,0,0.7); color: #000" title="Highlight Style">
 		Apply this CSS Style to cleaned links.
 	</setting>
+	<setting pref="extensions.cleanlinks.repdelay" type="integer" title="Replay Delay"
+		tooltiptext="Reapply cleaning of links after the specified number of seconds. This is for non-Delegation Mode only, set it to 0 to disable it."></setting>
 	<setting pref="extensions.cleanlinks.evdm" type="bool" title="Event Delegation Mode?"
 		tooltiptext="This is a less intrusive mode by just listening to click events. Note that real-time highlighting and counters will not work then, even though the performance should be much better."></setting>
 	<setting pref="extensions.cleanlinks.cbc" type="bool" title="CopyLink Controller?"

@@ -190,6 +190,7 @@ let i$ = {
 	},
 	DetachDOMLoad: function(window,wmsData) {
 		wmsData = wmsData || addon.wms.get(window);
+		if(!wmsData) return;
 		let gBrowser = getBrowser(window);
 		gBrowser.removeEventListener('DOMContentLoaded', wmsData.domload, false);
 		i$.gBForeach(gBrowser,function(doc) {
@@ -199,6 +200,7 @@ let i$ = {
 	},
 	AttachDOMLoad: function(window,wmsData) {
 		wmsData = wmsData || addon.wms.get(window);
+		if(!wmsData) return;
 		let gBrowser = getBrowser(window);
 		gBrowser.addEventListener('DOMContentLoaded', wmsData.domload, false);
 		i$.gBForeach(gBrowser,function(doc) {
@@ -473,7 +475,8 @@ function setOptions(Reset) {
 		evdm      : !0,
 		progltr   : !1,
 		cbc       : !0,
-		gotarget  : !1
+		gotarget  : !1,
+		repdelay  :  4,
 	})) {
 		if(!addon.branch.getPrefType(k) || Reset) {
 			switch(typeof v) {
