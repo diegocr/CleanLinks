@@ -237,6 +237,9 @@ const cleanlinks = {
 			
 		} catch(e) {}
 		
+		if(b.asciiHost == 'www.google.com' && /[?&]q=https?:/i.test(b.spec))
+			return h;
+		
 		let lmt = 4, s = 0, p, ht = null, rp = this.op.remove, l = h;
 		h.replace(/^javascript:.+(["'])(https?(?:\:|%3a).+?)\1/gi,function(a,b,c)(++s,h=c));
 		
