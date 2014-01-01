@@ -469,7 +469,7 @@ function setOptions(Reset) {
 		skipdoms  : 'accounts.google.com,docs.google.com,translate.google.com,'
 			+ 'login.live.com,plus.google.com,www.facebook.com,twitter.com,'
 			+ 'static.ak.facebook.com,www.linkedin.com,www.virustotal.com,'
-			+ 'account.live.com,admin.brightcove.com',
+			+ 'account.live.com,admin.brightcove.com,webcache.googleusercontent.com',
 		highlight : !0,
 		hlstyle   : 'background:rgba(252,252,0,0.6); color: #000',
 		evdm      : !0,
