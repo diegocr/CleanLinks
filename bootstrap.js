@@ -476,7 +476,7 @@ function setOptions(Reset) {
 		progltr   : !1,
 		cbc       : !0,
 		gotarget  : !1,
-		repdelay  :  4,
+		repdelay  :  3,
 	})) {
 		if(!addon.branch.getPrefType(k) || Reset) {
 			switch(typeof v) {
