@@ -1,22 +1,22 @@
-<!ENTITY skipwhen.title "">
-<!ENTITY skipwhen.tooltip "">
-<!ENTITY remove.title "">
-<!ENTITY remove.tooltip "">
-<!ENTITY skipdoms.title "">
-<!ENTITY skipdoms.tooltip "">
-<!ENTITY highlight.title "">
-<!ENTITY hlstyle.emptytext "">
-<!ENTITY hlstyle.title "">
-<!ENTITY hlstyle.content "">
-<!ENTITY repdelay.title "">
-<!ENTITY repdelay.tooltip "">
-<!ENTITY evdm.title "">
-<!ENTITY evdm.tooltip "">
-<!ENTITY cbc.title "">
-<!ENTITY cbc.tooltip "">
-<!ENTITY progltr.title "">
-<!ENTITY progltr.tooltip "">
-<!ENTITY gotarget.title "">
-<!ENTITY gotarget.tooltip "">
-<!ENTITY reset.tooltip "">
-<!ENTITY reset.label "">
+<!ENTITY skipwhen.title "Evitar enlaces que coincidad con:">
+<!ENTITY skipwhen.tooltip "Patrón REGEXP que se usara para comprobar las URLs y evitar problemas con ciertos enlaces.">
+<!ENTITY remove.title "Eliminar de los enlaces:">
+<!ENTITY remove.tooltip "Patrón REGEXP que se aplicara a los enlaces para eliminar etiquetas de seguimiento y similares.">
+<!ENTITY skipdoms.title "Ignorar Dominios:">
+<!ENTITY skipdoms.tooltip "Lista de dominios separados por comas cuyos enlaces no se modificaran.">
+<!ENTITY highlight.title "Subrayar enlaces limpiados?">
+<!ENTITY hlstyle.emptytext "E.g. background:rgba(252,252,0,0.7); color: #000">
+<!ENTITY hlstyle.title "Estilo de subrayado">
+<!ENTITY hlstyle.content "Aplica este estilo de subrayado a los enlaces limpiados.">
+<!ENTITY repdelay.title "Retraso de reaplicación">
+<!ENTITY repdelay.tooltip "El limpiado de enlaces se aplicara nuevamente tras el numero de segundos especificado. Únicamente valido para el modo no-delegado.">
+<!ENTITY evdm.title "Modo de Evento Delegado?">
+<!ENTITY evdm.tooltip "Usando este modo los enlaces se limpiara al vuelo cuando pulse sobre ellos, lo cual es menos intrusivo pero la funcionalidad de destacar enlaces en tiempo real no estará disponible.">
+<!ENTITY cbc.title "CopyLink Controller?">
+<!ENTITY cbc.tooltip "Instala un controlador de comando cmd_copyLink para limpiar los enlaces copiados al portapapeles usnado el menú contextual.">
+<!ENTITY progltr.title "Usar observador de redirección?">
+<!ENTITY progltr.tooltip "Instala un observador de protocolo HTTP para identificar redirecciones. Esto habilitara la posibilidad de limpiar URLs ocultas tras enlaces cortos ofrecidos por servicios tales como goo.gl.">
+<!ENTITY gotarget.title "Usar el atributo Target?">
+<!ENTITY gotarget.tooltip "Los enlaces pueden contener un atributo Target el cual indica donde deben abrirse.">
+<!ENTITY reset.tooltip "Reinicia las opciones a sus valores por defecto.">
+<!ENTITY reset.label "Reiniciar Opciones">

@@ -508,7 +508,7 @@ const cleanlinks = {
 				else
 					this.op[p] = new RegExp(this.op[p]);
 			} catch(e) {
-			    alert(_("browser.regexerr") + p + '": '+e.message);
+				alert(_("browser.regexerr") + ' "' + p + '": '+e.message);
 				this.op[p] = null;
 			}
 		}
