@@ -463,7 +463,7 @@ function unloadFromWindow(window) {
 function setOptions(Reset) {
 	for(let [k,v] in Iterator({
 		enabled   : !0,
-		skipwhen  : 'ServiceLogin|imgres\\?|watch%3Fv|auth\\?client_id|signup|'
+        skipwhen  : 'magnet:|ServiceLogin|imgres\\?|watch%3Fv|auth\\?client_id|signup|'
 			+ 'oauth|openid\\.ns|\\.mcstatic\\.com|sVidLoc|[Ll]ogout|submit\\?url=',
 		remove    : '(?:ref|aff)\\w*|utm_\\w+|(?:merchant|programme|media)ID',
 		skipdoms  : 'accounts.google.com,docs.google.com,translate.google.com,'
@@ -522,8 +522,6 @@ function startup(data) {
 			.setSubstitution(addon.tag,
 				io.newURI(__SCRIPT_URI_SPEC__+'/../',null,null));
 		
-		Cu.import(rsc('locale.jsm'), scope);
-		
 		i$.wmForeach(loadIntoWindowStub);
 		Services.wm.addListener(i$);
 		
@@ -551,8 +549,6 @@ function shutdown(data, reason) {
 	
 	Services.wm.removeListener(i$);
 	i$.wmForeach(unloadFromWindow);
-	
-	Cu.unload(rsc('locale.jsm'));
 	
 	Services.io.getProtocolHandler("resource")
 		.QueryInterface(Ci.nsIResProtocolHandler)
