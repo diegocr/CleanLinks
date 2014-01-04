@@ -1,0 +1,14 @@
+# Locale file for CleanLinks
+
+addon.description: 将加密/内嵌链接还原为直接链接。
+
+browser.status: 状态：
+browser.enabled: 已启用
+browser.disabled: 已禁用
+browser.enable: 启用
+browser.disable: 禁用
+browser.cleanedlinks: 已处理链接数：
+browser.clicktheicon: 点击图标以
+browser.regexerr: 处理规则时遇到错误！
+browser.touch: CleanLinks Touch!
+browser.hashtag: #
