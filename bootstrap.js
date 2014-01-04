@@ -488,6 +488,7 @@ function setOptions(Reset) {
 	}
 }
 
+let scope = this;
 function startup(data) {
 	let tmp = {};
 	Cu.import("resource://gre/modules/AddonManager.jsm", tmp);
@@ -521,6 +522,8 @@ function startup(data) {
 			.setSubstitution(addon.tag,
 				io.newURI(__SCRIPT_URI_SPEC__+'/../',null,null));
 		
+		Cu.import(rsc('locale.jsm'), scope);
+		
 		i$.wmForeach(loadIntoWindowStub);
 		Services.wm.addListener(i$);
 		
@@ -548,6 +551,8 @@ function shutdown(data, reason) {
 	
 	Services.wm.removeListener(i$);
 	i$.wmForeach(unloadFromWindow);
+	
+	Cu.unload(rsc('locale.jsm'));
 	
 	Services.io.getProtocolHandler("resource")
 		.QueryInterface(Ci.nsIResProtocolHandler)
