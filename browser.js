@@ -17,12 +17,15 @@
 let {classes:Cc, interfaces:Ci, utils:Cu, results:Cr} = Components,
 	{Services}=Cu.import("resource://gre/modules/Services.jsm",{});
 
+let strings = Services.strings.createBundle("chrome://cleanlinks/locale/browser.properties");
+function _(key) strings.GetStringFromName(key)
+
 const cleanlinks = {
 	pkg:'CleanLinks',
 	tag_b:'data-cleanedlinks',
 	tag_l:'data-cleanedlink',
-	tag_t:"\n \n- CleanLinks Touch!",
-	tag_h:'#',
+	tag_t:"\n \n- " + _("browser.touch"),
+	tag_h:_("browser.hashtag"),
 	op:null,
 	ps:null,
 	handleEvent: function(ev) {
@@ -423,10 +426,10 @@ const cleanlinks = {
 					+ 'border:1px solid rgba(20,20,30,0.4);box-shadow:inset 0 0 3px 0 rgba(0,0,0,0.6);'
 					+ 'border-radius:6px;background-color:#e4e5e0;text-align:center'}));
 				e.appendChild(t.oc('label',{value:t.pkg,style:'color:#00adef;font:11pt "message-box"'}));
-				e.appendChild(t.oc('label',{value:'Status: '+(b ? 'Enabled':'Disabled')}));
-				if(!t.evdm && b) e.appendChild(t.oc('label',{value:'Cleaned Links: '+r}));
-				e.appendChild(t.oc('label',{value:'Click the icon to '
-					+(b ? 'Disable':'Enable'),style:'color:#8e9f9f;font:12px Georgia'}));
+				e.appendChild(t.oc('label',{value:_("browser.status")+(b ? _("browser.enabled"):_("browser.disabled"))}));
+				if(!t.evdm && b) e.appendChild(t.oc('label',{value:_("browser.cleanedlinks")+r}));
+				e.appendChild(t.oc('label',{value:_("browser.clicktheicon")
+					+(b ? _("browser.disable"):_("browser.enable")),style:'color:#8e9f9f;font:12px Georgia'}));
 			}catch(e){
 				alert(e);
 				return false;
@@ -505,7 +508,7 @@ const cleanlinks = {
 				else
 					this.op[p] = new RegExp(this.op[p]);
 			} catch(e) {
-				alert('Error Processing CleanLinks Pattern "'+p+'": '+e.message);
+			    alert(_("browser.regexerr") + p + '": '+e.message);
 				this.op[p] = null;
 			}
 		}

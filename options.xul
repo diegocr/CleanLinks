@@ -1,26 +1,19 @@
 <?xml version="1.0"?>
+<!DOCTYPE vbox SYSTEM "chrome://cleanlinks/locale/options.dtd">
 <vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-	<setting pref="extensions.cleanlinks.skipwhen" type="string" title="Skip Links matching with:"
-		tooltiptext="This is a REGEXP Pattern urls will be checked against so that links to sharing platforms and such will not get broken. case-sensitive."></setting>
-	<setting pref="extensions.cleanlinks.remove" type="string" title="Remove From Links:"
-		tooltiptext="This is a regexp pattern which will be applied over links to remove tracking tags and such. case-insensitive."></setting>
-	<setting pref="extensions.cleanlinks.skipdoms" type="string" title="Skip Domains:"
-		tooltiptext="Comma-separated list of domains whose links won't be cleared."></setting>
-	<setting pref="extensions.cleanlinks.highlight" type="bool" title="Highlight Cleaned Links?"></setting>
-	<setting pref="extensions.cleanlinks.hlstyle" type="string" emptytext="E.g. background:rgba(252,252,0,0.7); color: #000" title="Highlight Style">
-		Apply this CSS Style to cleaned links.
-	</setting>
-	<setting pref="extensions.cleanlinks.repdelay" type="integer" title="Replay Delay"
-		tooltiptext="Reapply cleaning of links after the specified number of seconds. This is for non-Delegation Mode only, set it to 0 to disable it."></setting>
-	<setting pref="extensions.cleanlinks.evdm" type="bool" title="Event Delegation Mode?"
-		tooltiptext="This is a less intrusive mode by just listening to click events. Note that real-time highlighting and counters will not work then, even though the performance should be much better."></setting>
-	<setting pref="extensions.cleanlinks.cbc" type="bool" title="CopyLink Controller?"
-		tooltiptext="This installs a cmd_copyLink controller to catch context-menu's Copy Link Location calls to clear links before being copied to the clipboard."></setting>
-	<setting pref="extensions.cleanlinks.progltr" type="bool" title="Use Redirect Watcher?"
-		tooltiptext="Set up a HTTP Observer to catch 3xx redirections. For example, this should make possible to clear links hidden behind shortened URLs."></setting>
-	<setting pref="extensions.cleanlinks.gotarget" type="bool" title="Follow Target Attribute?"
-		tooltiptext="Whether the target attribute on links should be checked and respected."></setting>
-	<setting title="" type="control" tooltiptext="Reset options to their default values.">
-		<button label="Reset Options" oncommand="Cc['@mozilla.org/observer-service;1'].getService(Ci.nsIObserverService).notifyObservers(null,'cleanlinks-resetoptions',null);"/>
-	</setting>
+  <setting pref="extensions.cleanlinks.skipwhen" type="string" title="&skipwhen.title;" tooltiptext="&skipwhen.tooltip;"></setting>
+  <setting pref="extensions.cleanlinks.remove" type="string" title="&remove.title;" tooltiptext="&remove.tooltip;"></setting>
+  <setting pref="extensions.cleanlinks.skipdoms" type="string" title="&skipdoms.title;" tooltiptext="&skipdoms.tooltip;"></setting>
+  <setting pref="extensions.cleanlinks.highlight" type="bool" title="&highlight.title;"></setting>
+  <setting pref="extensions.cleanlinks.hlstyle" type="string" emptytext="&hlstyle.emptytext;" title="&hlstyle.title;">
+    &hlstyle.content;
+  </setting>
+  <setting pref="extensions.cleanlinks.repdelay" type="integer" title="&repdelay.title;" tooltiptext="&repdelay.tooltip;"></setting>
+  <setting pref="extensions.cleanlinks.evdm" type="bool" title="&evdm.title;" tooltiptext="&evdm.tooltip;"></setting>
+  <setting pref="extensions.cleanlinks.cbc" type="bool" title="&cbc.title;" tooltiptext="&cbc.tooltip;"></setting>
+  <setting pref="extensions.cleanlinks.progltr" type="bool" title="&progltr.title;" tooltiptext="&progltr.tooltip;"></setting>
+  <setting pref="extensions.cleanlinks.gotarget" type="bool" title="&gotarget.title;" tooltiptext="&gotarget.tooltip;"></setting>
+  <setting title="" type="control" tooltiptext="&reset.tooltip;">
+    <button label="&reset.label;" oncommand="Cc['@mozilla.org/observer-service;1'].getService(Ci.nsIObserverService).notifyObservers(null,'cleanlinks-resetoptions',null);"/>
+  </setting>
 </vbox>
