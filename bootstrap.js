@@ -55,7 +55,7 @@ let i$ = {
 		let bro = win.diegocr[addon.tag],
 			clt = bro.cl(link,base);
 		
-		LOG([link,clt]);
+		// LOG([link,clt]);
 		return (clt != link) ? (bro.blink(win), clt) : null;
 	},
 	observe: function(s,t,d) {
@@ -115,9 +115,9 @@ let i$ = {
 								var w = s.loadGroup.notificationCallbacks.getInterface(Ci.nsIDOMWindow);
 							} catch(e) {}
 							
-							LOG([w&&w.location,c.originalURI.spec,c.URI.spec,l,
-								c.loadFlags & Ci.nsIChannel.LOAD_REPLACE,
-								c instanceof Ci.nsIWritablePropertyBag]);
+							// LOG([w&&w.location,c.originalURI.spec,c.URI.spec,l,
+								// c.loadFlags & Ci.nsIChannel.LOAD_REPLACE,
+								// c instanceof Ci.nsIWritablePropertyBag]);
 							
 							if(w && (l = this.getLink(w,l,c.URI))) {
 								// Check for The page isn't redirecting properly...
