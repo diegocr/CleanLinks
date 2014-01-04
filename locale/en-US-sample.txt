@@ -5,6 +5,8 @@ addon.description: Converts obfuscated/nested links to genuine clean links
 browser.status: Status: 
 browser.enabled: Enabled
 browser.disabled: Disabled
+browser.enable: Enable
+browser.disable: Disable
 browser.cleanedlinks: Cleaned Links: 
 browser.clicktheicon: Click the icon to 
 browser.regexerr: Error Processing CleanLinks Pattern
