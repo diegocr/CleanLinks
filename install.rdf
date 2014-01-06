@@ -12,6 +12,7 @@
 		<em:localized>
 			<Description>
 				<em:locale>zh-CN</em:locale>
+				<em:name>Clean Links</em:name>
 				<em:description>将加密/内嵌链接还原为直接链接。</em:description>
 				<em:translator>Simon Chan</em:translator>
 			</Description>
@@ -19,6 +20,7 @@
 		<em:localized>
 			<Description>
 				<em:locale>zh-TW</em:locale>
+				<em:name>Clean Links</em:name>
 				<em:description>將加密/內嵌鏈接還原為直接鏈接。</em:description>
 				<em:translator>Simon Chan</em:translator>
 			</Description>
@@ -26,6 +28,7 @@
 		<em:localized>
 			<Description>
 				<em:locale>es-ES</em:locale>
+				<em:name>Clean Links</em:name>
 				<em:description>Complemento para limpiar enlaces enmascarados.</em:description>
 				<em:translator>Pepito Grillo</em:translator>
 			</Description>
