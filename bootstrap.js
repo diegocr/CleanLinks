@@ -14,7 +14,8 @@ let {classes:Cc,interfaces:Ci,utils:Cu,results:Cr} = Components,addon;
 Cu.import("resource://gre/modules/Services.jsm");
 
 function rsc(n) 'resource://' + addon.tag + '/' + n;
-function LOG(m) (m = addon.name + ' Message @ '
+function LOG(m) addon.debug && 
+	(m = addon.name + ' Message @ '
 	+ (new Date()).toISOString() + "\n> "
 	+ (Array.isArray(m) ? m.join("\n> "):m),
 	dump(m + "\n"), Services.console.logStringMessage(m));
@@ -55,7 +56,7 @@ let i$ = {
 		let bro = win.diegocr[addon.tag],
 			clt = bro.cl(link,base);
 		
-		// LOG([link,clt]);
+		LOG([link,clt]);
 		return (clt != link) ? (bro.blink(win), clt) : null;
 	},
 	observe: function(s,t,d) {
@@ -115,9 +116,9 @@ let i$ = {
 								var w = s.loadGroup.notificationCallbacks.getInterface(Ci.nsIDOMWindow);
 							} catch(e) {}
 							
-							// LOG([w&&w.location,c.originalURI.spec,c.URI.spec,l,
-								// c.loadFlags & Ci.nsIChannel.LOAD_REPLACE,
-								// c instanceof Ci.nsIWritablePropertyBag]);
+							LOG([w&&w.location,c.originalURI.spec,c.URI.spec,l,
+								c.loadFlags & Ci.nsIChannel.LOAD_REPLACE,
+								c instanceof Ci.nsIWritablePropertyBag]);
 							
 							if(w && (l = this.getLink(w,l,c.URI))) {
 								// Check for The page isn't redirecting properly...
@@ -461,7 +462,7 @@ function unloadFromWindow(window) {
 }
 
 function setOptions(Reset) {
-	for(let [k,v] in Iterator({
+	let Options = {
 		enabled   : !0,
 		skipwhen  : 'ServiceLogin|imgres\\?|watch%3Fv|auth\\?client_id|signup|'
 			+ 'oauth|openid\\.ns|\\.mcstatic\\.com|sVidLoc|[Ll]ogout|submit\\?url=|magnet:',
@@ -469,7 +470,8 @@ function setOptions(Reset) {
 		skipdoms  : 'accounts.google.com,docs.google.com,translate.google.com,'
 			+ 'login.live.com,plus.google.com,www.facebook.com,twitter.com,'
 			+ 'static.ak.facebook.com,www.linkedin.com,www.virustotal.com,'
-			+ 'account.live.com,admin.brightcove.com,webcache.googleusercontent.com',
+			+ 'account.live.com,admin.brightcove.com,www.mywot.com,'
+			+ 'webcache.googleusercontent.com',
 		highlight : !0,
 		hlstyle   : 'background:rgba(252,252,0,0.6); color: #000',
 		evdm      : !0,
@@ -477,7 +479,8 @@ function setOptions(Reset) {
 		cbc       : !0,
 		gotarget  : !1,
 		repdelay  :  3,
-	})) {
+	};
+	for(let [k,v] in Iterator(Options)) {
 		if(!addon.branch.getPrefType(k) || Reset) {
 			switch(typeof v) {
 				case 'boolean': addon.branch.setBoolPref (k,v); break;
@@ -486,6 +489,30 @@ function setOptions(Reset) {
 			}
 		}
 	}
+	
+	if(!Reset && VersionLTCheck(addon.version)) {
+		LOG('Checking new domains...');
+		
+		let src = Options.skipdoms.split(',');
+		let dst = addon.branch.getPrefType('skipdoms')
+			&& addon.branch.getCharPref('skipdoms');
+		
+		dst = (dst || '').split(',');
+		
+		src.forEach(function(d) {
+			if(!~dst.indexOf(d)) {
+				LOG('Adding domain '+d);
+				dst.push(d);
+			}
+		});
+		
+		addon.branch.setCharPref('skipdoms', dst.join(","));
+	}
+}
+
+function VersionLTCheck(v) {
+	return !addon.branch.getPrefType('version')
+		|| Services.vc.compare(addon.branch.getCharPref('version'),v) < 0;
 }
 
 let scope = this;
@@ -506,8 +533,9 @@ function startup(data) {
 		if("nsIPrefBranch2" in Ci)
 			addon.branch.QueryInterface(Ci.nsIPrefBranch2);
 		
-		let Reset = !addon.branch.getPrefType('version')
-			|| Services.vc.compare(addon.branch.getCharPref('version'),'2.4') < 0;
+		addon.debug = 'a' === addon.version.replace(/[\d.]/g,'');
+		
+		let Reset = VersionLTCheck('2.4');
 		
 		setOptions(Reset);
 		
