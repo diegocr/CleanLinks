@@ -4,7 +4,7 @@
 		<em:id>{158d7cb3-7039-4a75-8e0b-3bd0a464edd2}</em:id>
 		<em:type>2</em:type>
 		<em:name>Clean Links</em:name>
-		<em:version>2.5a2</em:version>
+		<em:version>2.5a3</em:version>
 		<em:creator>Diego Casorran</em:creator>
 		<em:contributor>Simon Chan</em:contributor>
 		<em:description>Converts obfuscated/nested links to genuine clean links</em:description>
@@ -37,23 +37,23 @@
 			<Description>
 				<!-- Firefox -->
 				<em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-				<em:minVersion>17.0</em:minVersion>
-				<em:maxVersion>26.*</em:maxVersion>
+				<em:minVersion>22.0</em:minVersion>
+				<em:maxVersion>27.*</em:maxVersion>
 			</Description>
 		</em:targetApplication>
 		<em:targetApplication>
 			<Description>
 				<!-- SeaMonkey -->
 				<em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
-				<em:minVersion>2.14</em:minVersion>
-				<em:maxVersion>2.24</em:maxVersion>
+				<em:minVersion>2.19</em:minVersion>
+				<em:maxVersion>2.27</em:maxVersion>
 			</Description>
 		</em:targetApplication>
 		<em:targetApplication>
 			<Description>
 				<!-- Fennec -->
 				<em:id>{a23983c0-fd0e-11dc-95ff-0800200c9a66}</em:id>
-				<em:minVersion>17.0</em:minVersion>
+				<em:minVersion>22.0</em:minVersion>
 				<em:maxVersion>26.*</em:maxVersion>
 			</Description>
 		</em:targetApplication>
@@ -61,16 +61,16 @@
 			<Description>
 				<!-- Android -->
 				<em:id>{aa3c5121-dab2-40e2-81ca-7ea25febc110}</em:id>
-				<em:minVersion>17.0</em:minVersion>
-				<em:maxVersion>26.*</em:maxVersion>
+				<em:minVersion>22.0</em:minVersion>
+				<em:maxVersion>28.*</em:maxVersion>
 			</Description>
 		</em:targetApplication>
 		<em:targetApplication>
 			<Description>
 				<!-- Thunderbird -->
 				<em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-				<em:minVersion>17.0</em:minVersion>
-				<em:maxVersion>26.*</em:maxVersion>
+				<em:minVersion>22.0</em:minVersion>
+				<em:maxVersion>27.*</em:maxVersion>
 			</Description>
 		</em:targetApplication>
 	</Description>

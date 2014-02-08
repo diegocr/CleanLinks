@@ -264,7 +264,7 @@ const cleanlinks = {
 			
 			if(~(p = h.indexOf('html&')) || ~(p = h.indexOf('html%')))
 				h = h.substr(0,p+4);
-			else if(~(p = h.indexOf('/&')) || ~(p = h.indexOf('/%')))
+			else if(~(p = h.indexOf('/&')))// || ~(p = h.indexOf('/%')))
 				h = h.substr(0,p);
 			if(h.indexOf('://') == -1)
 				h = 'http://' + h;

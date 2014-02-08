@@ -14,11 +14,10 @@ let {classes:Cc,interfaces:Ci,utils:Cu,results:Cr} = Components,addon;
 Cu.import("resource://gre/modules/Services.jsm");
 
 function rsc(n) 'resource://' + addon.tag + '/' + n;
-function LOG(m) addon.debug && 
-	(m = addon.name + ' Message @ '
-	+ (new Date()).toISOString() + "\n> "
-	+ (Array.isArray(m) ? m.join("\n> "):m),
-	dump(m + "\n"), Services.console.logStringMessage(m));
+function LOG(m) addon.debug && (m = addon.name + ' Message @ '
+	+ (new Date()).toISOString() + "\n> " + (Array.isArray(m) ? m.join("\n> "):m)
+	+ "\n" + new Error().stack.split("\n").map(s => s.replace(/^(.*@).+\//,'$1'))
+	.join("\n"), dump(m + "\n"), Services.console.logStringMessage(m));
 
 let ia = Services.appinfo.ID[3],
 	wt = 5==ia?'mail:3pane'
@@ -497,7 +496,7 @@ function setOptions(Reset) {
 		let dst = addon.branch.getPrefType('skipdoms')
 			&& addon.branch.getCharPref('skipdoms');
 		
-		dst = (dst || '').split(',');
+		dst = (dst || '').split(',').map(String.trim).filter(String);
 		
 		src.forEach(function(d) {
 			if(!~dst.indexOf(d)) {
