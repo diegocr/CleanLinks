@@ -21,7 +21,8 @@ function LOG(m) addon.debug && (m = addon.name + ' Message @ '
 
 let ia = Services.appinfo.ID[3],
 	wt = 5==ia?'mail:3pane'
-		:'navigator:browser';
+		:'navigator:browser',
+	cltrack = {};
 
 let i$ = {
 	addHTTPObserver: function() {
@@ -63,6 +64,7 @@ let i$ = {
 			case 'nsPref:changed':
 				switch(d) {
 					case 'cbc':
+					case 'cltrack':
 					case 'enabled':
 					case 'progltr':
 						let v = addon.branch.getBoolPref(d);
@@ -86,6 +88,16 @@ let i$ = {
 						}
 						
 						addon[d] = v;
+						
+						if(d == 'cltrack') {
+							if(v) {
+								cltrack = {};
+							} else {
+								cltrack = undefined;
+							}
+							break;
+						}
+						
 						if(v === true) {
 							
 							this.addHTTPObserver();
@@ -97,12 +109,18 @@ let i$ = {
 						if(d === 'enabled') {
 							this.wmForeach(this[(v?'At':'De')+'tachDOMLoad']);
 						}
+					default:
 						break;
 				}
 				break;
 			
 			case 'cleanlinks-resetoptions':
 				return setOptions(!0);
+			
+			case 'cleanlinks-cltrack':
+				d = JSON.parse(d);
+				LOG([t].concat(d));
+				return addon.cltrack && (cltrack[d[0]]=d[1]);
 			
 			case 'http-on-examine-response': {
 				let c = s.QueryInterface(Ci.nsIHttpChannel);
@@ -287,6 +305,16 @@ function loadIntoWindow(window) {
 		if(p)p.appendChild(n);
 		return n;
 	}
+	function cLabel(i,u) {
+		u = u || i;
+		i = e('label',{value:i,tooltiptext:u,style
+			:'cursor:pointer;text-decoration:underline'});
+		if(i) i.addEventListener('click',function() {
+			let b = getBrowser(window);
+			b.selectedTab = b.addTab(u);
+		}, false);
+		return i;
+	}
 	
 	loadSubScript(rsc('browser.js'), window);
 	window.diegocr[addon.tag].mob = 3==ia;
@@ -296,11 +324,91 @@ function loadIntoWindow(window) {
 	
 	let wmsData = {
 		TBBHandler: function(ev) {
+			ev.preventDefault();
 			
-			try {
-				window.diegocr[addon.tag].l()
-			} catch(e) {
-				Cu.reportError(e);
+			switch(ev.button) {
+				case 0:
+					try {
+						window.diegocr[addon.tag].l()
+					} catch(e) {
+						Cu.reportError(e);
+					}
+					break;
+				case 2: {
+					let x = $(addon.tag+'-context');
+					if(!x) break;
+					
+					while(x.firstChild)
+						x.removeChild(x.firstChild);
+					
+					e('vbox',{style:'padding:4px;min-width:320px'},[
+							e('hbox',{align:'baseline',flex:1},[
+								e('image',{src:rsc('icon.png')}),
+								e('vbox',{},[
+									e('label',{value:addon.name+' v'+addon.version,style:'font:italic 16px Georgia'}),
+									e('label',{value:'Copyright (c) 2014 Diego Casorran'}),
+									cLabel('https://github.com/diegocr/cleanlinks')
+								]),
+							]),
+							e('spacer',{minheight:9}),
+							e('groupbox',0,[
+								e('description',{
+									id:addon.tag+'-lbd',
+									value:'This is a current-session list for the cleaned links and its originals, for ease whitelisting.'
+								}),
+								// e('separator'),
+								e('listbox',{flex:1,id:addon.tag+'-listbox',seltype:'multiple',minheight:280},[
+									e('listhead',0,[
+										e('listheader',{label:'Original Link'}),
+										e('listheader',{label:'Cleaned Link'})
+									]),
+									e('listcols',0,[e('listcol'),e('listcol')])
+								]),
+								e('hbox',0,[
+									e('spacer',{flex:1}),
+									e('button',{label:'Whitelist Selection',id:addon.tag+'-applywl'}),
+								])
+							])
+						],x);
+					
+					let t = $(addon.tag+'-listbox'), d = getSkipDomA();
+					for(let l in cltrack) {
+						try {
+							let u1 = Services.io.newURI(l,null,null);
+								u2 = Services.io.newURI(cltrack[l],null,null);
+							if(~d.indexOf(u1.host)) continue;
+							e('listitem',{tooltiptext:l},[
+								e('listcell',{
+									label:l,image:u1.prePath+'/favicon.ico',
+									'class':'listcell-iconic',crop:'center',
+									style:'max-width:310px'}),
+								e('listcell',{
+									label:u2.spec,image:u2.prePath+'/favicon.ico',
+									'class':'listcell-iconic', crop:'right',
+									style:'max-width:270px'})
+							],t);
+						} catch(e) {
+							Cu.reportError(e);
+						}
+					}
+					$(addon.tag+'-applywl').addEventListener('command', function() {
+						d = getSkipDomA();
+						while(1) {
+							let i = t.getSelectedItem(0);
+							i = i && t.removeItemAt(t.getIndexOfItem(i));
+							if(!i) break;
+							
+							i = i.firstElementChild;
+							let u = Services.io.newURI(i.getAttribute('label'),null,null);
+							d.push(u.host);
+						}
+						addon.branch.setCharPref('skipdoms', d.join(","));
+					}, !1);
+					
+					x._context = true;
+					x.openPopup(ev.currentTarget);
+				}
+				default:break;
 			}
 		},
 		getCleanLink: function(ev) {
@@ -333,7 +441,7 @@ function loadIntoWindow(window) {
 		gNavToolbox.palette.appendChild(e('toolbarbutton',{
 			id:m,label:addon.name,class:'toolbarbutton-1',
 			image:rsc('icon16.png')
-		})).addEventListener('command', wmsData.TBBHandler, !1);
+		})).addEventListener('click', wmsData.TBBHandler, !1);
 		
 		if(!addon.branch.getPrefType("version")) {
 			let nv = $('nav-bar') || $('mail-bar3');
@@ -363,17 +471,22 @@ function loadIntoWindow(window) {
 		
 		try {
 			e('tooltip',{id:addon.tag+'-tooltip'},0,$('mainPopupSet'))
-				.addEventListener('popupshowing', wmsData.popupshowing = function(ev) {
+				.addEventListener('popupshowing',
+				wmsData.popupshowing = function(ev) {
 					try {
 						return window.diegocr[addon.tag].l(ev);
 					} catch(e) {
 						Cu.reportError(e);
 					}
 				}, !0);
+			e('panel',{id:addon.tag+'-context',backdrag:'true',
+				position:'bottomcenter topleft',type:'arrow'},
+				0, $('mainPopupSet'));
 			
 			let sTT = function() {
 				let n = $(m);
 				n&&n.setAttribute('tooltip',addon.tag+'-tooltip');
+				n&&n.setAttribute('context',addon.tag+'-context');
 				return !!n;
 			};
 			sTT() || window.addEventListener('aftercustomization',sTT,false);
@@ -426,7 +539,7 @@ function unloadFromWindow(window) {
 		let wmsData = addon.wms.get(window);
 		
 		if(wmsData.TBBHandler && btn) {
-			btn.removeEventListener('command',wmsData.TBBHandler,!1);
+			btn.removeEventListener('click',wmsData.TBBHandler,!1);
 		}
 		if(wmsData.popupshowing) {
 			let tt = $(addon.tag+'-tooltip');
@@ -460,6 +573,12 @@ function unloadFromWindow(window) {
 		n.parentNode.removeChild(n);
 }
 
+function getSkipDomA() {
+	return (addon.branch.getPrefType('skipdoms')
+		&& addon.branch.getCharPref('skipdoms') || '')
+			.split(',').map(String.trim).filter(String);
+}
+
 function setOptions(Reset) {
 	let Options = {
 		enabled   : !0,
@@ -478,6 +597,7 @@ function setOptions(Reset) {
 		cbc       : !0,
 		gotarget  : !1,
 		repdelay  :  3,
+		cltrack   : !0
 	};
 	for(let [k,v] in Iterator(Options)) {
 		if(!addon.branch.getPrefType(k) || Reset) {
@@ -493,10 +613,7 @@ function setOptions(Reset) {
 		LOG('Checking new domains...');
 		
 		let src = Options.skipdoms.split(',');
-		let dst = addon.branch.getPrefType('skipdoms')
-			&& addon.branch.getCharPref('skipdoms');
-		
-		dst = (dst || '').split(',').map(String.trim).filter(String);
+		let dst = getSkipDomA();
 		
 		src.forEach(function(d) {
 			if(!~dst.indexOf(d)) {
@@ -552,11 +669,12 @@ function startup(data) {
 		i$.wmForeach(loadIntoWindowStub);
 		Services.wm.addListener(i$);
 		
-		['enabled','progltr'].forEach(function(p)
+		['enabled','progltr','cltrack'].forEach(function(p)
 			addon[p] = addon.branch.getBoolPref(p));
 		i$.addHTTPObserver();
 		
 		Services.obs.addObserver(i$,'cleanlinks-resetoptions', false);
+		Services.obs.addObserver(i$,'cleanlinks-cltrack', false);
 		
 		// i$.startup();
 		addon.branch.setCharPref('version', addon.version);

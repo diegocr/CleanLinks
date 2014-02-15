@@ -297,6 +297,9 @@ const cleanlinks = {
 		}
 		
 		// if(l != h) this.d([l,h]);
+		if(l != h) {
+			Services.obs.notifyObservers(this,'cleanlinks-cltrack',JSON.stringify([l,h]));
+		}
 		
 		return h;
 	},
