@@ -1,12 +1,12 @@
 /* ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/
- * 
+ *
  * Contributor(s):
  *   Diego Casorran <dcasorran@gmail.com> (Original Author)
- * 
+ *
  * ***** END LICENSE BLOCK ***** */
 
 let {classes:Cc,interfaces:Ci,utils:Cu,results:Cr} = Components,addon;
@@ -45,17 +45,17 @@ let i$ = {
 			.QueryInterface(Ci.nsIInterfaceRequestor)
 			.getInterface(Ci.nsIDOMWindow)
 			.window;
-		
+
 		/**
 		 * We might get a redirection from a non-browser window
 		 * Eg, Chatzilla loading remote fonts from CSS motif
 		 */
 		if(!win.diegocr)
 			return null;
-		
+
 		let bro = win.diegocr[addon.tag],
 			clt = bro.cl(link,base);
-		
+
 		LOG([link,clt]);
 		return (clt != link) ? (bro.blink(win), clt) : null;
 	},
@@ -68,12 +68,12 @@ let i$ = {
 					case 'enabled':
 					case 'progltr':
 						let v = addon.branch.getBoolPref(d);
-						
+
 						if(d === 'cbc') {
 							this.wmForeach(function(w){
 								if(addon.wms.has(w)) {
 									let d = addon.wms.get(w);
-									
+
 									if(v === true) {
 										d.controller=3==ia
 											? new copyLinkMobile(w)
@@ -86,9 +86,9 @@ let i$ = {
 							});
 							break;
 						}
-						
+
 						addon[d] = v;
-						
+
 						if(d == 'cltrack') {
 							if(v) {
 								cltrack = {};
@@ -97,13 +97,13 @@ let i$ = {
 							}
 							break;
 						}
-						
+
 						if(v === true) {
-							
+
 							this.addHTTPObserver();
-							
+
 						} else {
-							
+
 							this.removeHTTPObserver();
 						}
 						if(d === 'enabled') {
@@ -113,18 +113,18 @@ let i$ = {
 						break;
 				}
 				break;
-			
+
 			case 'cleanlinks-resetoptions':
 				return setOptions(!0);
-			
+
 			case 'cleanlinks-cltrack':
 				d = JSON.parse(d);
 				LOG([t].concat(d));
 				return addon.cltrack && (cltrack[d[0]]=d[1]);
-			
+
 			case 'http-on-examine-response': {
 				let c = s.QueryInterface(Ci.nsIHttpChannel);
-				
+
 				try {
 					if(30 == parseInt(c.responseStatus/10) && 304 != c.responseStatus) {
 						let l = c.getResponseHeader('Location');
@@ -132,24 +132,24 @@ let i$ = {
 							try {
 								var w = s.loadGroup.notificationCallbacks.getInterface(Ci.nsIDOMWindow);
 							} catch(e) {}
-							
+
 							LOG([w&&w.location,c.originalURI.spec,c.URI.spec,l,
 								c.loadFlags & Ci.nsIChannel.LOAD_REPLACE,
 								c instanceof Ci.nsIWritablePropertyBag]);
-							
+
 							if(w && (l = this.getLink(w,l,c.URI))) {
 								// Check for The page isn't redirecting properly...
 								if(l !== c.URI.spec || !(c.loadFlags & Ci.nsIChannel.LOAD_REPLACE)) {
-									
+
 									if(c instanceof Ci.nsIWritablePropertyBag) try {
-										
+
 										let r = c.getProperty(addon.tag);
 										if(r == l) break;
-										
+
 									} catch(e) {}
-									
+
 									c.setResponseHeader('Location', l, false);
-									
+
 									if(c instanceof Ci.nsIWritablePropertyBag)
 										c.setProperty(addon.tag, l);
 								}
@@ -159,7 +159,7 @@ let i$ = {
 				} catch(e) {
 					Cu.reportError(e);
 				}
-				
+
 			}	break;
 		}
 	},
@@ -173,9 +173,9 @@ let i$ = {
 	gBForeach: function(gBrowser,callback) {
 		let wrapper = function(doc) {
 			if(doc instanceof Ci.nsIDOMHTMLDocument) try {
-				
+
 				callback(doc);
-				
+
 				let l = doc.defaultView.frames,
 					c = l.length;
 				while(c--) {
@@ -185,16 +185,16 @@ let i$ = {
 				Cu.reportError(e);
 			}
 		};
-		
+
 		if(typeof gBrowser.getBrowserAtIndex === 'function') {
 			let l = gBrowser.browsers.length;
-			
+
 			while(l--) {
 				wrapper(gBrowser.getBrowserAtIndex(l).contentDocument);
 			}
 		} else if(gBrowser.nodeName === 'deck') {
 			let l = gBrowser.childNodes.length;
-			
+
 			while(l--) {
 				wrapper(gBrowser.childNodes[l].contentDocument);
 			}
@@ -240,16 +240,16 @@ let i$ = {
 function copyLinkController(window) {
 	let clipboardHelper = Cc["@mozilla.org/widget/clipboardhelper;1"]
 		.getService(Ci.nsIClipboardHelper);
-	
+
 	let { goDoCommand } = window;
 	window.goDoCommand = function(aCommand) {
 		if(aCommand === 'cmd_copyLink' && addon.enabled) try {
-			
+
 			let { gContextMenu } = window;
 			if(gContextMenu && gContextMenu.onLink) {
-				
+
 				let link = i$.getLink(window,gContextMenu.linkURL);
-				
+
 				if(link) {
 					clipboardHelper.copyString(link);
 					return;
@@ -260,7 +260,7 @@ function copyLinkController(window) {
 		}
 		goDoCommand(aCommand);
 	};
-	
+
 	this.shutdown = function() {
 		window.goDoCommand = goDoCommand;
 	};
@@ -268,12 +268,12 @@ function copyLinkController(window) {
 
 function copyLinkMobile(window) {
 	let nwndcm = window.NativeWindow.contextmenus;
-	
+
 	let { _getLinkURL } = nwndcm;
 	nwndcm._getLinkURL = function(aLink) {
 		try {
 			aLink = _getLinkURL.call(nwndcm,aLink);
-			
+
 			if(aLink) {
 				aLink = i$.getLink(window,aLink) || aLink;
 			}
@@ -282,7 +282,7 @@ function copyLinkMobile(window) {
 		}
 		return aLink;
 	};
-	
+
 	this.shutdown = function() {
 		nwndcm._getLinkURL = _getLinkURL;
 	};
@@ -291,13 +291,13 @@ function copyLinkMobile(window) {
 function loadIntoWindow(window) {
 	if(wt!=window.document.documentElement.getAttribute("windowtype"))
 		return;
-	
+
 	function c(n) window.document.createElement(n);
 	function $(n) window.document.getElementById(n);
 	function e(n,a,e,p) {
 		if(!(n = c(n)))
 			return null;
-		
+
 		if(a)for(let x in a)n.setAttribute(x,''+a[x]);
 		if(e)for(let i = 0, m = e.length ; i < m ; ++i ) {
 			if(e[i]) n.appendChild(e[i]);
@@ -315,17 +315,17 @@ function loadIntoWindow(window) {
 		}, false);
 		return i;
 	}
-	
+
 	loadSubScript(rsc('browser.js'), window);
 	window.diegocr[addon.tag].mob = 3==ia;
 	window.diegocr[addon.tag].addon = addon;
 	window.diegocr[addon.tag].LOG = LOG;
 	window.diegocr[addon.tag].rsc = rsc;
-	
+
 	let wmsData = {
 		TBBHandler: function(ev) {
 			ev.preventDefault();
-			
+
 			switch(ev.button) {
 				case 0:
 					try {
@@ -337,10 +337,10 @@ function loadIntoWindow(window) {
 				case 2: {
 					let x = $(addon.tag+'-context');
 					if(!x) break;
-					
+
 					while(x.firstChild)
 						x.removeChild(x.firstChild);
-					
+
 					e('vbox',{style:'padding:4px;min-width:320px'},[
 							e('hbox',{align:'baseline',flex:1},[
 								e('image',{src:rsc('icon.png')}),
@@ -357,7 +357,7 @@ function loadIntoWindow(window) {
 									value:'This is a current-session list for the cleaned links and its originals, for ease whitelisting.'
 								}),
 								// e('separator'),
-								e('listbox',{flex:1,id:addon.tag+'-listbox',seltype:'multiple',minheight:280},[
+								e('listbox',{flex:1,id:addon.tag+'-listbox',rows:10,seltype:'multiple',minheight:280},[
 									e('listhead',0,[
 										e('listheader',{label:'Original Link'}),
 										e('listheader',{label:'Cleaned Link'})
@@ -370,14 +370,14 @@ function loadIntoWindow(window) {
 								])
 							])
 						],x);
-					
+
 					let t = $(addon.tag+'-listbox'), d = getSkipDomA();
 					for(let l in cltrack) {
 						try {
 							let u1 = Services.io.newURI(l,null,null);
 								u2 = Services.io.newURI(cltrack[l],null,null);
 							if(~d.indexOf(u1.host)) continue;
-							e('listitem',{tooltiptext:l},[
+							e('listitem',{tooltiptext:l,maxheight:18},[
 								e('listcell',{
 									label:l,image:u1.prePath+'/favicon.ico',
 									'class':'listcell-iconic',crop:'center',
@@ -397,14 +397,14 @@ function loadIntoWindow(window) {
 							let i = t.getSelectedItem(0);
 							i = i && t.removeItemAt(t.getIndexOfItem(i));
 							if(!i) break;
-							
+
 							i = i.firstElementChild;
 							let u = Services.io.newURI(i.getAttribute('label'),null,null);
 							d.push(u.host);
 						}
 						addon.branch.setCharPref('skipdoms', d.join(","));
 					}, !1);
-					
+
 					x._context = true;
 					x.openPopup(ev.currentTarget);
 				}
@@ -414,27 +414,27 @@ function loadIntoWindow(window) {
 		getCleanLink: function(ev) {
 			let node = ev.target,
 				url = node.getAttribute('url');
-			
+
 			node.setAttribute('url', i$.getLink(window,url,node.baseURI) || url);
 			ev.stopPropagation();
 		},
 		domload: function(ev) {
 			let doc = ev.originalTarget;
-			
+
 			if(doc instanceof Ci.nsIDOMHTMLDocument) {
-				
+
 				i$.putc(doc,this.getCleanLink);
 			}
 		}
 	};
 	wmsData.domload = wmsData.domload.bind(wmsData);
-	
+
 	if(addon.branch.getBoolPref('cbc')) {
 		wmsData.controller=3==ia
 			? new copyLinkMobile(window)
 			: new copyLinkController(window);
 	}
-	
+
 	let gNavToolbox = window.gNavToolbox || $("mail-toolbox");
 	if(gNavToolbox && gNavToolbox.palette) {
 		let m = addon.tag+'-toolbar-button';
@@ -442,7 +442,7 @@ function loadIntoWindow(window) {
 			id:m,label:addon.name,class:'toolbarbutton-1',
 			image:rsc('icon16.png')
 		})).addEventListener('click', wmsData.TBBHandler, !1);
-		
+
 		if(!addon.branch.getPrefType("version")) {
 			let nv = $('nav-bar') || $('mail-bar3');
 			if( nv ) {
@@ -455,7 +455,7 @@ function loadIntoWindow(window) {
 				function(tb) {
 					let cs = tb.getAttribute("currentset").split(","),
 						bp = cs.indexOf(m) + 1;
-					
+
 					if(bp) {
 						let at = null, f = [],
 						xul={spacer:1,spring:1,separator:1};
@@ -468,7 +468,7 @@ function loadIntoWindow(window) {
 					}
 				});
 		}
-		
+
 		try {
 			e('tooltip',{id:addon.tag+'-tooltip'},0,$('mainPopupSet'))
 				.addEventListener('popupshowing',
@@ -482,7 +482,7 @@ function loadIntoWindow(window) {
 			e('panel',{id:addon.tag+'-context',backdrag:'true',
 				position:'bottomcenter topleft',type:'arrow'},
 				0, $('mainPopupSet'));
-			
+
 			let sTT = function() {
 				let n = $(m);
 				n&&n.setAttribute('tooltip',addon.tag+'-tooltip');
@@ -494,26 +494,26 @@ function loadIntoWindow(window) {
 			Cu.reportError(e);
 		}
 	}
-	
+
 	i$.AttachDOMLoad(window,wmsData);
-	
+
 	addon.wms.set(window,wmsData);
 	gNavToolbox=wmsData=undefined;
 }
 
 function getBrowser(w) {
-	
+
 	if(typeof w.getBrowser === 'function')
 		return w.getBrowser();
-	
+
 	if("gBrowser" in w)
 		return w.gBrowser;
-	
+
 	return w.BrowserApp.deck;
 }
 
 function loadIntoWindowStub(domWindow) {
-	
+
 	if(domWindow.document.readyState == "complete") {
 		loadIntoWindow(domWindow);
 	} else {
@@ -527,17 +527,17 @@ function loadIntoWindowStub(domWindow) {
 function unloadFromWindow(window) {
 	let $ = function(n) window.document.getElementById(n);
 	let btnId = addon.tag+'-toolbar-button',btn= $(btnId);
-	
+
 	try {
 		window.diegocr[addon.tag].handleEvent({type:'unload'});
 		delete window.diegocr[addon.tag];
 	} catch(e) {
 		Cu.reportError(e);
 	}
-	
+
 	if(addon.wms.has(window)) {
 		let wmsData = addon.wms.get(window);
-		
+
 		if(wmsData.TBBHandler && btn) {
 			btn.removeEventListener('click',wmsData.TBBHandler,!1);
 		}
@@ -553,7 +553,7 @@ function unloadFromWindow(window) {
 		}
 		addon.wms.delete(window);
 	}
-	
+
 	if(btn) {
 		btn.parentNode.removeChild(btn);
 	} else {
@@ -567,7 +567,7 @@ function unloadFromWindow(window) {
 			}
 		}
 	}
-	
+
 	let n;
 	if((n = $(addon.tag+'-tooltip')))
 		n.parentNode.removeChild(n);
@@ -608,20 +608,20 @@ function setOptions(Reset) {
 			}
 		}
 	}
-	
+
 	if(!Reset && VersionLTCheck(addon.version)) {
 		LOG('Checking new domains...');
-		
+
 		let src = Options.skipdoms.split(',');
 		let dst = getSkipDomA();
-		
+
 		src.forEach(function(d) {
 			if(!~dst.indexOf(d)) {
 				LOG('Adding domain '+d);
 				dst.push(d);
 			}
 		});
-		
+
 		addon.branch.setCharPref('skipdoms', dst.join(","));
 	}
 }
@@ -637,7 +637,7 @@ function startup(data) {
 	Cu.import("resource://gre/modules/AddonManager.jsm", tmp);
 	tmp.AddonManager.getAddonByID(data.id,function(data) {
 		let io = Services.io;
-		
+
 		addon = {
 			id: data.id,
 			name: data.name,
@@ -648,57 +648,57 @@ function startup(data) {
 		addon.branch = Services.prefs.getBranch('extensions.'+addon.tag+'.');
 		if("nsIPrefBranch2" in Ci)
 			addon.branch.QueryInterface(Ci.nsIPrefBranch2);
-		
+
 		addon.debug = 'a' === addon.version.replace(/[\d.]/g,'');
-		
+
 		let Reset = VersionLTCheck('2.4');
-		
+
 		setOptions(Reset);
-		
+
 		if(5!=ia) {
 			addon.branch.addObserver("", i$, false);
 		} else {
 			['At','De'].forEach(function(i)i$[i+'tachDOMLoad']=rsc);
 		}
-		
+
 		io.getProtocolHandler("resource")
 			.QueryInterface(Ci.nsIResProtocolHandler)
 			.setSubstitution(addon.tag,
 				io.newURI(__SCRIPT_URI_SPEC__+'/../',null,null));
-		
+
 		i$.wmForeach(loadIntoWindowStub);
 		Services.wm.addListener(i$);
-		
+
 		['enabled','progltr','cltrack'].forEach(function(p)
 			addon[p] = addon.branch.getBoolPref(p));
 		i$.addHTTPObserver();
-		
+
 		Services.obs.addObserver(i$,'cleanlinks-resetoptions', false);
 		Services.obs.addObserver(i$,'cleanlinks-cltrack', false);
-		
+
 		// i$.startup();
 		addon.branch.setCharPref('version', addon.version);
 	});
 }
 
 function shutdown(data, reason) {
-	
+
 	if(reason == APP_SHUTDOWN)
 		return;
-	
+
 	Services.obs.removeObserver(i$,'cleanlinks-resetoptions');
 	addon.branch.removeObserver("", i$);
-	
+
 	i$.removeHTTPObserver();
 	// i$.shutdown();
-	
+
 	Services.wm.removeListener(i$);
 	i$.wmForeach(unloadFromWindow);
-	
+
 	Services.io.getProtocolHandler("resource")
 		.QueryInterface(Ci.nsIResProtocolHandler)
 		.setSubstitution(addon.tag,null);
-	
+
 	Services.strings.flushBundles();
 }
 
