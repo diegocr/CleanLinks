@@ -360,8 +360,8 @@ function loadIntoWindow(window) {
 								// e('separator'),
 								e('listbox',{flex:1,id:addon.tag+'-listbox',rows:10,seltype:'multiple',minheight:280},[
 									e('listhead',0,[
-										e('listheader',{label:'Original Link'}),
-										e('listheader',{label:'Cleaned Link'})
+										e('listheader',{label:_('bootstrap.listheader.original')}),
+										e('listheader',{label:_('bootstrap.listheader.cleaned')})
 									]),
 									e('listcols',0,[e('listcol'),e('listcol')])
 								]),
@@ -489,7 +489,7 @@ function loadIntoWindow(window) {
 					}
 				}, !0);
 			e('panel',{id:addon.tag+'-context',backdrag:'true',
-				position:'after_end',type:'arrow',flip:'slide'},
+				position:'bottomcenter topright',type:'arrow',flip:'slide'},
 				0, $('mainPopupSet'));
 
 			let sTT = function() {
