@@ -24,6 +24,10 @@ let ia = Services.appinfo.ID[3],
 		:'navigator:browser',
 	cltrack = {};
 
+let _ = (function(strings) {
+	return function _(key) strings.GetStringFromName(key);
+})(Services.strings.createBundle("chrome://cleanlinks/locale/browser.properties"));
+
 let i$ = {
 	addHTTPObserver: function() {
 		if(!addon.obson && addon.progltr && addon.enabled) {
@@ -352,10 +356,7 @@ function loadIntoWindow(window) {
 							]),
 							e('spacer',{minheight:9}),
 							e('groupbox',0,[
-								e('description',{
-									id:addon.tag+'-lbd',
-									value:'This is a current-session list for the cleaned links and its originals, for ease whitelisting.'
-								}),
+								e('description',{ id:addon.tag+'-lbd' }),
 								// e('separator'),
 								e('listbox',{flex:1,id:addon.tag+'-listbox',rows:10,seltype:'multiple',minheight:280},[
 									e('listhead',0,[
@@ -366,7 +367,7 @@ function loadIntoWindow(window) {
 								]),
 								e('hbox',0,[
 									e('spacer',{flex:1}),
-									e('button',{label:'Whitelist Selection',id:addon.tag+'-applywl'}),
+									e('button',{label:_('bootstrap.whitelist.button'),id:addon.tag+'-applywl'}),
 								])
 							])
 						],x);
@@ -407,6 +408,14 @@ function loadIntoWindow(window) {
 
 					x._context = true;
 					x.openPopup(ev.currentTarget);
+					
+					let s = $(addon.tag+'-lbd');
+					s.style.maxWidth = Math.max(460,t.boxObject.width) + "px";
+					s.textContent = _('bootstrap.whitelist.description');
+					
+					if(!Object.keys(cltrack).length) {
+						t.lastChild.lastChild.flex = 1;
+					}
 				}
 				default:break;
 			}
@@ -480,7 +489,7 @@ function loadIntoWindow(window) {
 					}
 				}, !0);
 			e('panel',{id:addon.tag+'-context',backdrag:'true',
-				position:'bottomcenter topleft',type:'arrow'},
+				position:'after_end',type:'arrow',flip:'slide'},
 				0, $('mainPopupSet'));
 
 			let sTT = function() {
@@ -567,10 +576,11 @@ function unloadFromWindow(window) {
 			}
 		}
 	}
-
-	let n;
-	if((n = $(addon.tag+'-tooltip')))
-		n.parentNode.removeChild(n);
+	
+	['popup','context'].forEach(function(n) {
+		if((n = $(addon.tag+'-'+n)))
+			n.parentNode.removeChild(n);
+	});
 }
 
 function getSkipDomA() {

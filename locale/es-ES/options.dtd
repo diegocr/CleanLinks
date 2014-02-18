@@ -1,4 +1,4 @@
-<!ENTITY skipwhen.title "Evitar enlaces que coincidad con:">
+<!ENTITY skipwhen.title "Evitar enlaces que coincidan con:">
 <!ENTITY skipwhen.tooltip "Patrón REGEXP que se usara para comprobar las URLs y evitar problemas con ciertos enlaces.">
 <!ENTITY remove.title "Eliminar de los enlaces:">
 <!ENTITY remove.tooltip "Patrón REGEXP que se aplicara a los enlaces para eliminar etiquetas de seguimiento y similares.">
@@ -13,10 +13,12 @@
 <!ENTITY evdm.title "Modo de Evento Delegado?">
 <!ENTITY evdm.tooltip "Usando este modo los enlaces se limpiara al vuelo cuando pulse sobre ellos, lo cual es menos intrusivo pero la funcionalidad de destacar enlaces en tiempo real no estará disponible.">
 <!ENTITY cbc.title "CopyLink Controller?">
-<!ENTITY cbc.tooltip "Instala un controlador de comando cmd_copyLink para limpiar los enlaces copiados al portapapeles usnado el menú contextual.">
+<!ENTITY cbc.tooltip "Instala un controlador de comando cmd_copyLink para limpiar los enlaces copiados al portapapeles usando el menú contextual.">
 <!ENTITY progltr.title "Usar observador de redirección?">
 <!ENTITY progltr.tooltip "Instala un observador de protocolo HTTP para identificar redirecciones. Esto habilitara la posibilidad de limpiar URLs ocultas tras enlaces cortos ofrecidos por servicios tales como goo.gl.">
 <!ENTITY gotarget.title "Usar el atributo Target?">
 <!ENTITY gotarget.tooltip "Los enlaces pueden contener un atributo Target el cual indica donde deben abrirse.">
 <!ENTITY reset.tooltip "Reinicia las opciones a sus valores por defecto.">
 <!ENTITY reset.label "Reiniciar Opciones">
+<!ENTITY cltrack.title "Seguimiento de enlaces">
+<!ENTITY cltrack.content "Esta opción le permitirá añadir dominios fácilmente a la lista de ignorados usando RMB en el botón de la barra de navegación.">

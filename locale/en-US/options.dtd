@@ -20,3 +20,5 @@
 <!ENTITY gotarget.tooltip "Whether the target attribute on links should be checked and respected.">
 <!ENTITY reset.tooltip "Reset options to their default values.">
 <!ENTITY reset.label "Reset Options">
+<!ENTITY cltrack.title "Link Tracking">
+<!ENTITY cltrack.content "Enabling this option will perform tracking of cleaned links to easily whitelist their domains by right-clicking the toolbar button.">

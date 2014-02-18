@@ -13,8 +13,8 @@
   <setting pref="extensions.cleanlinks.cbc" type="bool" title="&cbc.title;" tooltiptext="&cbc.tooltip;"></setting>
   <setting pref="extensions.cleanlinks.progltr" type="bool" title="&progltr.title;" tooltiptext="&progltr.tooltip;"></setting>
   <setting pref="extensions.cleanlinks.gotarget" type="bool" title="&gotarget.title;" tooltiptext="&gotarget.tooltip;"></setting>
-  <setting pref="extensions.cleanlinks.cltrack" type="bool" title="Link Tracking" tooltiptext="">
-    Enabling this option will perform tracking of cleaned links to easily whitelist their domains by right-clicking the toolbar button.
+  <setting pref="extensions.cleanlinks.cltrack" type="bool" title="&cltrack.title;" tooltiptext="">
+    &cltrack.content;
   </setting>
   <setting title="" type="control" tooltiptext="&reset.tooltip;">
     <button label="&reset.label;" oncommand="Cc['@mozilla.org/observer-service;1'].getService(Ci.nsIObserverService).notifyObservers(null,'cleanlinks-resetoptions',null);"/>
