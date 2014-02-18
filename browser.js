@@ -1,11 +1,11 @@
 /* ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/
- * 
+ *
  * The Original Code is CleanLinks Mozilla Extension.
- * 
+ *
  * The Initial Developer of the Original Code is
  * Copyright (C)2012 Diego Casorran <dcasorran@gmail.com>
  * All Rights Reserved.
@@ -57,7 +57,7 @@ const cleanlinks = {
 							else {
 								let wnd = b.ownerDocument.defaultView,
 									wfr = content.frames;
-								
+
 								switch(t) {
 									case '_top'    : wnd = wnd.top;    break;
 									case '_parent' : wnd = wnd.parent; break;
@@ -68,7 +68,7 @@ const cleanlinks = {
 									default:
 										[].some.call(wfr,function(f) f.name == t && (wnd=f));
 								}
-								
+
 								if(wnd) try {
 									wnd.location = a;
 									return;
@@ -109,7 +109,7 @@ const cleanlinks = {
 	},
 	b2: function(d,x) {
 		let a,b = 0, c, e = 7;
-		
+
 		if(!d) d = this.gd();
 		try {
 			if(!d.body)
@@ -117,10 +117,10 @@ const cleanlinks = {
 		} catch(e) {
 			return 0;
 		}
-		
+
 		// while(--e && (a=this.c(d))) b += a;
 		b = this.c(d);
-		
+
 		if(x) {
 			e = d.defaultView.frames;
 			c = e.length;
@@ -129,7 +129,7 @@ const cleanlinks = {
 			}
 			if(x==2)return b;
 		}
-		
+
 		while(d.defaultView.frameElement) {
 			d = d.defaultView.frameElement.ownerDocument;
 		}
@@ -145,9 +145,9 @@ const cleanlinks = {
 		if(!d) d = this.gd();
 		if(!d.body)
 			return;
-		
+
 		let l = d.getElementsByTagName('a'), c = l.length;
-		
+
 		while(c--) {
 			if(l[c].hasAttribute(this.tag_l)) {
 				l[c].setAttribute('href',l[c].getAttribute(this.tag_l));
@@ -157,7 +157,7 @@ const cleanlinks = {
 					this.hl(l[c],1);
 			}
 		}
-		
+
 		l = d.defaultView.frames;
 		c = l.length;
 		while(c--) {
@@ -170,21 +170,21 @@ const cleanlinks = {
 	b4: function(ev) {
 		if(!(ev.originalTarget instanceof XULElement))
 			return;
-		
+
 		let t = cleanlinks;
 		if(!t.op.enabled)
 			t.b3();
 		else
 			t.b2();
-		
+
 		// t.b5();
 	},
 	b5: function(d,c) {
 		let tb = document.getElementById('cleanlinks-toolbar-button');
 		if(!tb) return;
-		
+
 		if(!d) d = this.gd();
-		
+
 		try {
 			let activeWin = Application.activeWindow;
 			if(activeWin.activeTab.document != d || !(d=d.body))
@@ -192,24 +192,24 @@ const cleanlinks = {
 		} catch(e) {
 			return;
 		}
-		
+
 		d = c || parseInt(d.getAttribute(this.tag_b));
 		tb.setAttribute('image',this.rsc('icon16'+(d?'!':'')+'.png'));
 	},
 	c: function(d) {
 		let t = 0, l = d.getElementsByTagName('a'), c = l.length;
-		
+
 		while(c--) {
-			
+
 			let h1 = l[c].href, h2 = this.cl(h1,l[c].baseURI);
-			
+
 			if( h1 != h2 ) {
 				++t;
-				
+
 				if(!(l[c].hasAttribute(this.tag_l))) {
-					
+
 					l[c].setAttribute(this.tag_l,l[c].href);
-					
+
 					let m = l[c].hasAttribute('title') ? l[c].getAttribute('title') : '';
 					m += this.tag_t;
 					l[c].setAttribute('title',m.replace(/^\s+/,''));
@@ -223,29 +223,30 @@ const cleanlinks = {
 		}
 		return t;
 	},
-	
+
 	cl: function(h,b) {
 		if(!h || h.startsWith("view-source:")
 		|| (this.op.skipwhen && this.op.skipwhen.test(h)))
 			return h;
-		
+
 		if(typeof b === 'string')
 			b = this.nu(b);
-		
+
+		let lu;
 		if(this.op.skipdoms) try {
-			let uri = this.nu(h,b);
-			
-			if(~this.op.skipdoms.indexOf(uri.host))
+			lu = this.nu(h,b);
+
+			if(~this.op.skipdoms.indexOf(lu.host))
 				return h;
-			
+
 		} catch(e) {}
-		
+
 		if(/\.google\.[a-z.]+\/search\?(?:.+&)?q=http/i.test(h))
 			return h;
-		
+
 		let lmt = 4, s = 0, p, ht = null, rp = this.op.remove, l = h;
 		h.replace(/^javascript:.+(["'])(https?(?:\:|%3a).+?)\1/gi,function(a,b,c)(++s,h=c));
-		
+
 		if(/((?:aHR0|d3d3)[A-Z0-9+=\/]+)/gi.test(h)) try {
 			let r = RegExp.$1;
 			if(/\.yahoo.com$/.test(b.asciiHost))
@@ -255,16 +256,16 @@ const cleanlinks = {
 		} catch(e) {
 			Cu.reportError('Invalid base64 data for "'+h+'" at "'+(b&&b.spec)+'"\n> '+e);
 		}
-		
+
 		while(--lmt && (/.\b([a-z]{2,}(?:\:|%3a)(?:\/|%2f).+)$/i.test(h) || /(?:[?=]|[^\/]\/)(www\..+)$/i.test(h))) {
 			h = RegExp.$1;
 			if(~(p = h.indexOf('&')))
 				h = h.substr(0,p);
 			h = decodeURIComponent(h);
-			
+
 			if(~(p = h.indexOf('html&')) || ~(p = h.indexOf('html%')))
 				h = h.substr(0,p+4);
-			else if(~(p = h.indexOf('/&')) || ~(p = h.indexOf('/%')))
+			else if(~(p = h.indexOf('/&')))// || ~(p = h.indexOf('/%')))
 				h = h.substr(0,p);
 			if(h.indexOf('://') == -1)
 				h = 'http://' + h;
@@ -272,7 +273,7 @@ const cleanlinks = {
 				h += '/';
 			++s;
 		}
-		
+
 		try {
 			// Check if the protocol can be handled...
 			this.ios.newChannel(h,null,b||null);
@@ -287,27 +288,30 @@ const cleanlinks = {
 				}
 			}
 		}
-		
+
 		rp.lastIndex = 0;
 		if( s || rp.test(h)) {
 			if(~(p = h.indexOf('#'))) (ht = h.substr(p), h = h.substr(0,p));
-			
+
 			h = h.replace('&amp;','&','g').replace(rp,'').replace(/[?&]$/,'')
 				+ (ht && /^[\w\/#!-]+$/.test(ht) ? ht : (this.evdm ? '':this.tag_h));
 		}
-		
+
 		// if(l != h) this.d([l,h]);
-		
+		if(l != h) {
+			Services.obs.notifyObservers(this,'cleanlinks-cltrack',JSON.stringify([lu&&lu.spec||l,h]));
+		}
+
 		return h;
 	},
-	
+
 	d: function(m) {
 		this.LOG(m);
 	},
-	
+
 	de: function() {
 		this.dd();
-		
+
 		if(this.op.evdm) {
 			document.documentElement.addEventListener('click', this.edl, true);
 			this.evdm = true;
@@ -320,7 +324,7 @@ const cleanlinks = {
 			this.b5();
 		}
 	},
-	
+
 	dd: function() {
 		if(this.domWay) {
 			(this.mob ? BrowserApp.deck:gBrowser).removeEventListener('DOMContentLoaded', this.b, false);
@@ -331,15 +335,15 @@ const cleanlinks = {
 			delete this.evdm;
 		}
 	},
-	
+
 	edl: function(ev) {
 		if(ev.button != 2 && !(ev.target instanceof XULElement)) {
 			let n = ev.target;
-			
+
 			if(n.nodeName != 'A') do {
 				n = n.parentNode;
 			} while(n && !~['A','BODY','HTML'].indexOf(n.nodeName));
-			
+
 			if(n&&n.nodeName == 'A') {
 				let t = cleanlinks,z = n.href, x = t.cl(z,n.baseURI);
 				if(z != x) {
@@ -348,7 +352,7 @@ const cleanlinks = {
 					}
 					ev.stopPropagation();
 					ev.preventDefault();
-					
+
 					t.edc(x,n,ev);
 					t.blink(window);
 				}
@@ -356,7 +360,7 @@ const cleanlinks = {
 		}
 		ev = null;
 	},
-	
+
 	blink: function(window) {
 		if(this.op.highlight) {
 			if((n = window.document.getElementById('urlbar'))) {
@@ -370,10 +374,10 @@ const cleanlinks = {
 			}
 		}
 	},
-	
+
 	g: function(n,v) {
 		let p = this.ps;
-		
+
 		if(typeof v == 'undefined') {
 			let s = Ci.nsIPrefBranch;
 			n = n || 'enabled';
@@ -395,32 +399,32 @@ const cleanlinks = {
 		}
 		return null;
 	},
-	
+
 	hl: function(o,d) {
 		(''+this.op.hlstyle).split(';').forEach(function(r) {
 			let [k,v] = r.split(':').map(String.trim);
 			o.style.setProperty(k,d?'':v,'important');
 		});
 	},
-	
+
 	l: function(s) {
-		
+
 		// ToolTip handler
 		if(typeof s == 'object') {
 			let t = cleanlinks,
 				e = s.target,
 				r = 0,
 				b = t.g();
-			
+
 			while(e.firstChild)
 				e.removeChild(e.firstChild);
-			
+
 			try {
 				r = parseInt(t.wd().body.getAttribute(t.tag_b));
 				if(isNaN(r))
 					r = 0;
 			} catch(e) {}
-			
+
 			try {
 				e = e.appendChild(t.oc('vbox',{style:'margin:3px 5px;padding:5px 9px;'
 					+ 'border:1px solid rgba(20,20,30,0.4);box-shadow:inset 0 0 3px 0 rgba(0,0,0,0.6);'
@@ -434,10 +438,10 @@ const cleanlinks = {
 				alert(e);
 				return false;
 			}
-			
+
 			return true;
 		}
-		
+
 		// On/Off Handler
 		this.g('enabled',s=(typeof s != 'undefined' ? !!s : !this.g()));
 		let tb = document.getElementById('cleanlinks-toolbar-button');
@@ -446,14 +450,14 @@ const cleanlinks = {
 		}
 		return s;
 	},
-	
+
 	nu: function(u,b) {
 		if(typeof b === 'string') {
 			b = this.nu(b);
 		}
 		return this.ios.newURI(u,null,b||null);
 	},
-	
+
 	observe: function(s, t, d) {
 		switch(t) {
 			case 'nsPref:changed':
@@ -488,18 +492,18 @@ const cleanlinks = {
 			default:break;
 		}
 	},
-	
+
 	oc: function(e,a) {
 		const XUL_NS = 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul';
 		e = document.createElementNS(XUL_NS,e);
 		if(!e)return null;
-		
+
 		if( a ) for( let x in a) {
 			e.setAttribute(x,a[x]);
 		}
 		return e;
 	},
-	
+
 	pp: function() {
 		for each(let p in ['skipwhen','remove']) {
 			if(this.op[p] && typeof this.op[p] == 'string') try {
@@ -508,12 +512,12 @@ const cleanlinks = {
 				else
 					this.op[p] = new RegExp(this.op[p]);
 			} catch(e) {
-			    alert(_("browser.regexerr") + p + '": '+e.message);
+				alert(_("browser.regexerr") + ' "' + p + '": '+e.message);
 				this.op[p] = null;
 			}
 		}
 	},
-	
+
 	gd: function() {
 		try {
 			return gBrowser.contentDocument;
@@ -521,7 +525,7 @@ const cleanlinks = {
 			return this.wd() || window.content.document;
 		}
 	},
-	
+
 	w: function(m) {
 		try {
 			let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator)
