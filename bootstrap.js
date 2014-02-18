@@ -489,7 +489,7 @@ function loadIntoWindow(window) {
 					}
 				}, !0);
 			e('panel',{id:addon.tag+'-context',backdrag:'true',
-				position:'after_end',type:'arrow',flip:'slide'},
+				type:'arrow',flip:'slide'},
 				0, $('mainPopupSet'));
 
 			let sTT = function() {
