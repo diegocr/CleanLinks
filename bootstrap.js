@@ -372,7 +372,7 @@ function loadIntoWindow(window) {
 							])
 						],x);
 
-					let t = $(addon.tag+'-listbox'), d = getSkipDomA();
+					let t = $(addon.tag+'-listbox'), d = getSkipDomA(), cc = 0;
 					for(let l in cltrack) {
 						try {
 							let u1 = Services.io.newURI(l,null,null);
@@ -388,6 +388,7 @@ function loadIntoWindow(window) {
 									'class':'listcell-iconic', crop:'right',
 									style:'max-width:270px'})
 							],t);
+							++cc;
 						} catch(e) {
 							Cu.reportError(e);
 						}
@@ -413,7 +414,7 @@ function loadIntoWindow(window) {
 					s.style.maxWidth = Math.max(460,t.boxObject.width) + "px";
 					s.textContent = _('bootstrap.whitelist.description');
 					
-					if(!Object.keys(cltrack).length) {
+					if(cc == 0) {
 						t.lastChild.lastChild.flex = 1;
 					}
 				}
