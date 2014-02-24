@@ -28,6 +28,9 @@ let _ = (function(strings) {
 	return function _(key) strings.GetStringFromName(key);
 })(Services.strings.createBundle("chrome://cleanlinks/locale/browser.properties"));
 
+let FaviconService = Cc["@mozilla.org/browser/favicon-service;1"]
+	.getService(Ci.nsIFaviconService).QueryInterface(Ci.mozIAsyncFavicons);
+
 let i$ = {
 	addHTTPObserver: function() {
 		if(!addon.obson && addon.progltr && addon.enabled) {
@@ -292,6 +295,15 @@ function copyLinkMobile(window) {
 	};
 }
 
+function setFavicon(uri, cell) {
+	FaviconService.getFaviconURLForPage(uri, function(aURI) {
+		aURI = aURI && aURI.spec || uri.prePath+'/favicon.ico';
+		
+		cell.setAttribute('image', aURI);
+		LOG(cell.firstChild);
+	});
+}
+
 function loadIntoWindow(window) {
 	if(wt!=window.document.documentElement.getAttribute("windowtype"))
 		return;
@@ -375,19 +387,18 @@ function loadIntoWindow(window) {
 					let t = $(addon.tag+'-listbox'), d = getSkipDomA(), cc = 0;
 					for(let l in cltrack) {
 						try {
-							let u1 = Services.io.newURI(l,null,null);
+							let u1 = Services.io.newURI(l,null,null), c1, c2,
 								u2 = Services.io.newURI(cltrack[l],null,null);
 							if(~d.indexOf(u1.host)) continue;
-							e('listitem',{tooltiptext:l,maxheight:18},[
-								e('listcell',{
-									label:l,image:u1.prePath+'/favicon.ico',
-									'class':'listcell-iconic',crop:'center',
-									style:'max-width:310px'}),
-								e('listcell',{
-									label:u2.spec,image:u2.prePath+'/favicon.ico',
-									'class':'listcell-iconic', crop:'right',
-									style:'max-width:270px'})
-							],t);
+							c1 = e('listcell',{
+								label:l,style:'max-width:310px',
+								'class':'listcell-iconic',crop:'center'}),
+							c2 = e('listcell',{
+								label:u2.spec,style:'max-width:270px',
+								'class':'listcell-iconic', crop:'right'})
+							e('listitem',{tooltiptext:l,maxheight:18},[c1,c2],t);
+							setFavicon(u1,c1);
+							setFavicon(u2,c2);
 							++cc;
 						} catch(e) {
 							Cu.reportError(e);
