@@ -300,7 +300,11 @@ function setFavicon(uri, cell) {
 		aURI = aURI && aURI.spec || uri.prePath+'/favicon.ico';
 		
 		cell.setAttribute('image', aURI);
-		LOG(cell.firstChild);
+		
+		try {
+			cell.ownerDocument.getAnonymousElementByAttribute(cell,'class','listcell-icon')
+				.setAttribute('style', 'max-width:16px;max-height:16px');
+		} catch(e) {}
 	});
 }
 
