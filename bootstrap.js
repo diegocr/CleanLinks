@@ -298,9 +298,9 @@ function copyLinkMobile(window) {
 function setFavicon(uri, cell) {
 	FaviconService.getFaviconURLForPage(uri, function(aURI) {
 		aURI = aURI && aURI.spec || uri.prePath+'/favicon.ico';
-		
+
 		cell.setAttribute('image', aURI);
-		
+
 		try {
 			cell.ownerDocument.getAnonymousElementByAttribute(cell,'class','listcell-icon')
 				.setAttribute('style', 'max-width:16px;max-height:16px');
@@ -424,11 +424,13 @@ function loadIntoWindow(window) {
 
 					x._context = true;
 					x.openPopup(ev.currentTarget);
-					
-					let s = $(addon.tag+'-lbd');
-					s.style.maxWidth = Math.max(460,t.boxObject.width) + "px";
-					s.textContent = _('bootstrap.whitelist.description');
-					
+
+					window.setTimeout(function() {
+						let s = $(addon.tag+'-lbd');
+						s.style.maxWidth = Math.max(460,t.boxObject.width) + "px";
+						s.textContent = _('bootstrap.whitelist.description');
+					}, 40);
+
 					if(cc == 0) {
 						t.lastChild.lastChild.flex = 1;
 					}
@@ -592,7 +594,7 @@ function unloadFromWindow(window) {
 			}
 		}
 	}
-	
+
 	['popup','context'].forEach(function(n) {
 		if((n = $(addon.tag+'-'+n)))
 			n.parentNode.removeChild(n);
