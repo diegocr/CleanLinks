@@ -361,6 +361,7 @@ function loadIntoWindow(window) {
 					while(x.firstChild)
 						x.removeChild(x.firstChild);
 
+					let r = Math.min(14,Math.max(Object.keys(cltrack).length,8)), wpr = 30;
 					e('vbox',{style:'padding:4px;min-width:320px'},[
 							e('hbox',{align:'baseline',flex:1},[
 								e('image',{src:rsc('icon.png')}),
@@ -374,7 +375,7 @@ function loadIntoWindow(window) {
 							e('groupbox',0,[
 								e('description',{ id:addon.tag+'-lbd' }),
 								// e('separator'),
-								e('listbox',{flex:1,id:addon.tag+'-listbox',rows:10,seltype:'multiple',minheight:280},[
+								e('listbox',{flex:1,id:addon.tag+'-listbox',rows:r,seltype:'multiple',height:r*wpr},[
 									e('listhead',0,[
 										e('listheader',{label:_('bootstrap.listheader.original')}),
 										e('listheader',{label:_('bootstrap.listheader.cleaned')})
