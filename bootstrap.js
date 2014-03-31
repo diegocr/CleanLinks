@@ -300,6 +300,7 @@ function setFavicon(uri, cell) {
 		aURI = aURI && aURI.spec || uri.prePath+'/favicon.ico';
 
 		cell.setAttribute('image', aURI);
+		cell.setAttribute('tooltiptext', uri.spec.replace(/.{0,98}/g, function(x) x + ' '));
 
 		try {
 			cell.ownerDocument.getAnonymousElementByAttribute(cell,'class','listcell-icon')
@@ -401,7 +402,7 @@ function loadIntoWindow(window) {
 							c2 = e('listcell',{
 								label:u2.spec,style:'max-width:270px',
 								'class':'listcell-iconic', crop:'right'})
-							e('listitem',{tooltiptext:l,maxheight:18},[c1,c2],t);
+							e('listitem',{allowevents:!0,maxheight:18},[c1,c2],t);
 							setFavicon(u1,c1);
 							setFavicon(u2,c2);
 							++cc;

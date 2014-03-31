@@ -363,6 +363,7 @@ const cleanlinks = {
 
 	blink: function(window) {
 		if(this.op.highlight) {
+			let n;
 			if((n = window.document.getElementById('urlbar'))) {
 				if(!("ubg" in this))
 					this.ubg = n.style.background;
