@@ -261,6 +261,7 @@ const cleanlinks = {
 		} else {
 			switch(b.asciiHost) {
 				case 'www.tripadvisor.com':
+				  if(~h.indexOf('-a_urlKey'))
 					h = '=' + decodeURIComponent(h.replace(/_+([a-f\d]{2})/gi, '%$1')
 						.replace(/_|%5f/ig,'')).split('-aurl.').pop().split('-aurlKey').shift();
 					break;
