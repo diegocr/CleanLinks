@@ -309,6 +309,8 @@ function setFavicon(uri, cell) {
 	});
 }
 
+try{const{CustomizableUI:aUI}=Cu.import("resource:///modules/CustomizableUI.jsm",{})}catch(e){}
+
 function loadIntoWindow(window) {
 	if(wt!=window.document.documentElement.getAttribute("windowtype"))
 		return;
@@ -464,14 +466,24 @@ function loadIntoWindow(window) {
 			: new copyLinkController(window);
 	}
 
-	let gNavToolbox = window.gNavToolbox || $("mail-toolbox");
+	e('tooltip',{id:addon.tag+'-tooltip'},0,$('mainPopupSet'))
+		.addEventListener('popupshowing', wmsData.popupshowing
+			= ev => window.diegocr[addon.tag].l(ev), !0);
+	e('panel',{id:addon.tag+'-context',backdrag:'true',
+		position:'bottomcenter topright',type:'arrow',flip:'slide'},
+		0, $('mainPopupSet'));
+	let m = addon.tag+'-toolbar-button',
+	tn=e('toolbarbutton',{
+		id:m,label:addon.name,
+		class:'toolbarbutton-1',
+		tooltip:addon.tag+'-tooltip',
+		context:addon.tag+'-context',
+		image:rsc('icon16.png')
+	});
+	tn.addEventListener('click', wmsData.TBBHandler, !1);
+	let gNavToolbox = !aUI && (window.gNavToolbox || $("mail-toolbox"));
 	if(gNavToolbox && gNavToolbox.palette) {
-		let m = addon.tag+'-toolbar-button';
-		gNavToolbox.palette.appendChild(e('toolbarbutton',{
-			id:m,label:addon.name,class:'toolbarbutton-1',
-			image:rsc('icon16.png')
-		})).addEventListener('click', wmsData.TBBHandler, !1);
-
+		gNavToolbox.palette.appendChild(tn);
 		if(!addon.branch.getPrefType("version")) {
 			let nv = $('nav-bar') || $('mail-bar3');
 			if( nv ) {
@@ -492,35 +504,9 @@ function loadIntoWindow(window) {
 							(at=$(id))?!0:(f.push(id),!1));
 						at&&f.length&&f.forEach(function(n)xul[n]
 							&&(at=at&&at.previousElementSibling));
-						tb.insertItem(m, at, null, false);
-						return true;
+						return !!tb.insertItem(m, at);
 					}
 				});
-		}
-
-		try {
-			e('tooltip',{id:addon.tag+'-tooltip'},0,$('mainPopupSet'))
-				.addEventListener('popupshowing',
-				wmsData.popupshowing = function(ev) {
-					try {
-						return window.diegocr[addon.tag].l(ev);
-					} catch(e) {
-						Cu.reportError(e);
-					}
-				}, !0);
-			e('panel',{id:addon.tag+'-context',backdrag:'true',
-				position:'bottomcenter topright',type:'arrow',flip:'slide'},
-				0, $('mainPopupSet'));
-
-			let sTT = function() {
-				let n = $(m);
-				n&&n.setAttribute('tooltip',addon.tag+'-tooltip');
-				n&&n.setAttribute('context',addon.tag+'-context');
-				return !!n;
-			};
-			sTT() || window.addEventListener('aftercustomization',sTT,false);
-		} catch(e) {
-			Cu.reportError(e);
 		}
 	}
 
@@ -528,6 +514,8 @@ function loadIntoWindow(window) {
 
 	addon.wms.set(window,wmsData);
 	gNavToolbox=wmsData=undefined;
+
+	return tn;
 }
 
 function getBrowser(w) {
@@ -597,7 +585,7 @@ function unloadFromWindow(window) {
 		}
 	}
 
-	['popup','context'].forEach(function(n) {
+	['tooltip','context'].forEach(function(n) {
 		if((n = $(addon.tag+'-'+n)))
 			n.parentNode.removeChild(n);
 	});
@@ -696,8 +684,17 @@ function startup(data) {
 			.setSubstitution(addon.tag,
 				io.newURI(__SCRIPT_URI_SPEC__+'/../',null,null));
 
-		i$.wmForeach(loadIntoWindowStub);
-		Services.wm.addListener(i$);
+		if(aUI) {
+			aUI.createWidget({
+				type: 'custom',
+				defaultArea: aUI.AREA_NAVBAR,
+				id:addon.tag+'-toolbar-button',
+				onBuild:d=>loadIntoWindow(d.defaultView)
+			});
+		} else {
+			i$.wmForeach(loadIntoWindowStub);
+			Services.wm.addListener(i$);
+		}
 
 		['enabled','progltr','cltrack'].forEach(function(p)
 			addon[p] = addon.branch.getBoolPref(p));
@@ -722,7 +719,11 @@ function shutdown(data, reason) {
 	i$.removeHTTPObserver();
 	// i$.shutdown();
 
-	Services.wm.removeListener(i$);
+	if(aUI) {
+		aUI.destroyWidget(addon.tag+'-toolbar-button');
+	} else {
+		Services.wm.removeListener(i$);
+	}
 	i$.wmForeach(unloadFromWindow);
 
 	Services.io.getProtocolHandler("resource")
