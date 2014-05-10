@@ -258,6 +258,13 @@ const cleanlinks = {
 			if(d) h='='+d;
 		} catch(e) {
 			Cu.reportError('Invalid base64 data for "'+h+'" at "'+(b&&b.spec)+'"\n> '+e);
+		} else {
+			switch(b.asciiHost) {
+				case 'www.tripadvisor.com':
+					h = '=' + decodeURIComponent(h.replace(/_+([a-f\d]{2})/gi, '%$1')
+						.replace(/_|%5f/ig,'')).split('-aurl.').pop().split('-aurlKey').shift();
+					break;
+			}
 		}
 
 		while(--lmt && (/(?:.\b|3D)([a-z]{2,}(?:\:|%3a)(?:\/|%2f).+)$/i.test(h) || /(?:[?=]|[^\/]\/)(www\..+)$/i.test(h))) {
