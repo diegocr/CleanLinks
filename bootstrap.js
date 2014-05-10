@@ -617,6 +617,15 @@ function setOptions(Reset) {
 		repdelay  :  3,
 		cltrack   : !0
 	};
+	let lwl = {
+		zh : 'auth.alipay.com'
+	};
+	let locale =  Cc["@mozilla.org/chrome/chrome-registry;1"]
+		.getService(Ci.nsIXULChromeRegistry).getSelectedLocale("global");
+
+	let c = (locale || '').split('-').shift();
+	if(lwl[c]) Options.skipdoms += ',' + lwl[c];
+
 	for(let [k,v] in Iterator(Options)) {
 		if(!addon.branch.getPrefType(k) || Reset) {
 			switch(typeof v) {
