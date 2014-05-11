@@ -28,6 +28,9 @@ let _ = (function(strings) {
 	return function _(key) strings.GetStringFromName(key);
 })(Services.strings.createBundle("chrome://cleanlinks/locale/browser.properties"));
 
+let FaviconService = Cc["@mozilla.org/browser/favicon-service;1"]
+	.getService(Ci.nsIFaviconService).QueryInterface(Ci.mozIAsyncFavicons);
+
 let i$ = {
 	addHTTPObserver: function() {
 		if(!addon.obson && addon.progltr && addon.enabled) {
@@ -292,6 +295,22 @@ function copyLinkMobile(window) {
 	};
 }
 
+function setFavicon(uri, cell) {
+	FaviconService.getFaviconURLForPage(uri, function(aURI) {
+		aURI = aURI && aURI.spec || uri.prePath+'/favicon.ico';
+
+		cell.setAttribute('image', aURI);
+		cell.setAttribute('tooltiptext', uri.spec.replace(/.{0,98}/g, function(x) x + ' '));
+
+		try {
+			cell.ownerDocument.getAnonymousElementByAttribute(cell,'class','listcell-icon')
+				.setAttribute('style', 'max-width:16px;max-height:16px');
+		} catch(e) {}
+	});
+}
+
+try{const{CustomizableUI:aUI}=Cu.import("resource:///modules/CustomizableUI.jsm",{})}catch(e){}
+
 function loadIntoWindow(window) {
 	if(wt!=window.document.documentElement.getAttribute("windowtype"))
 		return;
@@ -345,6 +364,7 @@ function loadIntoWindow(window) {
 					while(x.firstChild)
 						x.removeChild(x.firstChild);
 
+					let r = Math.min(14,Math.max(Object.keys(cltrack).length,8)), wpr = 30;
 					e('vbox',{style:'padding:4px;min-width:320px'},[
 							e('hbox',{align:'baseline',flex:1},[
 								e('image',{src:rsc('icon.png')}),
@@ -358,7 +378,7 @@ function loadIntoWindow(window) {
 							e('groupbox',0,[
 								e('description',{ id:addon.tag+'-lbd' }),
 								// e('separator'),
-								e('listbox',{flex:1,id:addon.tag+'-listbox',rows:10,seltype:'multiple',minheight:280},[
+								e('listbox',{flex:1,id:addon.tag+'-listbox',rows:r,seltype:'multiple',height:r*wpr},[
 									e('listhead',0,[
 										e('listheader',{label:_('bootstrap.listheader.original')}),
 										e('listheader',{label:_('bootstrap.listheader.cleaned')})
@@ -372,22 +392,22 @@ function loadIntoWindow(window) {
 							])
 						],x);
 
-					let t = $(addon.tag+'-listbox'), d = getSkipDomA();
+					let t = $(addon.tag+'-listbox'), d = getSkipDomA(), cc = 0;
 					for(let l in cltrack) {
 						try {
-							let u1 = Services.io.newURI(l,null,null);
+							let u1 = Services.io.newURI(l,null,null), c1, c2,
 								u2 = Services.io.newURI(cltrack[l],null,null);
 							if(~d.indexOf(u1.host)) continue;
-							e('listitem',{tooltiptext:l,maxheight:18},[
-								e('listcell',{
-									label:l,image:u1.prePath+'/favicon.ico',
-									'class':'listcell-iconic',crop:'center',
-									style:'max-width:310px'}),
-								e('listcell',{
-									label:u2.spec,image:u2.prePath+'/favicon.ico',
-									'class':'listcell-iconic', crop:'right',
-									style:'max-width:270px'})
-							],t);
+							c1 = e('listcell',{
+								label:l,style:'max-width:310px',
+								'class':'listcell-iconic',crop:'center'}),
+							c2 = e('listcell',{
+								label:u2.spec,style:'max-width:270px',
+								'class':'listcell-iconic', crop:'right'})
+							e('listitem',{allowevents:!0,maxheight:18},[c1,c2],t);
+							setFavicon(u1,c1);
+							setFavicon(u2,c2);
+							++cc;
 						} catch(e) {
 							Cu.reportError(e);
 						}
@@ -408,12 +428,14 @@ function loadIntoWindow(window) {
 
 					x._context = true;
 					x.openPopup(ev.currentTarget);
-					
-					let s = $(addon.tag+'-lbd');
-					s.style.maxWidth = Math.max(460,t.boxObject.width) + "px";
-					s.textContent = _('bootstrap.whitelist.description');
-					
-					if(!Object.keys(cltrack).length) {
+
+					window.setTimeout(function() {
+						let s = $(addon.tag+'-lbd');
+						s.style.maxWidth = Math.max(460,t.boxObject.width) + "px";
+						s.textContent = _('bootstrap.whitelist.description');
+					}, 40);
+
+					if(cc == 0) {
 						t.lastChild.lastChild.flex = 1;
 					}
 				}
@@ -444,14 +466,24 @@ function loadIntoWindow(window) {
 			: new copyLinkController(window);
 	}
 
-	let gNavToolbox = window.gNavToolbox || $("mail-toolbox");
+	e('tooltip',{id:addon.tag+'-tooltip'},0,$('mainPopupSet'))
+		.addEventListener('popupshowing', wmsData.popupshowing
+			= ev => window.diegocr[addon.tag].l(ev), !0);
+	e('panel',{id:addon.tag+'-context',backdrag:'true',
+		position:'bottomcenter topright',type:'arrow',flip:'slide'},
+		0, $('mainPopupSet'));
+	let m = addon.tag+'-toolbar-button',
+	tn=e('toolbarbutton',{
+		id:m,label:addon.name,
+		class:'toolbarbutton-1',
+		tooltip:addon.tag+'-tooltip',
+		context:addon.tag+'-context',
+		image:rsc('icon16.png')
+	});
+	tn.addEventListener('click', wmsData.TBBHandler, !1);
+	let gNavToolbox = !aUI && (window.gNavToolbox || $("mail-toolbox"));
 	if(gNavToolbox && gNavToolbox.palette) {
-		let m = addon.tag+'-toolbar-button';
-		gNavToolbox.palette.appendChild(e('toolbarbutton',{
-			id:m,label:addon.name,class:'toolbarbutton-1',
-			image:rsc('icon16.png')
-		})).addEventListener('click', wmsData.TBBHandler, !1);
-
+		gNavToolbox.palette.appendChild(tn);
 		if(!addon.branch.getPrefType("version")) {
 			let nv = $('nav-bar') || $('mail-bar3');
 			if( nv ) {
@@ -472,35 +504,9 @@ function loadIntoWindow(window) {
 							(at=$(id))?!0:(f.push(id),!1));
 						at&&f.length&&f.forEach(function(n)xul[n]
 							&&(at=at&&at.previousElementSibling));
-						tb.insertItem(m, at, null, false);
-						return true;
+						return !!tb.insertItem(m, at);
 					}
 				});
-		}
-
-		try {
-			e('tooltip',{id:addon.tag+'-tooltip'},0,$('mainPopupSet'))
-				.addEventListener('popupshowing',
-				wmsData.popupshowing = function(ev) {
-					try {
-						return window.diegocr[addon.tag].l(ev);
-					} catch(e) {
-						Cu.reportError(e);
-					}
-				}, !0);
-			e('panel',{id:addon.tag+'-context',backdrag:'true',
-				position:'bottomcenter topright',type:'arrow',flip:'slide'},
-				0, $('mainPopupSet'));
-
-			let sTT = function() {
-				let n = $(m);
-				n&&n.setAttribute('tooltip',addon.tag+'-tooltip');
-				n&&n.setAttribute('context',addon.tag+'-context');
-				return !!n;
-			};
-			sTT() || window.addEventListener('aftercustomization',sTT,false);
-		} catch(e) {
-			Cu.reportError(e);
 		}
 	}
 
@@ -508,6 +514,8 @@ function loadIntoWindow(window) {
 
 	addon.wms.set(window,wmsData);
 	gNavToolbox=wmsData=undefined;
+
+	return tn;
 }
 
 function getBrowser(w) {
@@ -576,8 +584,8 @@ function unloadFromWindow(window) {
 			}
 		}
 	}
-	
-	['popup','context'].forEach(function(n) {
+
+	['tooltip','context'].forEach(function(n) {
 		if((n = $(addon.tag+'-'+n)))
 			n.parentNode.removeChild(n);
 	});
@@ -599,7 +607,7 @@ function setOptions(Reset) {
 			+ 'login.live.com,plus.google.com,www.facebook.com,twitter.com,'
 			+ 'static.ak.facebook.com,www.linkedin.com,www.virustotal.com,'
 			+ 'account.live.com,admin.brightcove.com,www.mywot.com,'
-			+ 'webcache.googleusercontent.com',
+			+ 'webcache.googleusercontent.com,web.archive.org',
 		highlight : !0,
 		hlstyle   : 'background:rgba(252,252,0,0.6); color: #000',
 		evdm      : !0,
@@ -609,6 +617,15 @@ function setOptions(Reset) {
 		repdelay  :  3,
 		cltrack   : !0
 	};
+	let lwl = {
+		zh : 'auth.alipay.com'
+	};
+	let locale =  Cc["@mozilla.org/chrome/chrome-registry;1"]
+		.getService(Ci.nsIXULChromeRegistry).getSelectedLocale("global");
+
+	let c = (locale || '').split('-').shift();
+	if(lwl[c]) Options.skipdoms += ',' + lwl[c];
+
 	for(let [k,v] in Iterator(Options)) {
 		if(!addon.branch.getPrefType(k) || Reset) {
 			switch(typeof v) {
@@ -676,8 +693,17 @@ function startup(data) {
 			.setSubstitution(addon.tag,
 				io.newURI(__SCRIPT_URI_SPEC__+'/../',null,null));
 
-		i$.wmForeach(loadIntoWindowStub);
-		Services.wm.addListener(i$);
+		if(aUI) {
+			aUI.createWidget({
+				type: 'custom',
+				defaultArea: aUI.AREA_NAVBAR,
+				id:addon.tag+'-toolbar-button',
+				onBuild:d=>loadIntoWindow(d.defaultView)
+			});
+		} else {
+			i$.wmForeach(loadIntoWindowStub);
+			Services.wm.addListener(i$);
+		}
 
 		['enabled','progltr','cltrack'].forEach(function(p)
 			addon[p] = addon.branch.getBoolPref(p));
@@ -702,7 +728,11 @@ function shutdown(data, reason) {
 	i$.removeHTTPObserver();
 	// i$.shutdown();
 
-	Services.wm.removeListener(i$);
+	if(aUI) {
+		aUI.destroyWidget(addon.tag+'-toolbar-button');
+	} else {
+		Services.wm.removeListener(i$);
+	}
 	i$.wmForeach(unloadFromWindow);
 
 	Services.io.getProtocolHandler("resource")

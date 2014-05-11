@@ -47,6 +47,7 @@ const cleanlinks = {
 				t.ios = Cc["@mozilla.org/network/io-service;1"]
 					.getService(Ci.nsIIOService);
 				t.observe(null,'nsPref:changed','skipdoms');
+				window.addEventListener('aftercustomization', t, !1);
 				t.edc = t.mob ? (function(a) window.content.location = a)
 					: (typeof window.openUILink !== 'function')
 					? function(a,b) (b.setAttribute('href', a), b.click())
@@ -84,11 +85,14 @@ const cleanlinks = {
 								'browser.tabs.loadInBackground')});
 					}.bind(t);
 				break;
+			case 'aftercustomization':
+				this.si(this.si.last);
+				break;
 			case 'unload':
 				t.ps.removeObserver("", t);
-				if(t.op.enabled) {
-					t.dd();
-				}
+				if(t.op.enabled) t.dd();
+				window.removeEventListener
+					('aftercustomization', t, !1);
 				for(let m in t)
 					delete t[m];
 			default:break;
@@ -194,7 +198,7 @@ const cleanlinks = {
 		}
 
 		d = c || parseInt(d.getAttribute(this.tag_b));
-		tb.setAttribute('image',this.rsc('icon16'+(d?'!':'')+'.png'));
+		this.si(d && '!', tb);
 	},
 	c: function(d) {
 		let t = 0, l = d.getElementsByTagName('a'), c = l.length;
@@ -244,20 +248,27 @@ const cleanlinks = {
 		if(/\.google\.[a-z.]+\/search\?(?:.+&)?q=http/i.test(h))
 			return h;
 
-		let lmt = 4, s = 0, p, ht = null, rp = this.op.remove, l = h;
+		let lmt = 4, s = 0, p, ht = null, rp = this.op.remove, l = h, Y = /\.yahoo.com$/.test(b.asciiHost);
 		h.replace(/^javascript:.+(["'])(https?(?:\:|%3a).+?)\1/gi,function(a,b,c)(++s,h=c));
 
 		if(/((?:aHR0|d3d3)[A-Z0-9+=\/]+)/gi.test(h)) try {
 			let r = RegExp.$1;
-			if(/\.yahoo.com$/.test(b.asciiHost))
-				r = r.replace(/\/RS.*$/,'');
+			if(Y) r = r.replace(/\/RS.*$/,'');
 			let d = decodeURIComponent(atob(r));
 			if(d) h='='+d;
 		} catch(e) {
 			Cu.reportError('Invalid base64 data for "'+h+'" at "'+(b&&b.spec)+'"\n> '+e);
+		} else {
+			switch(b.asciiHost) {
+				case 'www.tripadvisor.com':
+				  if(~h.indexOf('-a_urlKey'))
+					h = '=' + decodeURIComponent(h.replace(/_+([a-f\d]{2})/gi, '%$1')
+						.replace(/_|%5f/ig,'')).split('-aurl.').pop().split('-aurlKey').shift();
+					break;
+			}
 		}
 
-		while(--lmt && (/.\b([a-z]{2,}(?:\:|%3a)(?:\/|%2f).+)$/i.test(h) || /(?:[?=]|[^\/]\/)(www\..+)$/i.test(h))) {
+		while(--lmt && (/(?:.\b|3D)([a-z]{2,}(?:\:|%3a)(?:\/|%2f).+)$/i.test(h) || /(?:[?=]|[^\/]\/)(www\..+)$/i.test(h))) {
 			h = RegExp.$1;
 			if(~(p = h.indexOf('&')))
 				h = h.substr(0,p);
@@ -289,6 +300,8 @@ const cleanlinks = {
 			}
 		}
 
+		if(Y) h = h.replace(/\/R[KS]=\d.*$/,'');
+
 		rp.lastIndex = 0;
 		if( s || rp.test(h)) {
 			if(~(p = h.indexOf('#'))) (ht = h.substr(p), h = h.substr(0,p));
@@ -315,8 +328,7 @@ const cleanlinks = {
 		if(this.op.evdm) {
 			document.documentElement.addEventListener('click', this.edl, true);
 			this.evdm = true;
-			let tb = document.getElementById('cleanlinks-toolbar-button');
-			if(tb) tb.setAttribute('image',this.rsc('icon16~.png'));
+			this.si('~');
 		} else {
 			(this.mob ? BrowserApp.deck:gBrowser).addEventListener('DOMContentLoaded', this.b, false);
 			(this.mob ? BrowserApp.deck:gBrowser.tabContainer).addEventListener("TabSelect", this.b4, false);
@@ -363,6 +375,7 @@ const cleanlinks = {
 
 	blink: function(window) {
 		if(this.op.highlight) {
+			let n;
 			if((n = window.document.getElementById('urlbar'))) {
 				if(!("ubg" in this))
 					this.ubg = n.style.background;
@@ -444,9 +457,8 @@ const cleanlinks = {
 
 		// On/Off Handler
 		this.g('enabled',s=(typeof s != 'undefined' ? !!s : !this.g()));
-		let tb = document.getElementById('cleanlinks-toolbar-button');
-		if(tb && (!s || this.evdm)) {
-			tb.setAttribute('image',this.rsc('icon16'+(!s?'-':'~')+'.png'));
+		if(!s || this.evdm) {
+			this.si(s?'~':'-');
 		}
 		return s;
 	},
@@ -516,6 +528,15 @@ const cleanlinks = {
 				this.op[p] = null;
 			}
 		}
+	},
+
+	si: function(i, tb) {
+		if(!tb) tb = document.getElementById('cleanlinks-toolbar-button');;
+		if(!tb) return;
+
+		let s=tb.getAttribute('cui-areatype')=='menu-panel'? 32:16;
+		tb.setAttribute('image',this.rsc('icon'+s+(i||'')+'.png'));
+		this.si.last = i;
 	},
 
 	gd: function() {
