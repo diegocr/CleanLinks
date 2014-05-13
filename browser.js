@@ -26,11 +26,13 @@ const cleanlinks = {
 	tag_l:'data-cleanedlink',
 	tag_t:"\n \n- " + _("browser.touch"),
 	tag_h:_("browser.hashtag"),
+	acev:'aftercustomization',
 	op:null,
 	ps:null,
 	handleEvent: function(ev) {
 		let t = cleanlinks;
-		window.removeEventListener(ev.type, t, false);
+		if(ev.type != t.acev)
+			window.removeEventListener(ev.type, t, false);
 		t.pkg = t.addon.name + ' v' + t.addon.version;
 		switch(ev.type) {
 			case 'load':
@@ -47,7 +49,7 @@ const cleanlinks = {
 				t.ios = Cc["@mozilla.org/network/io-service;1"]
 					.getService(Ci.nsIIOService);
 				t.observe(null,'nsPref:changed','skipdoms');
-				window.addEventListener('aftercustomization', t, !1);
+				window.addEventListener(t.acev, t, !1);
 				t.edc = t.mob ? (function(a) window.content.location = a)
 					: (typeof window.openUILink !== 'function')
 					? function(a,b) (b.setAttribute('href', a), b.click())
@@ -85,19 +87,18 @@ const cleanlinks = {
 								'browser.tabs.loadInBackground')});
 					}.bind(t);
 				break;
-			case 'aftercustomization':
-				this.si(this.si.last);
+			case t.acev:
+				window.setTimeout(() => t.si(t.si.last), 400);
 				break;
 			case 'unload':
 				t.ps.removeObserver("", t);
 				if(t.op.enabled) t.dd();
-				window.removeEventListener
-					('aftercustomization', t, !1);
+				window.removeEventListener(t.acev, t, !1);
 				for(let m in t)
 					delete t[m];
 			default:break;
 		}
-		ev = t = undefined;
+		ev = undefined;
 	},
 	b: function(ev) {
 		if(ev.originalTarget instanceof HTMLDocument) {
@@ -534,9 +535,11 @@ const cleanlinks = {
 		if(!tb) tb = document.getElementById('cleanlinks-toolbar-button');;
 		if(!tb) return;
 
+		this.si.last = i;
+		if(i == '~' && this.op.evdmki) i = 0;
+
 		let s=tb.getAttribute('cui-areatype')=='menu-panel'? 32:16;
 		tb.setAttribute('image',this.rsc('icons/'+s+(i||'')+'.png'));
-		this.si.last = i;
 	},
 
 	gd: function() {
