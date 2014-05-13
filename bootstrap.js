@@ -478,7 +478,7 @@ function loadIntoWindow(window) {
 		class:'toolbarbutton-1',
 		tooltip:addon.tag+'-tooltip',
 		context:addon.tag+'-context',
-		image:rsc('icon16.png')
+		image:rsc('icons/16.png')
 	});
 	tn.addEventListener('click', wmsData.TBBHandler, !1);
 	let gNavToolbox = !aUI && (window.gNavToolbox || $("mail-toolbox"));

@@ -535,7 +535,7 @@ const cleanlinks = {
 		if(!tb) return;
 
 		let s=tb.getAttribute('cui-areatype')=='menu-panel'? 32:16;
-		tb.setAttribute('image',this.rsc('icon'+s+(i||'')+'.png'));
+		tb.setAttribute('image',this.rsc('icons/'+s+(i||'')+'.png'));
 		this.si.last = i;
 	},
 
