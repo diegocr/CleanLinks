@@ -364,6 +364,9 @@ const cleanlinks = {
 						if(n.hasAttribute('data-expanded-url'))
 							k = n.getAttribute('data-expanded-url');
 						break;
+					case 'www.facebook.com':
+						if(~(''+n.getAttribute('onmouseover')).indexOf('LinkshimAsyncLink'))
+							k = n.href;
 				}
 				z = k || n.href;
 				x = t.cl(z,n.baseURI);
