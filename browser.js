@@ -20,6 +20,16 @@ let {classes:Cc, interfaces:Ci, utils:Cu, results:Cr} = Components,
 let strings = Services.strings.createBundle("chrome://cleanlinks/locale/browser.properties");
 function _(key) strings.GetStringFromName(key)
 
+let handledElsewhere = function() !1;
+
+try {
+	let {XPIProvider:xS} = Components.utils.import('resource://gre/modules/XPIProvider.jsm', {});
+	if((xS = xS.bootstrapScopes['{c9d31470-81c6-4e3e-9a37-46eb9237ed3a}']))
+		handledElsewhere = function(n) !!xS.getProvider(n,xS.getPrefs());
+} catch(e) {
+	Cu.reportError(e);
+}
+
 const cleanlinks = {
 	pkg:'CleanLinks',
 	tag_b:'data-cleanedlinks',
@@ -357,7 +367,7 @@ const cleanlinks = {
 				n = n.parentNode;
 			} while(n && !~['A','BODY','HTML'].indexOf(n.nodeName));
 
-			if(n&&n.nodeName == 'A') {
+			if(n&&n.nodeName == 'A'&&!handledElsewhere(n)) {
 				let t = cleanlinks,z,x,k;
 				switch(n.ownerDocument.location.hostname) {
 					case 'twitter.com':
