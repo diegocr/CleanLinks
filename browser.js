@@ -358,8 +358,16 @@ const cleanlinks = {
 			} while(n && !~['A','BODY','HTML'].indexOf(n.nodeName));
 
 			if(n&&n.nodeName == 'A') {
-				let t = cleanlinks,z = n.href, x = t.cl(z,n.baseURI);
-				if(z != x) {
+				let t = cleanlinks,z,x,k;
+				switch(n.ownerDocument.location.hostname) {
+					case 'twitter.com':
+						if(n.hasAttribute('data-expanded-url'))
+							k = n.getAttribute('data-expanded-url');
+						break;
+				}
+				z = k || n.href;
+				x = t.cl(z,n.baseURI);
+				if(k || z != x) {
 					if(t.op.highlight) {
 						t.hl(n);
 					}
