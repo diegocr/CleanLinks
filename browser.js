@@ -244,6 +244,10 @@ const cleanlinks = {
 		|| (this.op.skipwhen && this.op.skipwhen.test(h)))
 			return h;
 
+		if(!b) {
+			if(/^https?:/.test(h)) b = h;
+			else b = content.location.href;
+		}
 		if(typeof b === 'string')
 			b = this.nu(b);
 
