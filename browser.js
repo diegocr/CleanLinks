@@ -280,6 +280,13 @@ const cleanlinks = {
 					h = '=' + decodeURIComponent(h.replace(/_+([a-f\d]{2})/gi, '%$1')
 						.replace(/_|%5f/ig,'')).split('-aurl.').pop().split('-aurlKey').shift();
 					break;
+				default:
+					switch(lu&&lu.asciiHost||(h.match(/^\w+:\/\/([^/]+)/)||[]).pop()) {
+						case 'redirect.disqus.com':
+							if(~h.indexOf('/url?url='))
+								h = '=' + h.match(/url\?url=([^&]+)/).pop().split(/%3a\w+$/i).shift();
+							break;
+					}
 			}
 		}
 
