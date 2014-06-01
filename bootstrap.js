@@ -397,7 +397,7 @@ function loadIntoWindow(window) {
 						try {
 							let u1 = Services.io.newURI(l,null,null), c1, c2,
 								u2 = Services.io.newURI(cltrack[l],null,null);
-							if(~d.indexOf(u1.host)) continue;
+							if(~d.indexOf(u1.asciiHost)) continue;
 							c1 = e('listcell',{
 								label:l,style:'max-width:310px',
 								'class':'listcell-iconic',crop:'center'}),
@@ -617,6 +617,7 @@ function setOptions(Reset) {
 		gotarget  : !1,
 		repdelay  :  3,
 		textcl    : !1,
+		ignhttp   : !1,
 		cltrack   : !0
 	};
 	let lwl = {

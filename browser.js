@@ -260,6 +260,10 @@ const cleanlinks = {
 
 		} catch(e) {}
 
+		if(this.op.ignhttp) {
+			if(!/^https?:/.test(lu&&lu.spec||h)) return h;
+		}
+
 		if(/\.google\.[a-z.]+\/search\?(?:.+&)?q=http/i.test(h))
 			return h;
 

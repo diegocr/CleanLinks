@@ -14,6 +14,7 @@
   <setting pref="extensions.cleanlinks.progltr" type="bool" title="&progltr.title;" tooltiptext="&progltr.tooltip;"></setting>
   <setting pref="extensions.cleanlinks.gotarget" type="bool" title="&gotarget.title;" tooltiptext="&gotarget.tooltip;"></setting>
   <setting pref="extensions.cleanlinks.textcl" type="bool" title="&textcl.title;" tooltiptext="&textcl.tooltip;"></setting>
+  <setting pref="extensions.cleanlinks.ignhttp" type="bool" title="&ignhttp.title;" tooltiptext="&ignhttp.tooltip;"></setting>
   <setting pref="extensions.cleanlinks.cltrack" type="bool" title="&cltrack.title;" tooltiptext="">
     &cltrack.content;
   </setting>
