@@ -22,5 +22,7 @@
 <!ENTITY reset.label "重置设置">
 <!ENTITY ignhttp.title "忽略非 HTTP(s) 协议链接">
 <!ENTITY ignhttp.tooltip "此选项将使本扩展忽略所有非 HTTP/HTTPS 协议的链接。">
+<!ENTITY textcl.title "转换文本链接">
+<!ENTITY textcl.tooltip "将文本状态的链接转换成可直接点击的链接。需要事件委托模式。">
 <!ENTITY cltrack.title "追踪链接">
 <!ENTITY cltrack.content "将会记录所有经过处理的链接，可以在工具栏按钮上右键以快速将域名添加到白名单。">
