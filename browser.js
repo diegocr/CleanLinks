@@ -311,7 +311,7 @@ const cleanlinks = {
 			++s;
 		}
 
-		h = h.replace(/^h\w+(ps?):/i,'htt$1:');
+		h = h.replace(/^h[\w*]+(ps?):/i,'htt$1:');
 
 		try {
 			// Check if the protocol can be handled...
@@ -386,7 +386,7 @@ const cleanlinks = {
 			t = n.textContent;
 			p = t.indexOf(c)+1;
 			while(p && !~' "\'<>\n\r\t'.indexOf(t[p])) --p;
-			if((t = (p&&t.substr(++p)||t).match(/^\s*(?:\w+:\/\/|www\.)[^\s">]+/))) {
+			if((t = (p&&t.substr(++p)||t).match(/^\s*(?:\w+:\/\/|www\.)[^\s">]{4,}/))) {
 				t = t.shift().trim();
 				if(!~t.indexOf('://')) t = 'http://'+t;
 			}
