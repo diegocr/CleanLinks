@@ -20,5 +20,7 @@
 <!ENTITY gotarget.tooltip "是否检查并遵守链接的 target 属性。">
 <!ENTITY reset.tooltip "还原所有设置到默认值">
 <!ENTITY reset.label "重置设置">
+<!ENTITY ignhttp.title "忽略非 HTTP(s) 协议连接">
+<!ENTITY ignhttp.tooltip "此选项将使扩展忽略所有非 HTTP/HTTPS 协议的连接。">
 <!ENTITY cltrack.title "追踪链接">
 <!ENTITY cltrack.content "将会记录所有经过处理的链接，可以在工具栏按钮上右键以快速将域名添加到白名单。">
