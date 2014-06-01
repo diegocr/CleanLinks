@@ -20,5 +20,7 @@
 <!ENTITY gotarget.tooltip "Los enlaces pueden contener un atributo Target el cual indica donde deben abrirse.">
 <!ENTITY reset.tooltip "Reinicia las opciones a sus valores por defecto.">
 <!ENTITY reset.label "Reiniciar Opciones">
+<!ENTITY textcl.title "Interceptar enlaces en texto">
+<!ENTITY textcl.tooltip "Permite clickar en enlaces no clickables por defecto para abrirlos como si fueran enlaces normales - Requiere usar el modo de Evento Delegado.">
 <!ENTITY cltrack.title "Seguimiento de enlaces">
 <!ENTITY cltrack.content "Esta opción le permitirá añadir dominios fácilmente a la lista de ignorados usando RMB en el botón de la barra de navegación.">

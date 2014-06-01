@@ -616,6 +616,7 @@ function setOptions(Reset) {
 		cbc       : !0,
 		gotarget  : !1,
 		repdelay  :  3,
+		textcl    : !1,
 		cltrack   : !0
 	};
 	let lwl = {

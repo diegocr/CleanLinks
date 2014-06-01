@@ -284,7 +284,7 @@ const cleanlinks = {
 					switch(lu&&lu.asciiHost||(h.match(/^\w+:\/\/([^/]+)/)||[]).pop()) {
 						case 'redirect.disqus.com':
 							if(~h.indexOf('/url?url='))
-								h = '=' + h.match(/url\?url=([^&]+)/).pop().split(/%3a\w+$/i).shift();
+								h = '=' + h.match(/url\?url=([^&]+)/).pop().split(/%3a[\w-]+$/i).shift();
 							break;
 					}
 			}
@@ -306,6 +306,8 @@ const cleanlinks = {
 				h += '/';
 			++s;
 		}
+
+		h = h.replace(/^h\w+(ps?):/i,'htt$1:');
 
 		try {
 			// Check if the protocol can be handled...
@@ -370,17 +372,39 @@ const cleanlinks = {
 		}
 	},
 
-	edl: function(ev) {
-		if(ev.button != 2 && !(ev.target instanceof XULElement)) {
-			let n = ev.target;
+	tcl: function(n) {
+		let c,p,t,s = n.ownerDocument.defaultView.getSelection();
 
-			if(n.nodeName != 'A') do {
+		this.d(['SEL', s.isCollapsed, s.focusNode&&s.focusNode.data, s.focusOffset]);
+
+		if(s.isCollapsed && s.focusNode && s.focusNode.data && (p=s.focusOffset)) {
+			c = s.focusNode.data.substr(p);
+			t = n.textContent;
+			p = t.indexOf(c)+1;
+			while(p && !~' "\'<>\n\r\t'.indexOf(t[p])) --p;
+			if((t = (p&&t.substr(++p)||t).match(/^\s*(?:\w+:\/\/|www\.)[^\s">]+/))) {
+				t = t.shift().trim();
+				if(!~t.indexOf('://')) t = 'http://'+t;
+			}
+			this.d(['RES',p,t,c]);
+		}
+
+		this.d(['TEXTCL ' + t]);
+
+		return t;
+	},
+
+	edl: function(ev) {
+		if(ev.button != 2 && !(ev.target.ownerDocument instanceof XULDocument)) {
+			let n = ev.target, k, t = cleanlinks;
+
+			if(n.nodeName != 'A' && (ev.altKey||!t.op.textcl||!(k=t.tcl(n)))) do {
 				n = n.parentNode;
 			} while(n && !~['A','BODY','HTML'].indexOf(n.nodeName));
 
-			if(n&&n.nodeName == 'A'&&!handledElsewhere(n)) {
-				let t = cleanlinks,z,x,k;
-				switch(n.ownerDocument.location.hostname) {
+			if(k||(n&&n.nodeName == 'A'&&!handledElsewhere(n))) {
+				let z,x;
+				switch(k||n.ownerDocument.location.hostname) {
 					case 'twitter.com':
 						if(n.hasAttribute('data-expanded-url'))
 							k = n.getAttribute('data-expanded-url');
@@ -399,21 +423,20 @@ const cleanlinks = {
 					ev.preventDefault();
 
 					t.edc(x,n,ev);
-					t.blink(window);
+					t.blink(window,k && 217);
 				}
 			}
 		}
-		ev = null;
 	},
 
-	blink: function(window) {
+	blink: function(window, c) {
 		if(this.op.highlight) {
 			let n;
 			if((n = window.document.getElementById('urlbar'))) {
 				if(!("ubg" in this))
 					this.ubg = n.style.background;
 				let z = this.ubg;
-				n.style.background = 'rgba(245,240,0,0.6)';
+				n.style.background = 'rgba('+(c||245)+',240,0,0.6)';
 				if(this.ubgt)
 					window.clearTimeout(this.ubgt);
 				this.ubgt = window.setTimeout(function() n.style.background = z,300);
