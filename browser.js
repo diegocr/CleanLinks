@@ -20,17 +20,29 @@ let {classes:Cc, interfaces:Ci, utils:Cu, results:Cr} = Components,
 let strings = Services.strings.createBundle("chrome://cleanlinks/locale/browser.properties");
 function _(key) strings.GetStringFromName(key)
 
+let handledElsewhere = function() !1;
+
+try {
+	let {XPIProvider:xS} = Components.utils.import('resource://gre/modules/XPIProvider.jsm', {});
+	if((xS = xS.bootstrapScopes['{c9d31470-81c6-4e3e-9a37-46eb9237ed3a}']))
+		handledElsewhere = function(n) !!xS.getProvider(n,xS.getPrefs());
+} catch(e) {
+	Cu.reportError(e);
+}
+
 const cleanlinks = {
 	pkg:'CleanLinks',
 	tag_b:'data-cleanedlinks',
 	tag_l:'data-cleanedlink',
 	tag_t:"\n \n- " + _("browser.touch"),
 	tag_h:_("browser.hashtag"),
+	acev:'aftercustomization',
 	op:null,
 	ps:null,
 	handleEvent: function(ev) {
 		let t = cleanlinks;
-		window.removeEventListener(ev.type, t, false);
+		if(ev.type != t.acev)
+			window.removeEventListener(ev.type, t, false);
 		t.pkg = t.addon.name + ' v' + t.addon.version;
 		switch(ev.type) {
 			case 'load':
@@ -47,7 +59,7 @@ const cleanlinks = {
 				t.ios = Cc["@mozilla.org/network/io-service;1"]
 					.getService(Ci.nsIIOService);
 				t.observe(null,'nsPref:changed','skipdoms');
-				window.addEventListener('aftercustomization', t, !1);
+				window.addEventListener(t.acev, t, !1);
 				t.edc = t.mob ? (function(a) window.content.location = a)
 					: (typeof window.openUILink !== 'function')
 					? function(a,b) (b.setAttribute('href', a), b.click())
@@ -85,19 +97,18 @@ const cleanlinks = {
 								'browser.tabs.loadInBackground')});
 					}.bind(t);
 				break;
-			case 'aftercustomization':
-				this.si(this.si.last);
+			case t.acev:
+				window.setTimeout(() => t.si(t.si.last), 400);
 				break;
 			case 'unload':
 				t.ps.removeObserver("", t);
 				if(t.op.enabled) t.dd();
-				window.removeEventListener
-					('aftercustomization', t, !1);
+				window.removeEventListener(t.acev, t, !1);
 				for(let m in t)
 					delete t[m];
 			default:break;
 		}
-		ev = t = undefined;
+		ev = undefined;
 	},
 	b: function(ev) {
 		if(ev.originalTarget instanceof HTMLDocument) {
@@ -233,6 +244,10 @@ const cleanlinks = {
 		|| (this.op.skipwhen && this.op.skipwhen.test(h)))
 			return h;
 
+		if(!b) {
+			if(/^https?:/.test(h)) b = h;
+			else b = content.location.href;
+		}
 		if(typeof b === 'string')
 			b = this.nu(b);
 
@@ -244,6 +259,10 @@ const cleanlinks = {
 				return h;
 
 		} catch(e) {}
+
+		if(this.op.ignhttp) {
+			if(!/^https?:/.test(lu&&lu.spec||h)) return h;
+		}
 
 		if(/\.google\.[a-z.]+\/search\?(?:.+&)?q=http/i.test(h))
 			return h;
@@ -265,6 +284,13 @@ const cleanlinks = {
 					h = '=' + decodeURIComponent(h.replace(/_+([a-f\d]{2})/gi, '%$1')
 						.replace(/_|%5f/ig,'')).split('-aurl.').pop().split('-aurlKey').shift();
 					break;
+				default:
+					switch(lu&&lu.asciiHost||(h.match(/^\w+:\/\/([^/]+)/)||[]).pop()) {
+						case 'redirect.disqus.com':
+							if(~h.indexOf('/url?url='))
+								h = '=' + h.match(/url\?url=([^&]+)/).pop().split(/%3a[\w-]+$/i).shift();
+							break;
+					}
 			}
 		}
 
@@ -284,6 +310,8 @@ const cleanlinks = {
 				h += '/';
 			++s;
 		}
+
+		h = h.replace(/^h[\w*]+(ps?):/i,'htt$1:');
 
 		try {
 			// Check if the protocol can be handled...
@@ -348,17 +376,50 @@ const cleanlinks = {
 		}
 	},
 
-	edl: function(ev) {
-		if(ev.button != 2 && !(ev.target instanceof XULElement)) {
-			let n = ev.target;
+	tcl: function(n) {
+		let c,p,t,s = n.ownerDocument.defaultView.getSelection();
 
-			if(n.nodeName != 'A') do {
+		this.d(['SEL', s.isCollapsed, s.focusNode&&s.focusNode.data, s.focusOffset]);
+
+		if(s.isCollapsed && s.focusNode && s.focusNode.data && (p=s.focusOffset)) {
+			c = s.focusNode.data.substr(p);
+			t = n.textContent;
+			p = t.indexOf(c)+1;
+			while(p && !~' "\'<>\n\r\t'.indexOf(t[p])) --p;
+			if((t = (p&&t.substr(++p)||t).match(/^\s*(?:\w+:\/\/|www\.)[^\s">]{4,}/))) {
+				t = t.shift().trim();
+				if(!~t.indexOf('://')) t = 'http://'+t;
+			}
+			this.d(['RES',p,t,c]);
+		}
+
+		this.d(['TEXTCL ' + t]);
+
+		return t;
+	},
+
+	edl: function(ev) {
+		if(ev.button != 2 && !(ev.target.ownerDocument instanceof XULDocument)) {
+			let n = ev.target, k, t = cleanlinks;
+
+			if(n.nodeName != 'A' && (ev.altKey||!t.op.textcl||!(k=t.tcl(n)))) do {
 				n = n.parentNode;
 			} while(n && !~['A','BODY','HTML'].indexOf(n.nodeName));
 
-			if(n&&n.nodeName == 'A') {
-				let t = cleanlinks,z = n.href, x = t.cl(z,n.baseURI);
-				if(z != x) {
+			if(k||(n&&n.nodeName == 'A'&&!handledElsewhere(n))) {
+				let z,x;
+				switch(k||n.ownerDocument.location.hostname) {
+					case 'twitter.com':
+						if(n.hasAttribute('data-expanded-url'))
+							k = n.getAttribute('data-expanded-url');
+						break;
+					case 'www.facebook.com':
+						if(~(''+n.getAttribute('onmouseover')).indexOf('LinkshimAsyncLink'))
+							k = n.href;
+				}
+				z = k || n.href;
+				x = t.cl(z,n.baseURI);
+				if(k || z != x) {
 					if(t.op.highlight) {
 						t.hl(n);
 					}
@@ -366,21 +427,20 @@ const cleanlinks = {
 					ev.preventDefault();
 
 					t.edc(x,n,ev);
-					t.blink(window);
+					t.blink(window,k && 217);
 				}
 			}
 		}
-		ev = null;
 	},
 
-	blink: function(window) {
+	blink: function(window, c) {
 		if(this.op.highlight) {
 			let n;
 			if((n = window.document.getElementById('urlbar'))) {
 				if(!("ubg" in this))
 					this.ubg = n.style.background;
 				let z = this.ubg;
-				n.style.background = 'rgba(245,240,0,0.6)';
+				n.style.background = 'rgba('+(c||245)+',240,0,0.6)';
 				if(this.ubgt)
 					window.clearTimeout(this.ubgt);
 				this.ubgt = window.setTimeout(function() n.style.background = z,300);
@@ -534,9 +594,11 @@ const cleanlinks = {
 		if(!tb) tb = document.getElementById('cleanlinks-toolbar-button');;
 		if(!tb) return;
 
-		let s=tb.getAttribute('cui-areatype')=='menu-panel'? 32:16;
-		tb.setAttribute('image',this.rsc('icon'+s+(i||'')+'.png'));
 		this.si.last = i;
+		if(i == '~' && this.op.evdmki) i = 0;
+
+		let s=tb.getAttribute('cui-areatype')=='menu-panel'? 32:16;
+		tb.setAttribute('image',this.rsc('icons/'+s+(i||'')+'.png'));
 	},
 
 	gd: function() {

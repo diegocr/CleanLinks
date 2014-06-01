@@ -397,7 +397,7 @@ function loadIntoWindow(window) {
 						try {
 							let u1 = Services.io.newURI(l,null,null), c1, c2,
 								u2 = Services.io.newURI(cltrack[l],null,null);
-							if(~d.indexOf(u1.host)) continue;
+							if(~d.indexOf(u1.asciiHost)) continue;
 							c1 = e('listcell',{
 								label:l,style:'max-width:310px',
 								'class':'listcell-iconic',crop:'center'}),
@@ -478,7 +478,7 @@ function loadIntoWindow(window) {
 		class:'toolbarbutton-1',
 		tooltip:addon.tag+'-tooltip',
 		context:addon.tag+'-context',
-		image:rsc('icon16.png')
+		image:rsc('icons/16.png')
 	});
 	tn.addEventListener('click', wmsData.TBBHandler, !1);
 	let gNavToolbox = !aUI && (window.gNavToolbox || $("mail-toolbox"));
@@ -611,10 +611,13 @@ function setOptions(Reset) {
 		highlight : !0,
 		hlstyle   : 'background:rgba(252,252,0,0.6); color: #000',
 		evdm      : !0,
+		evdmki    : !0,
 		progltr   : !1,
 		cbc       : !0,
 		gotarget  : !1,
 		repdelay  :  3,
+		textcl    : !1,
+		ignhttp   : !1,
 		cltrack   : !0
 	};
 	let lwl = {
