@@ -22,5 +22,7 @@
 <!ENTITY reset.label "重置設定">
 <!ENTITY ignhttp.title "忽略非 HTTP(s) 協議鏈接">
 <!ENTITY ignhttp.tooltip "此選項將使本附加元件忽略所有非 HTTP/HTTPS 協議的鏈接。">
+<!ENTITY textcl.title "轉換文本鏈接">
+<!ENTITY textcl.tooltip "將文本狀態的鏈接轉換成可直接點擊的鏈接。需要事件委託模式。">
 <!ENTITY cltrack.title "追踪鏈接">
 <!ENTITY cltrack.content "將會記錄所有經過處理的鏈接，可以在工具欄按鈕上右鍵以快速將域名添加到白名單。">
