@@ -9,7 +9,7 @@
 <!ENTITY hlstyle.title "高亮樣式">
 <!ENTITY hlstyle.content "本樣式將被應用到經過處理的鏈接標籤上">
 <!ENTITY repdelay.title "重複處理間隔">
-<!ENTITY repdelay.tooltip "在指定秒之後再次處理網頁上的鏈接。只在不使用事件委託模式時有效，設置為 0 即禁用。">
+<!ENTITY repdelay.tooltip "在指定秒之後再次處理頁面上的鏈接。只在不使用事件委託模式時有效，設置為 0 即禁用。">
 <!ENTITY evdm.title "使用事件委托模式">
 <!ENTITY evdm.tooltip "監聽點擊事件處理鏈接。本模式下實時高亮和計數器將會無效。">
 <!ENTITY cbc.title "接管複製鏈接地址菜單">
@@ -18,7 +18,9 @@
 <!ENTITY progltr.tooltip "使用 HTTP 監聽器捕捉 3xx 跳轉。例如將短鏈接還原成長鏈接。">
 <!ENTITY gotarget.title "遵守 target 屬性">
 <!ENTITY gotarget.tooltip "是否檢查並遵守鏈接的 target 屬性。">
-<!ENTITY reset.tooltip "還原所有設置到默認值">
-<!ENTITY reset.label "重置設置">
+<!ENTITY reset.tooltip "還原所有設定到默認值">
+<!ENTITY reset.label "重置設定">
+<!ENTITY ignhttp.title "忽略非 HTTP(s) 協議鏈接">
+<!ENTITY ignhttp.tooltip "此選項將使本附加元件忽略所有非 HTTP/HTTPS 協議的鏈接。">
 <!ENTITY cltrack.title "追踪鏈接">
 <!ENTITY cltrack.content "將會記錄所有經過處理的鏈接，可以在工具欄按鈕上右鍵以快速將域名添加到白名單。">
