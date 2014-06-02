@@ -22,7 +22,8 @@
 <!ENTITY reset.label "Einstellungen zurücksetzen">
 <!ENTITY cltrack.title "Links Verfolgen">
 <!ENTITY cltrack.content "Diese Option verfolgt gesäuberte Links um ihre Domains durch Rechtsklick des Menübuttons einfach in die Ausnahmeliste einfügen zu können.">
+<!ENTITY ignhttp.title "Nicht-http/s Links ignorieren">
+<!ENTITY ignhttp.tooltip "Diese Option aktiviert, dass nicht-http/s Links bei der Prüfung nach verschachtelten Links ignoriert werden.">
 <!ENTITY textcl.title "Erfasse Text Links">
 <!ENTITY textcl.tooltip "Erlaubt klicken auf nicht verlinkte Text Links um die wie normale Links zu öffnen - Benötigt den Event Delegations Modus.">
-<!ENTITY cltrack.title "Link Verfolgung">
 <!ENTITY cltrack.content "Das Aktivieren dieser Option erlaubt die Nachverfolgung von gesäuberten Links um ihre Domains leichter mit einem Rechtsklick auf den Toolbar Button in die Ausnahmeliste aufnehmen zu können.">
