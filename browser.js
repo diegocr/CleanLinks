@@ -382,14 +382,14 @@ const cleanlinks = {
 		this.d(['SEL', s.isCollapsed, s.focusNode&&s.focusNode.data, s.focusOffset]);
 
 		if(s.isCollapsed && s.focusNode && s.focusNode.data && (p=s.focusOffset)) {
-			let zx = ' "\'<>\n\r\t()[]|=';
+			let zx = ' "\'<>\n\r\t()[]|';
 			c = s.focusNode.data.substr(--p);
 			t = n.innerHTML.replace(/<\/?wbr>/ig,'').replace(/<[^>]+?>/g,' ');
 			p = t.indexOf(c)+1;
 			if(p === 0) p=(t=n.textContent).indexOf(c)+1;
 			while(p && !~zx.indexOf(t[p])) --p;
 			if((t = (p&&t.substr(++p)||t).match(/^\s*(?:\w+:\/\/|www\.)[^\s">]{4,}/))) {
-				t = t.shift().replace(RegExp("["+zx.replace(/(.)/g,'\\$1')+"]+$"),'');
+				t = t.shift().trim().replace(RegExp("["+zx.replace(/(.)/g,'\\$1')+"]+$"),'');
 				if(!~t.indexOf('://')) t = 'http://'+t;
 			}
 			this.d(['RES',p,t,c]);
