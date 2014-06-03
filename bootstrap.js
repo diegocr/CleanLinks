@@ -28,7 +28,8 @@ let _ = (function(strings) {
 	return function _(key) strings.GetStringFromName(key);
 })(Services.strings.createBundle("chrome://cleanlinks/locale/browser.properties"));
 
-let FaviconService = Cc["@mozilla.org/browser/favicon-service;1"]
+let FaviconService = Cc["@mozilla.org/browser/favicon-service;1"];
+FaviconService = FaviconService && FaviconService
 	.getService(Ci.nsIFaviconService).QueryInterface(Ci.mozIAsyncFavicons);
 
 let i$ = {

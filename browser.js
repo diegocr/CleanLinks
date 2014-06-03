@@ -379,7 +379,7 @@ const cleanlinks = {
 	tcl: function(n) {
 		let c,p,t,s = n.ownerDocument.defaultView.getSelection();
 
-		this.d(['SEL', s.isCollapsed, s.focusNode&&s.focusNode.data, s.focusOffset]);
+		// this.d(['SEL', s.isCollapsed, s.focusNode&&s.focusNode.data, s.focusOffset]);
 
 		if(s.isCollapsed && s.focusNode && s.focusNode.data && (p=s.focusOffset)) {
 			let zx = ' "\'<>\n\r\t()[]|';
@@ -392,10 +392,10 @@ const cleanlinks = {
 				t = t.shift().trim().replace(RegExp("["+zx.replace(/(.)/g,'\\$1')+"]+$"),'');
 				if(!~t.indexOf('://')) t = 'http://'+t;
 			}
-			this.d(['RES',p,t,c]);
+			// this.d(['RES',p,t,c]);
 		}
 
-		this.d(['TEXTCL ' + t]);
+		// this.d(['TEXTCL ' + t]);
 
 		return t;
 	},
