@@ -126,6 +126,7 @@ let i$ = {
 				return setOptions(!0);
 
 			case 'cleanlinks-cltrack':
+				if (!cltrack) break;
 				d = JSON.parse(d);
 				LOG([t].concat(d));
 				return addon.cltrack && (cltrack[d[0]]=d[1]);
@@ -364,6 +365,8 @@ function loadIntoWindow(window) {
 
 					while(x.firstChild)
 						x.removeChild(x.firstChild);
+					
+					if (!cltrack) break;
 
 					let r = Math.min(14,Math.max(Object.keys(cltrack).length,8)), wpr = 30;
 					e('vbox',{style:'padding:4px;min-width:320px'},[

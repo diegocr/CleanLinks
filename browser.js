@@ -23,7 +23,8 @@ function _(key) strings.GetStringFromName(key)
 let handledElsewhere = function() !1;
 
 try {
-	let {XPIProvider:xS} = Components.utils.import('resource://gre/modules/XPIProvider.jsm', {});
+	let {XPIProvider:xS} = Cu.import('resource://gre/modules/'
+	+(parseInt(Services.appinfo.version)>29?'addons/':'')+'XPIProvider.jsm', {});
 	if((xS = xS.bootstrapScopes['{c9d31470-81c6-4e3e-9a37-46eb9237ed3a}']))
 		handledElsewhere = function(n) !!xS.getProvider(n,xS.getPrefs());
 } catch(e) {
