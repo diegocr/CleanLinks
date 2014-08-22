@@ -625,7 +625,7 @@ function setOptions(Reset) {
 		cltrack   : !0
 	};
 	let lwl = {
-		zh : 'auth.alipay.com'
+		zh : 'auth.alipay.com,widget.weibo.com'
 	};
 	let locale =  Cc["@mozilla.org/chrome/chrome-registry;1"]
 		.getService(Ci.nsIXULChromeRegistry).getSelectedLocale("global");
