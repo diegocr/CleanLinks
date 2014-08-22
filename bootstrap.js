@@ -246,6 +246,31 @@ let i$ = {
 (function(global) global.loadSubScript = function(file,scope)
 	Services.scriptloader.loadSubScript(file,scope||global))(this);
 
+function copyLinkController30(window) {
+	let clipboardHelper = Cc["@mozilla.org/widget/clipboardhelper;1"]
+		.getService(Ci.nsIClipboardHelper);
+
+	let { nsContextMenu } = window;
+	if (nsContextMenu) {
+		nsContextMenu.prototype.__copyLink_Orig4CL = nsContextMenu.prototype.copyLink;
+		nsContextMenu.prototype.copyLink = function() {
+			let link = i$.getLink(window,this.linkURL);
+			if(link) {
+				clipboardHelper.copyString(link, window.document);
+			} else {
+				this.__copyLink_Orig4CL.apply(this, arguments);
+			}
+		};
+	}
+
+	this.shutdown = function() {
+		if (nsContextMenu) {
+			nsContextMenu.prototype.copyLink = nsContextMenu.prototype.__copyLink_Orig4CL;
+			delete nsContextMenu.prototype.__copyLink_Orig4CL;
+		}
+	};
+}
+
 function copyLinkController(window) {
 	let clipboardHelper = Cc["@mozilla.org/widget/clipboardhelper;1"]
 		.getService(Ci.nsIClipboardHelper);
@@ -365,7 +390,7 @@ function loadIntoWindow(window) {
 
 					while(x.firstChild)
 						x.removeChild(x.firstChild);
-					
+
 					if (!cltrack) break;
 
 					let r = Math.min(14,Math.max(Object.keys(cltrack).length,8)), wpr = 30;
@@ -467,7 +492,12 @@ function loadIntoWindow(window) {
 	if(addon.branch.getBoolPref('cbc')) {
 		wmsData.controller=3==ia
 			? new copyLinkMobile(window)
-			: new copyLinkController(window);
+			: (
+				// TODO: SeaMonkey..
+				parseInt(Services.appinfo.version) > 29
+					? new copyLinkController30(window)
+					: new copyLinkController(window)
+			);
 	}
 
 	e('tooltip',{id:addon.tag+'-tooltip'},0,$('mainPopupSet'))
