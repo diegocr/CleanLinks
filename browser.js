@@ -265,8 +265,9 @@ const cleanlinks = {
 			if(!/^https?:/.test(lu&&lu.spec||h)) return h;
 		}
 
-		if(/\.google\.[a-z.]+\/search\?(?:.+&)?q=http/i.test(h))
-			return h;
+		if(/\.google\.[a-z.]+\/search\?(?:.+&)?q=http/i.test(h)
+		|| /^https?:\/\/www\.amazon\.[\w.]+\/.*\/voting\/cast\//.test(h)
+		  )	return h;
 
 		let lmt = 4, s = 0, p, ht = null, rp = this.op.remove, l = h, Y = /\.yahoo.com$/.test(b.asciiHost);
 		h.replace(/^javascript:.+(["'])(https?(?:\:|%3a).+?)\1/gi,function(a,b,c)(++s,h=c));
@@ -378,11 +379,11 @@ const cleanlinks = {
 	},
 
 	tcl: function(n) {
-		let c,p,t,s = n.ownerDocument.defaultView.getSelection();
+		let c,p,t,s = n.ownerDocument && n.ownerDocument.defaultView.getSelection();
 
 		// this.d(['SEL', s.isCollapsed, s.focusNode&&s.focusNode.data, s.focusOffset]);
 
-		if(s.isCollapsed && s.focusNode && s.focusNode.data && (p=s.focusOffset)) {
+		if(s && s.isCollapsed && s.focusNode && s.focusNode.data && (p=s.focusOffset)) {
 			let zx = ' "\'<>\n\r\t()[]|';
 			c = s.focusNode.data.substr(--p);
 			t = n.innerHTML.replace(/<\/?wbr>/ig,'').replace(/<[^>]+?>/g,' ');
