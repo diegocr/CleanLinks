@@ -641,7 +641,8 @@ function setOptions(Reset) {
 			+ 'login.live.com,plus.google.com,www.facebook.com,twitter.com,'
 			+ 'static.ak.facebook.com,www.linkedin.com,www.virustotal.com,'
 			+ 'account.live.com,admin.brightcove.com,www.mywot.com,'
-			+ 'webcache.googleusercontent.com,web.archive.org,accounts.youtube.com',
+			+ 'webcache.googleusercontent.com,web.archive.org,accounts.youtube.com,'
+			+ 'signin.ebay.com',
 		highlight : !0,
 		hlstyle   : 'background:rgba(252,252,0,0.6); color: #000',
 		evdm      : !0,
