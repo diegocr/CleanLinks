@@ -296,7 +296,7 @@ const cleanlinks = {
 			}
 		}
 
-		while(--lmt && (/(?:.\b|3D)([a-z]{2,}(?:\:|%3a)(?:\/|%2f).+)$/i.test(h) || /(?:[?=]|[^\/]\/)(www\..+)$/i.test(h))) {
+		while(--lmt && (/(?:.\b|3D)([a-z]{2,}(?:\:|%3a)(?:\/|%2f){2}.+)$/i.test(h) || /(?:[?=]|[^\/]\/)(www\..+)$/i.test(h))) {
 			h = RegExp.$1;
 			if(~(p = h.indexOf('&')))
 				h = h.substr(0,p);
@@ -329,6 +329,16 @@ const cleanlinks = {
 				}
 			}
 		}
+
+	/*	if (l != h) {
+			try {
+				this.nu(h);
+			} catch(e) {
+				this.d('Got an invalid URL: ' + h);
+				this.d(e);
+				h = l;
+			}
+		}*/
 
 		if(Y) h = h.replace(/\/R[KS]=\d.*$/,'');
 
