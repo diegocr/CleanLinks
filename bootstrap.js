@@ -45,6 +45,18 @@ let i$ = {
 			delete addon.obson;
 		}
 	},
+	addHTTPObserver2: function() {
+		if(!addon.obson2 && addon.httpomr && addon.enabled) {
+			Services.obs.addObserver(i$, 'http-on-modify-request', false);
+			addon.obson2 = !0;
+		}
+	},
+	removeHTTPObserver2: function() {
+		if(addon.obson2) {
+			Services.obs.removeObserver(i$, 'http-on-modify-request', false);
+			delete addon.obson2;
+		}
+	},
 	getLink: function(win,link,base) {
 		win = win.QueryInterface(Ci.nsIInterfaceRequestor)
 			.getInterface(Ci.nsIWebNavigation)
@@ -67,6 +79,28 @@ let i$ = {
 		LOG([link,clt]);
 		return (clt != link) ? (bro.blink(win), clt) : null;
 	},
+	getChannelWindow: function(c,ctx) {
+		if(c instanceof Ci.nsIHttpChannel) {
+			let getDOMWindow = function(cb) {
+				if(cb instanceof Ci.nsIInterfaceRequestor) {
+					if(Ci.nsILoadContext) try {
+						if(ctx) {
+							let x = cb.getInterface(Ci.nsILoadContext);
+							return (ctx.value = x).associatedWindow;
+						}
+						return cb.getInterface(Ci.nsILoadContext).associatedWindow;
+					} catch(e) {} try {
+						return cb.getInterface(Ci.nsIDOMWindow);
+					} catch(e) {}
+				}
+				return null;
+			};
+			return c.notificationCallbacks && getDOMWindow(c.notificationCallbacks) ||
+				(c.loadGroup && c.loadGroup.notificationCallbacks)
+				&& getDOMWindow(c.loadGroup.notificationCallbacks) || null;
+		}
+		return null;
+	},
 	observe: function(s,t,d) {
 		switch(t) {
 			case 'nsPref:changed':
@@ -75,6 +109,7 @@ let i$ = {
 					case 'cltrack':
 					case 'enabled':
 					case 'progltr':
+					case 'httpomr':
 						let v = addon.branch.getBoolPref(d);
 
 						if(d === 'cbc') {
@@ -109,10 +144,12 @@ let i$ = {
 						if(v === true) {
 
 							this.addHTTPObserver();
+							this.addHTTPObserver2();
 
 						} else {
 
 							this.removeHTTPObserver();
+							this.removeHTTPObserver2();
 						}
 						if(d === 'enabled') {
 							this.wmForeach(this[(v?'At':'De')+'tachDOMLoad']);
@@ -130,6 +167,30 @@ let i$ = {
 				d = JSON.parse(d);
 				LOG([t].concat(d));
 				return addon.cltrack && (cltrack[d[0]]=d[1]);
+
+			case 'http-on-modify-request': {
+				let c = s.QueryInterface(Ci.nsIHttpChannel);
+
+				if (s.loadFlags & s.LOAD_INITIAL_DOCUMENT_URI) {
+					/**
+					 * TODO: Move the link cleaning stuff to a module so
+					 * that we don't have to rely on the channel's window
+					 */
+					let win = this.getChannelWindow(c);
+					if (win) {
+						LOG('window: ' + win.location);
+						let link = this.getLink(win, c.URI.spec, c.URI);
+						if (link) try {
+							s.redirectTo(Services.io.newURI(link, null, null));
+						} catch(e) {
+							Cu.reportError(e);
+						}
+					} else {
+						LOG('No window for document_uri: ' + c.URI.spec);
+					}
+				}
+
+			}	break;
 
 			case 'http-on-examine-response': {
 				let c = s.QueryInterface(Ci.nsIHttpChannel);
@@ -648,6 +709,7 @@ function setOptions(Reset) {
 		evdm      : !0,
 		evdmki    : !0,
 		progltr   : !1,
+		httpomr   : !1,
 		cbc       : !0,
 		gotarget  : !1,
 		repdelay  :  3,
@@ -743,9 +805,10 @@ function startup(data) {
 			Services.wm.addListener(i$);
 		}
 
-		['enabled','progltr','cltrack'].forEach(function(p)
+		['enabled','progltr','httpomr','cltrack'].forEach(function(p)
 			addon[p] = addon.branch.getBoolPref(p));
 		i$.addHTTPObserver();
+		i$.addHTTPObserver2();
 
 		Services.obs.addObserver(i$,'cleanlinks-resetoptions', false);
 		Services.obs.addObserver(i$,'cleanlinks-cltrack', false);
@@ -764,6 +827,7 @@ function shutdown(data, reason) {
 	addon.branch.removeObserver("", i$);
 
 	i$.removeHTTPObserver();
+	i$.removeHTTPObserver2();
 	// i$.shutdown();
 
 	if(aUI) {

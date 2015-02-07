@@ -12,6 +12,7 @@
   <setting pref="extensions.cleanlinks.evdm" type="bool" title="&evdm.title;" tooltiptext="&evdm.tooltip;"></setting>
   <setting pref="extensions.cleanlinks.cbc" type="bool" title="&cbc.title;" tooltiptext="&cbc.tooltip;"></setting>
   <setting pref="extensions.cleanlinks.progltr" type="bool" title="&progltr.title;" tooltiptext="&progltr.tooltip;"></setting>
+  <setting pref="extensions.cleanlinks.httpomr" type="bool" title="Use HTTP Observer" tooltiptext="Setup an http on-modify-request listener for document_uri requests."></setting>
   <setting pref="extensions.cleanlinks.gotarget" type="bool" title="&gotarget.title;" tooltiptext="&gotarget.tooltip;"></setting>
   <setting pref="extensions.cleanlinks.textcl" type="bool" title="&textcl.title;" tooltiptext="&textcl.tooltip;"></setting>
   <setting pref="extensions.cleanlinks.ignhttp" type="bool" title="&ignhttp.title;" tooltiptext="&ignhttp.tooltip;"></setting>
