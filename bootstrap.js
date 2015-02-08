@@ -178,7 +178,6 @@ let i$ = {
 					 */
 					let win = this.getChannelWindow(c);
 					if (win) {
-						LOG('window: ' + win.location);
 						let link = this.getLink(win, c.URI.spec, c.URI);
 						if (link) try {
 							s.redirectTo(Services.io.newURI(link, null, null));
@@ -287,6 +286,7 @@ let i$ = {
 		});
 	},
 	AttachDOMLoad: function(window,wmsData) {
+		if (addon.obson2) return;
 		wmsData = wmsData || addon.wms.get(window);
 		if(!wmsData) return;
 		let gBrowser = getBrowser(window);
@@ -823,6 +823,7 @@ function shutdown(data, reason) {
 	if(reason == APP_SHUTDOWN)
 		return;
 
+	Services.obs.removeObserver(i$,'cleanlinks-cltrack');
 	Services.obs.removeObserver(i$,'cleanlinks-resetoptions');
 	addon.branch.removeObserver("", i$);
 
