@@ -180,8 +180,10 @@ let i$ = {
 					if (win) {
 						LOG('window: ' + win.location);
 						let link = this.getLink(win, c.URI.spec, c.URI);
-						if (link) try {
-							s.redirectTo(Services.io.newURI(link, null, null));
+						if (link && link != s.originalURI.spec) try {
+							let uri = Services.io.newURI(link, null, null);
+							s.originalURI = uri;
+							s.redirectTo(uri);
 						} catch(e) {
 							Cu.reportError(e);
 						}
