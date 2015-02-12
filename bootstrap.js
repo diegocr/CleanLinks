@@ -171,7 +171,7 @@ let i$ = {
 			case 'http-on-modify-request': {
 				let c = s.QueryInterface(Ci.nsIHttpChannel);
 
-				if (s.loadFlags & s.LOAD_INITIAL_DOCUMENT_URI) {
+				if (s.loadFlags & s.LOAD_DOCUMENT_URI) {
 					/**
 					 * TODO: Move the link cleaning stuff to a module so
 					 * that we don't have to rely on the channel's window
