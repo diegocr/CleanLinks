@@ -180,9 +180,13 @@ let i$ = {
 					if (win) {
 						let link = this.getLink(win, c.URI.spec, c.URI);
 						if (link && link != s.originalURI.spec) try {
+							let dom = win.document.domain;
 							let uri = Services.io.newURI(link, null, null);
-							s.originalURI = uri;
-							s.redirectTo(uri);
+							if (dom === c.URI.host || dom !== uri.host) {
+								s.originalURI = uri;
+								s.redirectTo(uri);
+							}
+							else LOG('^ Skipping redirect: ' + c.URI.spec + '  ->  ' + link);
 						} catch(e) {
 							Cu.reportError(e);
 						}
