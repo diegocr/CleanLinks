@@ -12,6 +12,7 @@
 let {classes:Cc,interfaces:Ci,utils:Cu,results:Cr} = Components,addon;
 
 Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 function rsc(n) 'resource://' + addon.tag + '/' + n;
 function LOG(m) addon.debug && (m = addon.name + ' Message @ '
@@ -403,7 +404,14 @@ function setFavicon(uri, cell) {
 	});
 }
 
-try{const{CustomizableUI:aUI}=Cu.import("resource:///modules/CustomizableUI.jsm",{})}catch(e){}
+XPCOMUtils.defineLazyGetter(this, 'aUI', function() {
+	if (3!=ia) try {
+		var { CustomizableUI } = Cu.import('resource:///modules/CustomizableUI.jsm', {});
+	} catch(e) {
+		Cu.reportError(e);
+	}
+	return typeof CustomizableUI !== 'undefined' && CustomizableUI;
+});
 
 function loadIntoWindow(window) {
 	if(wt!=window.document.documentElement.getAttribute("windowtype"))
