@@ -499,8 +499,9 @@ function loadIntoWindow(window) {
 					let t = $(addon.tag+'-listbox'), d = getSkipDomA(), cc = 0;
 					for(let l in cltrack) {
 						try {
-							let u1 = Services.io.newURI(l,null,null), c1, c2,
-								u2 = Services.io.newURI(cltrack[l],null,null);
+							let u1 = Services.io.newURI(l,null,null),
+								u2 = Services.io.newURI(cltrack[l],null,null),
+								c1, c2, item;
 							if(~d.indexOf(u1.asciiHost)) continue;
 							c1 = e('listcell',{
 								label:l,style:'max-width:310px',
@@ -508,7 +509,10 @@ function loadIntoWindow(window) {
 							c2 = e('listcell',{
 								label:u2.spec,style:'max-width:270px',
 								'class':'listcell-iconic', crop:'right'})
-							e('listitem',{allowevents:!0,maxheight:18},[c1,c2],t);
+							item = e('listitem',{allowevents:!0,maxheight:18},[c1,c2],t);
+							item.addEventListener("dblclick", function(event) {
+								window.gBrowser.selectedTab = window.gBrowser.addTab(event.target.value);
+							});
 							setFavicon(u1,c1);
 							setFavicon(u2,c2);
 							++cc;
