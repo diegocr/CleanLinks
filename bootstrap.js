@@ -74,9 +74,13 @@ let i$ = {
 		if(!win.diegocr)
 			return null;
 
-		let bro = win.diegocr[addon.tag],
-			clt = bro.cl(link,base);
+		let bro = win.diegocr[addon.tag];
+		if(bro.skip) {
+			bro.skip = false;
+			return null;
+		}
 
+		let clt = bro.cl(link,base);
 		LOG([link,clt]);
 		return (clt != link) ? (bro.blink(win), clt) : null;
 	},
@@ -511,6 +515,7 @@ function loadIntoWindow(window) {
 								'class':'listcell-iconic', crop:'right'})
 							item = e('listitem',{allowevents:!0,maxheight:18},[c1,c2],t);
 							item.addEventListener("dblclick", function(event) {
+								window.diegocr[addon.tag].skip = true;
 								window.gBrowser.selectedTab = window.gBrowser.addTab(event.target.value);
 							});
 							setFavicon(u1,c1);
