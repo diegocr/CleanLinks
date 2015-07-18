@@ -709,7 +709,7 @@ function getSkipDomA() {
 function setOptions(Reset) {
 	let Options = {
 		enabled   : !0,
-		skipwhen  : 'ServiceLogin|imgres\\?|watch%3Fv|auth\\?client_id|signup|bing\\.com/widget|'
+		skipwhen  : 'ServiceLogin|imgres\\?|searchbyimage\\?|watch%3Fv|auth\\?client_id|signup|bing\\.com/widget|'
 			+ 'oauth|openid\\.ns|\\.mcstatic\\.com|sVidLoc|[Ll]ogout|submit\\?url=|magnet:',
 		remove    : '(?:ref|aff)\\w*|utm_\\w+|(?:merchant|programme|media)ID',
 		skipdoms  : 'accounts.google.com,docs.google.com,translate.google.com,'
