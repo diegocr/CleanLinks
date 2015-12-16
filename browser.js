@@ -275,7 +275,7 @@ const cleanlinks = {
 		let lmt = 4, s = 0, p, ht = null, rp = this.op.remove, l = h, Y = /\.yahoo.com$/.test(b.asciiHost);
 		h.replace(/^javascript:.+(["'])(https?(?:\:|%3a).+?)\1/gi,function(a,b,c)(++s,h=c));
 
-		if(/((?:aHR0|d3d3)[A-Z0-9+=\/]+)/gi.test(h)) try {
+		if(/\b((?:aHR0|d3d3)[A-Z0-9+=\/]+)/gi.test(h)) try {
 			let r = RegExp.$1;
 			if(Y) r = r.replace(/\/RS.*$/,'');
 			let d = decodeURIComponent(atob(r));
