@@ -68,6 +68,9 @@ const cleanlinks = {
 					: (typeof window.openUILink !== 'function')
 					? function(a,b) (b.setAttribute('href', a), b.click())
 					: function(a,b,c) {
+						if (c.button == 0 && c.altKey) {
+							return false; // alt+click, do nothing
+						}
 						if(this.op.gotarget && 0 == c.button && !(c.shiftKey || c.ctrlKey || c.metaKey || c.altKey)) {
 							let t = b.hasAttribute('target') && b.getAttribute('target') || '_self';
 							if("_blank" == t) c.button = 1;
@@ -88,7 +91,7 @@ const cleanlinks = {
 
 								if(wnd) try {
 									wnd.location = a;
-									return;
+									return true;
 								} catch(e) {
 									Cu.reportError(e);
 								}
@@ -99,6 +102,7 @@ const cleanlinks = {
 							inBackground: (function(p,n) p.getPrefType(n)
 							&&	p.getBoolPref(n))(Services.prefs,
 								'browser.tabs.loadInBackground')});
+						return true;
 					}.bind(t);
 				break;
 			case t.acev:
@@ -437,14 +441,13 @@ const cleanlinks = {
 				z = k || n.href;
 				x = t.cl(z,n.baseURI);
 				if(k || z != x) {
-					if(t.op.highlight) {
-						t.hl(n);
-					}
 					ev.stopPropagation();
 					ev.preventDefault();
 
-					t.edc(x,n,ev);
-					t.blink(window,k && 217);
+					if (t.edc(x,n,ev)) {
+						if (t.op.highlight) t.hl(n);
+						t.blink(window,k && 217);
+					}
 				}
 			}
 		}
