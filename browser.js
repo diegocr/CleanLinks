@@ -25,8 +25,11 @@ let handledElsewhere = function() !1;
 try {
 	let {XPIProvider:xS} = Cu.import('resource://gre/modules/'
 	+(parseInt(Services.appinfo.version)>29?'addons/':'')+'XPIProvider.jsm', {});
-	if((xS = xS.bootstrapScopes['{c9d31470-81c6-4e3e-9a37-46eb9237ed3a}']))
-		handledElsewhere = function(n) !!xS.getProvider(n,xS.getPrefs());
+	if((xS = xS.bootstrapScopes['{c9d31470-81c6-4e3e-9a37-46eb9237ed3a}'])) {
+		if (typeof xS.getPrefs === 'function') {
+			handledElsewhere = function(n) !!xS.getProvider(n,xS.getPrefs());
+		}
+	}
 } catch(e) {
 	Cu.reportError(e);
 }

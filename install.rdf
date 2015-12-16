@@ -4,7 +4,7 @@
 		<em:id>{158d7cb3-7039-4a75-8e0b-3bd0a464edd2}</em:id>
 		<em:type>2</em:type>
 		<em:name>Clean Links</em:name>
-		<em:version>2.7</em:version>
+		<em:version>2.8a1</em:version>
 		<em:creator>Diego Casorran</em:creator>
 		<em:contributor>Eduard Braun</em:contributor>
 		<em:contributor>Simon Chan</em:contributor>
@@ -47,7 +47,7 @@
 				<!-- Firefox -->
 				<em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
 				<em:minVersion>22.0</em:minVersion>
-				<em:maxVersion>36.*</em:maxVersion>
+				<em:maxVersion>43.*</em:maxVersion>
 			</Description>
 		</em:targetApplication>
 		<em:targetApplication>
