@@ -63,6 +63,16 @@ const cleanlinks = {
 				t.ios = Cc["@mozilla.org/network/io-service;1"]
 					.getService(Ci.nsIIOService);
 				t.observe(null,'nsPref:changed','skipdoms');
+				if (t.ios.newChannel !== 'function') {
+					t.newChannel = function(aSpec, aBaseURI) {
+						return this.ios.newChannel2(aSpec,
+							null,
+							aBaseURI,
+							null, null, null,
+							Ci.nsILoadInfo.SEC_NORMAL,
+							Ci.nsIContentPolicy.TYPE_OTHER);
+					};
+				}
 				window.addEventListener(t.acev, t, !1);
 				t.edc = t.mob ? (function(a) window.content.location = a)
 					: (typeof window.openUILink !== 'function')
@@ -324,7 +334,7 @@ const cleanlinks = {
 
 		try {
 			// Check if the protocol can be handled...
-			this.ios.newChannel(h,null,b||null);
+			this.newChannel(h, b||null);
 		} catch(e) {
 			if(e.result == Cr.NS_ERROR_UNKNOWN_PROTOCOL) {
 				h = l;
@@ -548,6 +558,10 @@ const cleanlinks = {
 			b = this.nu(b);
 		}
 		return this.ios.newURI(u,null,b||null);
+	},
+
+	newChannel: function(aSpec, aBaseURI) {
+		return this.ios.newChannel(aSpec, null, aBaseURI);
 	},
 
 	observe: function(s, t, d) {
