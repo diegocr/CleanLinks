@@ -18,7 +18,7 @@ function rsc(n) 'resource://' + addon.tag + '/' + n;
 function LOG(m) addon.debug && (m = addon.name + ' Message @ '
 	+ (new Date()).toISOString() + "\n> " + (Array.isArray(m) ? m.join("\n> "):m)
 	+ "\n" + new Error().stack.split("\n").map(s => s.replace(/^(.*@).+\//,'$1'))
-	.join("\n"), dump(m + "\n"), Services.console.logStringMessage(m));
+	.join("\n"), dump(m + "\n"), console.log(m));
 
 let ia = Services.appinfo.ID[3],
 	wt = 5==ia?'mail:3pane'
@@ -28,6 +28,20 @@ let ia = Services.appinfo.ID[3],
 let _ = (function(strings) {
 	return function _(key) strings.GetStringFromName(key);
 })(Services.strings.createBundle("chrome://cleanlinks/locale/browser.properties"));
+
+let console = (function() {
+		try {
+			let { console } = Cu.import("resource://gre/modules/Console.jsm", {});
+			return console;
+		}
+		catch (ex) {}
+
+		let conemu = {
+			error: Cu.reportError.bind(Cu),
+			log: Services.console.logStringMessage.bind(Services.console)
+		};
+		return conemu;
+	})();
 
 let FaviconService = Cc["@mozilla.org/browser/favicon-service;1"];
 FaviconService = FaviconService && FaviconService
