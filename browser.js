@@ -353,7 +353,7 @@ const cleanlinks = {
 		if( s || rp.test(h)) {
 			if(~(p = h.indexOf('#'))) (ht = h.substr(p), h = h.substr(0,p));
 
-			h = h.replace('&amp;','&','g').replace(rp,'').replace(/[?&]$/,'')
+			h = h.replace(/&amp;/g, '&').replace(rp,'').replace(/[?&]$/,'')
 				+ (ht && /^[\w\/#!-]+$/.test(ht) ? ht : (this.evdm ? '':this.tag_h));
 		}
 
