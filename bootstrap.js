@@ -340,7 +340,7 @@ function copyLinkController30(window) {
 	if (nsContextMenu) {
 		nsContextMenu.prototype.__copyLink_Orig4CL = nsContextMenu.prototype.copyLink;
 		nsContextMenu.prototype.copyLink = function() {
-			let link = i$.getLink(window,this.linkURL);
+			let link = addon.enabled && i$.getLink(window,this.linkURL);
 			if(link) {
 				clipboardHelper.copyString(link, window.document);
 			} else {
@@ -394,7 +394,7 @@ function copyLinkMobile(window) {
 		try {
 			aLink = _getLinkURL.call(nwndcm,aLink);
 
-			if(aLink) {
+			if(addon.enabled && aLink) {
 				aLink = i$.getLink(window,aLink) || aLink;
 			}
 		} catch(e) {
