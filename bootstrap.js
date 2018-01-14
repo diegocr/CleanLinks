@@ -73,52 +73,12 @@ let i$ = {
 		}
 	},
 	getLink: function(win,link,base) {
-		win = win.QueryInterface(Ci.nsIInterfaceRequestor)
-			.getInterface(Ci.nsIWebNavigation)
-			.QueryInterface(Ci.nsIDocShell)
-			.QueryInterface(Ci.nsIDocShellTreeItem).rootTreeItem
-			.QueryInterface(Ci.nsIInterfaceRequestor)
-			.getInterface(Ci.nsIDOMWindow)
-			.window;
-
-		/**
-		 * We might get a redirection from a non-browser window
-		 * Eg, Chatzilla loading remote fonts from CSS motif
-		 */
-		if(!win.diegocr)
-			return null;
-
-		let bro = win.diegocr[addon.tag];
-		if(bro.skip) {
-			bro.skip = false;
-			return null;
-		}
-
-		let clt = bro.cl(link,base);
+		let clt = addon.cleanLink(link,base);
 		LOG([link,clt]);
-		return (clt != link) ? (bro.blink(win), clt) : null;
+		return (clt != link) ? (this.blink(win), clt) : null;
 	},
-	getChannelWindow: function(c,ctx) {
-		if(c instanceof Ci.nsIHttpChannel) {
-			let getDOMWindow = function(cb) {
-				if(cb instanceof Ci.nsIInterfaceRequestor) {
-					if(Ci.nsILoadContext) try {
-						if(ctx) {
-							let x = cb.getInterface(Ci.nsILoadContext);
-							return (ctx.value = x).associatedWindow;
-						}
-						return cb.getInterface(Ci.nsILoadContext).associatedWindow;
-					} catch(e) {} try {
-						return cb.getInterface(Ci.nsIDOMWindow);
-					} catch(e) {}
-				}
-				return null;
-			};
-			return c.notificationCallbacks && getDOMWindow(c.notificationCallbacks) ||
-				(c.loadGroup && c.loadGroup.notificationCallbacks)
-				&& getDOMWindow(c.loadGroup.notificationCallbacks) || null;
-		}
-		return null;
+	blink: function(window) {
+		LOG('TODO: blink')
 	},
 	observe: function(s,t,d) {
 		switch(t) {
@@ -171,7 +131,7 @@ let i$ = {
 							this.removeHTTPObserver2();
 						}
 						if(d === 'enabled') {
-							this.wmForeach(this[(v?'At':'De')+'tachDOMLoad']);
+							// this.wmForeach(this[(v?'At':'De')+'tachDOMLoad']);
 						}
 					default:
 						break;
@@ -182,6 +142,7 @@ let i$ = {
 				return setOptions(!0);
 
 			case 'cleanlinks-cltrack':
+			LOG('CLTRACK')
 				if (!cltrack) break;
 				d = JSON.parse(d);
 				LOG([t].concat(d));
@@ -191,26 +152,22 @@ let i$ = {
 				let c = s.QueryInterface(Ci.nsIHttpChannel);
 
 				if (s.loadFlags & s.LOAD_DOCUMENT_URI) {
-					/**
-					 * TODO: Move the link cleaning stuff to a module so
-					 * that we don't have to rely on the channel's window
-					 */
-					let win = this.getChannelWindow(c);
-					if (win) {
-						let link = this.getLink(win, c.URI.spec, c.URI);
-						if (link && link != s.originalURI.spec) try {
-							let dom = win.document.domain;
-							let uri = Services.io.newURI(link, null, null);
-							if (dom === c.URI.host || dom !== uri.host) {
-								s.originalURI = uri;
-								s.redirectTo(uri);
-							}
-							else LOG('^ Skipping redirect: ' + c.URI.spec + '  ->  ' + link);
-						} catch(e) {
-							Cu.reportError(e);
-						}
-					} else {
-						LOG('No window for document_uri: ' + c.URI.spec);
+					let link = this.getLink(null, c.URI.spec, c.URI);
+					
+					LOG(['cleanLink-modreq', link, c.URI.spec, s.originalURI.spec])
+					
+					if (link && link != s.originalURI.spec) try {
+						// let dom = win.document.domain;
+						let uri = Services.io.newURI(link, null, null);
+						// if (dom === c.URI.host || dom !== uri.host) {
+							// s.originalURI = uri;
+							s.redirectTo(uri);
+							LOG('Redirecting to ' + uri.spec)
+						// }
+						// else LOG('^ Skipping redirect: ' + c.URI.spec + '  ->  ' + link);
+						// TODO FIXME: reinstantiate 182e58e50d29 (iframe redirections back to top-level document)
+					} catch(e) {
+						Cu.reportError(e);
 					}
 				}
 
@@ -295,31 +252,6 @@ let i$ = {
 		} else {
 			throw new Error('Unknown gBrowser instance.');
 		}
-	},
-	putc: function(doc,dsp) {
-		doc.addEventListener('getCleanLink', dsp, true);
-		loadSubScript(rsc('content.js'),doc.defaultView);
-	},
-	DetachDOMLoad: function(window,wmsData) {
-		wmsData = wmsData || addon.wms.get(window);
-		if(!wmsData) return;
-		let gBrowser = getBrowser(window);
-		gBrowser.removeEventListener('DOMContentLoaded', wmsData.domload, false);
-		i$.gBForeach(gBrowser,function(doc) {
-			// LOG('detaching from ' + doc.location.href);
-			doc.removeEventListener('getCleanLink',wmsData.getCleanLink,true);
-		});
-	},
-	AttachDOMLoad: function(window,wmsData) {
-		if (addon.obson2) return;
-		wmsData = wmsData || addon.wms.get(window);
-		if(!wmsData) return;
-		let gBrowser = getBrowser(window);
-		gBrowser.addEventListener('DOMContentLoaded', wmsData.domload, false);
-		i$.gBForeach(gBrowser,function(doc) {
-			// LOG('attaching to ' + doc.location.href);
-			i$.putc(doc,wmsData.getCleanLink);
-		});
 	},
 	onOpenWindow: function(aWindow) {
 		let domWindow = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindow);
@@ -459,12 +391,6 @@ function loadIntoWindow(window) {
 		return i;
 	}
 
-	loadSubScript(rsc('browser.js'), window);
-	window.diegocr[addon.tag].mob = 3==ia;
-	window.diegocr[addon.tag].addon = addon;
-	window.diegocr[addon.tag].LOG = LOG;
-	window.diegocr[addon.tag].rsc = rsc;
-
 	let wmsData = {
 		TBBHandler: function(ev) {
 			ev.preventDefault();
@@ -492,7 +418,7 @@ function loadIntoWindow(window) {
 								e('image',{src:rsc('icon.png')}),
 								e('vbox',{},[
 									e('label',{value:addon.name+' v'+addon.version,style:'font:italic 16px Georgia'}),
-									e('label',{value:'Copyright (c) 2014 Diego Casorran'}),
+									e('label',{value:'Copyright (c) 2017 Diego Casorran'}),
 									cLabel('https://github.com/diegocr/cleanlinks')
 								]),
 							]),
@@ -568,24 +494,8 @@ function loadIntoWindow(window) {
 				}
 				default:break;
 			}
-		},
-		getCleanLink: function(ev) {
-			let node = ev.target,
-				url = node.getAttribute('url');
-
-			node.setAttribute('url', i$.getLink(window,url,node.baseURI) || url);
-			ev.stopPropagation();
-		},
-		domload: function(ev) {
-			let doc = ev.originalTarget;
-
-			if(doc instanceof Ci.nsIDOMHTMLDocument) {
-
-				i$.putc(doc,this.getCleanLink);
-			}
 		}
 	};
-	wmsData.domload = wmsData.domload.bind(wmsData);
 
 	if(addon.branch.getBoolPref('cbc')) {
 		wmsData.controller=3==ia
@@ -642,8 +552,6 @@ function loadIntoWindow(window) {
 		}
 	}
 
-	i$.AttachDOMLoad(window,wmsData);
-
 	addon.wms.set(window,wmsData);
 	gNavToolbox=wmsData=undefined;
 
@@ -677,13 +585,6 @@ function unloadFromWindow(window) {
 	let $ = function(n) window.document.getElementById(n);
 	let btnId = addon.tag+'-toolbar-button',btn= $(btnId);
 
-	try {
-		window.diegocr[addon.tag].handleEvent({type:'unload'});
-		delete window.diegocr[addon.tag];
-	} catch(e) {
-		Cu.reportError(e);
-	}
-
 	if(addon.wms.has(window)) {
 		let wmsData = addon.wms.get(window);
 
@@ -697,9 +598,6 @@ function unloadFromWindow(window) {
 		if(wmsData.controller) {
 			wmsData.controller.shutdown();
 		}
-		if(wmsData.domload) {
-			i$.DetachDOMLoad(window,wmsData);
-		}
 		addon.wms.delete(window);
 	}
 
@@ -708,7 +606,7 @@ function unloadFromWindow(window) {
 	} else {
 		let gNavToolbox = window.gNavToolbox || $('mail-toolbox');
 		if(gNavToolbox && gNavToolbox.palette) {
-			for each(let node in gNavToolbox.palette) {
+			for(let node of gNavToolbox.palette) {
 				if(node && node.id == btnId) {
 					gNavToolbox.palette.removeChild(node);
 					break;
@@ -795,6 +693,10 @@ function VersionLTCheck(v) {
 		|| Services.vc.compare(addon.branch.getCharPref('version'),v) < 0;
 }
 
+function globalMMListener(ev) {
+	LOG('GOT MESSAGE ' + ev.data)
+}
+
 let scope = this;
 function startup(data) {
 	let tmp = {};
@@ -809,6 +711,17 @@ function startup(data) {
 			tag: data.name.toLowerCase().replace(/[^\w]/g,''),
 			wms: new WeakMap()
 		};
+		io.getProtocolHandler("resource")
+			.QueryInterface(Ci.nsIResProtocolHandler)
+			.setSubstitution(addon.tag,
+				io.newURI(__SCRIPT_URI_SPEC__+'/../',null,null));
+
+		let { Settings } = Cu.import('resource://cleanlinks/modules/settings.jsm', {});
+		addon.settings = Settings;
+
+		let { cleanLink } = Cu.import('resource://cleanlinks/modules/cleaner.jsm', {});
+		addon.cleanLink = cleanLink;
+
 		addon.branch = Services.prefs.getBranch('extensions.'+addon.tag+'.');
 		if("nsIPrefBranch2" in Ci)
 			addon.branch.QueryInterface(Ci.nsIPrefBranch2);
@@ -824,11 +737,6 @@ function startup(data) {
 		} else {
 			['At','De'].forEach(function(i)i$[i+'tachDOMLoad']=rsc);
 		}
-
-		io.getProtocolHandler("resource")
-			.QueryInterface(Ci.nsIResProtocolHandler)
-			.setSubstitution(addon.tag,
-				io.newURI(__SCRIPT_URI_SPEC__+'/../',null,null));
 
 		if(aUI) {
 			aUI.createWidget({
@@ -849,7 +757,11 @@ function startup(data) {
 
 		Services.obs.addObserver(i$,'cleanlinks-resetoptions', false);
 		Services.obs.addObserver(i$,'cleanlinks-cltrack', false);
-
+		
+		addon.fsid = addon.id.replace(/[^\w-]/g, '') + '-' + (Math.random()*Date.now()).toString(36);
+		Services.mm.addMessageListener('cleanlinks:' + addon.fsid, globalMMListener);
+		Services.mm.loadFrameScript(rsc("content.js?id=" + addon.fsid), true);
+		
 		// i$.startup();
 		addon.branch.setCharPref('version', addon.version);
 	});
@@ -859,6 +771,11 @@ function shutdown(data, reason) {
 
 	if(reason == APP_SHUTDOWN)
 		return;
+
+	let messageName = 'cleanlinks:' + addon.fsid;
+	Services.mm.removeMessageListener(messageName, globalMMListener);
+	Services.mm.broadcastAsyncMessage(messageName, 'unload');
+	Services.mm.removeDelayedFrameScript(rsc("content.js?id=" + addon.fsid));
 
 	Services.obs.removeObserver(i$,'cleanlinks-cltrack');
 	Services.obs.removeObserver(i$,'cleanlinks-resetoptions');
@@ -875,11 +792,22 @@ function shutdown(data, reason) {
 	}
 	i$.wmForeach(unloadFromWindow);
 
+	try {
+		Cu.unload(rsc('modules/cleaner.jsm'));
+		Cu.unload(rsc('modules/settings.jsm'));
+		// Cu.unload(rsc('modules/frame-script.jsm'));
+	}
+	catch (ex) {
+		Cu.reportError(ex);
+	}
+	
 	Services.io.getProtocolHandler("resource")
 		.QueryInterface(Ci.nsIResProtocolHandler)
 		.setSubstitution(addon.tag,null);
 
 	Services.strings.flushBundles();
+
+	addon = undefined;
 }
 
 function install(data, reason) {}
