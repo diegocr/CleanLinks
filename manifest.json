@@ -1,10 +1,11 @@
 {
 	"name": "Clean Links",
-	"description": "Converts obfuscated/nested links to genuine clean links",
+	"description": "__MSG_addon_description__",
 	"author": "Diego Casorran (creator), \nCimbali (contributor), \nEduard Braun (German translation), \nSimon Chan (Chinese and Taiwanese translations)",
 	"manifest_version": 2,
 	"version": "3.0-prealpha",
 	"homepage_url": "https://github.com/diegocr/CleanLinks",
+	"default_locale": "en_US",
 	"icons":
 	{
 		"48": "icon.png"

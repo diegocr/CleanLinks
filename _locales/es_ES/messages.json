@@ -1,0 +1,174 @@
+{
+"addon_description": {
+	"message": "Convierte enlaces enmascarados/anidados en auténticos enlaces limpios",
+	"description": ""
+},
+"browser_status": {
+	"message": "Estado:\u0020",
+	"description": ""
+},
+"browser_enabled": {
+	"message": "Activado",
+	"description": ""
+},
+"browser_disabled": {
+	"message": "Desactivado",
+	"description": ""
+},
+"browser_enable": {
+	"message": "activar",
+	"description": ""
+},
+"browser_disable": {
+	"message": "desactivar",
+	"description": ""
+},
+"browser_cleanedlinks": {
+	"message": "Enlaces limpiados:\u0020",
+	"description": ""
+},
+"browser_clicktheicon": {
+	"message": "Pulsa en icono para\u0020",
+	"description": ""
+},
+"browser_regexerr": {
+	"message": "Error procesando el patrón regex",
+	"description": ""
+},
+"browser_touch": {
+	"message": "CleanLinks Touch!",
+	"description": ""
+},
+"browser_hashtag": {
+	"message": "#",
+	"description": ""
+},
+"bootstrap_listheader_original": {
+	"message": "Enlace Original",
+	"description": ""
+},
+"bootstrap_listheader_cleaned": {
+	"message": "Enlace Límpio",
+	"description": ""
+},
+"bootstrap_whitelist_button": {
+	"message": "Ignorar Dominios",
+	"description": ""
+},
+"bootstrap_whitelist_description": {
+	"message": "Esta lista contiene los enlaces limpiados y sus originales, para facilitar su adición a la opción de ignorados.",
+	"description": ""
+},
+"skipwhen_title": {
+	"message": "Evitar enlaces que coincidan con:",
+	"description": ""
+},
+"skipwhen_tooltip": {
+	"message": "Patrón REGEXP que se usara para comprobar las URLs y evitar problemas con ciertos enlaces.",
+	"description": ""
+},
+"remove_title": {
+	"message": "Eliminar de los enlaces:",
+	"description": ""
+},
+"remove_tooltip": {
+	"message": "Patrón REGEXP que se aplicara a los enlaces para eliminar etiquetas de seguimiento y similares.",
+	"description": ""
+},
+"skipdoms_title": {
+	"message": "Ignorar Dominios:",
+	"description": ""
+},
+"skipdoms_tooltip": {
+	"message": "Lista de dominios separados por comas cuyos enlaces no se modificaran.",
+	"description": ""
+},
+"highlight_title": {
+	"message": "Subrayar enlaces limpiados?",
+	"description": ""
+},
+"hlstyle_emptytext": {
+	"message": "E.g. background:rgba(252,252,0,0.7); color: #000",
+	"description": ""
+},
+"hlstyle_title": {
+	"message": "Estilo de subrayado",
+	"description": ""
+},
+"hlstyle_content": {
+	"message": "Aplica este estilo de subrayado a los enlaces limpiados.",
+	"description": ""
+},
+"repdelay_title": {
+	"message": "Retraso de reaplicación",
+	"description": ""
+},
+"repdelay_tooltip": {
+	"message": "El limpiado de enlaces se aplicara nuevamente tras el numero de segundos especificado. Únicamente valido para el modo no-delegado.",
+	"description": ""
+},
+"evdm_title": {
+	"message": "Modo de Evento Delegado?",
+	"description": ""
+},
+"evdm_tooltip": {
+	"message": "Usando este modo los enlaces se limpiara al vuelo cuando pulse sobre ellos, lo cual es menos intrusivo pero la funcionalidad de destacar enlaces en tiempo real no estará disponible.",
+	"description": ""
+},
+"cbc_title": {
+	"message": "CopyLink Controller?",
+	"description": ""
+},
+"cbc_tooltip": {
+	"message": "Instala un controlador de comando cmd_copyLink para limpiar los enlaces copiados al portapapeles usando el menú contextual.",
+	"description": ""
+},
+"progltr_title": {
+	"message": "Usar observador de redirección?",
+	"description": ""
+},
+"progltr_tooltip": {
+	"message": "Instala un observador de protocolo HTTP para identificar redirecciones. Esto habilitara la posibilidad de limpiar URLs ocultas tras enlaces cortos ofrecidos por servicios tales como goo.gl.",
+	"description": ""
+},
+"gotarget_title": {
+	"message": "Usar el atributo Target?",
+	"description": ""
+},
+"gotarget_tooltip": {
+	"message": "Los enlaces pueden contener un atributo Target el cual indica donde deben abrirse.",
+	"description": ""
+},
+"reset_tooltip": {
+	"message": "Reinicia las opciones a sus valores por defecto.",
+	"description": ""
+},
+"reset_label": {
+	"message": "Reiniciar Opciones",
+	"description": ""
+},
+"ignhttp_title": {
+	"message": "Ignorar enlaces que no sean http/s",
+	"description": ""
+},
+"ignhttp_tooltip": {
+	"message": "Esta opción provoca que se ignoren enlaces que no sean http/s a la hora de comprobar urls anidadas en ellos",
+	"description": ""
+},
+"textcl_title": {
+	"message": "Interceptar enlaces en texto",
+	"description": ""
+},
+"textcl_tooltip": {
+	"message": "Permite clickar en enlaces no clickables por defecto para abrirlos como si fueran enlaces normales - Requiere usar el modo de Evento Delegado.",
+	"description": ""
+},
+"cltrack_title": {
+	"message": "Seguimiento de enlaces",
+	"description": ""
+},
+"cltrack_content": {
+	"message": "Esta opción le permitirá añadir dominios fácilmente a la lista de ignorados usando RMB en el botón de la barra de navegación.",
+	"description": ""
+}
+}

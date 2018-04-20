@@ -1,0 +1,174 @@
+{
+"addon_description": {
+	"message": "將加密/內嵌鏈接還原為直接鏈接。",
+	"description": ""
+},
+"browser_status": {
+	"message": "狀態：",
+	"description": ""
+},
+"browser_enabled": {
+	"message": "已啟用",
+	"description": ""
+},
+"browser_disabled": {
+	"message": "已禁用",
+	"description": ""
+},
+"browser_enable": {
+	"message": "啟用",
+	"description": ""
+},
+"browser_disable": {
+	"message": "禁用",
+	"description": ""
+},
+"browser_cleanedlinks": {
+	"message": "已處理鏈接數：",
+	"description": ""
+},
+"browser_clicktheicon": {
+	"message": "點擊圖標以",
+	"description": ""
+},
+"browser_regexerr": {
+	"message": "處理規則時遇到錯誤：",
+	"description": ""
+},
+"browser_touch": {
+	"message": "CleanLinks Touch!",
+	"description": ""
+},
+"browser_hashtag": {
+	"message": "#",
+	"description": ""
+},
+"bootstrap_listheader_original": {
+	"message": "原始鏈接",
+	"description": ""
+},
+"bootstrap_listheader_cleaned": {
+	"message": "直接鏈接",
+	"description": ""
+},
+"bootstrap_whitelist_button": {
+	"message": "添加到白名單",
+	"description": ""
+},
+"bootstrap_whitelist_description": {
+	"message": "此列表顯示了本次瀏覽器會話中已處理的鏈接和它們的原始鏈接，您可以方便地將某個域名添加到白名單中。請注意白名單會對整個域名生效，因此有時您可能需要找到鏈接的模式並將它們添加到“忽略鏈接規則”選項中。",
+	"description": ""
+},
+"skipwhen_title": {
+	"message": "忽略鏈接規則：",
+	"description": ""
+},
+"skipwhen_tooltip": {
+	"message": "符合本正則表達式的鏈接將被忽略以防止誤處理。區分大小寫。",
+	"description": ""
+},
+"remove_title": {
+	"message": "匹配鏈接規則：",
+	"description": ""
+},
+"remove_tooltip": {
+	"message": "符合本正則表達式的鏈接將被移除跳轉或追蹤。區分大小寫。",
+	"description": ""
+},
+"skipdoms_title": {
+	"message": "忽略域名規則：",
+	"description": ""
+},
+"skipdoms_tooltip": {
+	"message": "匹配的域名上的鏈接將被忽略。使用逗號分隔多個域名。",
+	"description": ""
+},
+"highlight_title": {
+	"message": "高亮已處理鏈接",
+	"description": ""
+},
+"hlstyle_emptytext": {
+	"message": "例如：background:rgba(252,252,0,0.7); color: #000",
+	"description": ""
+},
+"hlstyle_title": {
+	"message": "高亮樣式",
+	"description": ""
+},
+"hlstyle_content": {
+	"message": "本樣式將被應用到經過處理的鏈接標籤上",
+	"description": ""
+},
+"repdelay_title": {
+	"message": "重複處理間隔",
+	"description": ""
+},
+"repdelay_tooltip": {
+	"message": "在指定秒之後再次處理頁面上的鏈接。只在不使用事件委託模式時有效，設置為 0 即禁用。",
+	"description": ""
+},
+"evdm_title": {
+	"message": "使用事件委托模式",
+	"description": ""
+},
+"evdm_tooltip": {
+	"message": "監聽點擊事件處理鏈接。本模式下實時高亮和計數器將會無效。",
+	"description": ""
+},
+"cbc_title": {
+	"message": "接管複製鏈接地址菜單",
+	"description": ""
+},
+"cbc_tooltip": {
+	"message": "使用自定義的 cmd_copyLink 控制器接管 複製鏈接地址 右鍵菜單，將經過處理的鏈接複製到剪貼板。 ",
+	"description": ""
+},
+"progltr_title": {
+	"message": "使用跳轉監聽器",
+	"description": ""
+},
+"progltr_tooltip": {
+	"message": "使用 HTTP 監聽器捕捉 3xx 跳轉。例如將短鏈接還原成長鏈接。",
+	"description": ""
+},
+"gotarget_title": {
+	"message": "遵守 target 屬性",
+	"description": ""
+},
+"gotarget_tooltip": {
+	"message": "是否檢查並遵守鏈接的 target 屬性。",
+	"description": ""
+},
+"reset_tooltip": {
+	"message": "還原所有設定到默認值",
+	"description": ""
+},
+"reset_label": {
+	"message": "重置設定",
+	"description": ""
+},
+"ignhttp_title": {
+	"message": "忽略非 HTTP(s) 協議鏈接",
+	"description": ""
+},
+"ignhttp_tooltip": {
+	"message": "此選項將使本附加元件忽略所有非 HTTP/HTTPS 協議的鏈接。",
+	"description": ""
+},
+"textcl_title": {
+	"message": "轉換文本鏈接",
+	"description": ""
+},
+"textcl_tooltip": {
+	"message": "將文本狀態的鏈接轉換成可直接點擊的鏈接。需要事件委託模式。",
+	"description": ""
+},
+"cltrack_title": {
+	"message": "追踪鏈接",
+	"description": ""
+},
+"cltrack_content": {
+	"message": "將會記錄所有經過處理的鏈接，可以在工具欄按鈕上右鍵以快速將域名添加到白名單。",
+	"description": ""
+}
+}
