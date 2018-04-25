@@ -45,52 +45,6 @@ var prefValues = {
 	cltrack   : true                                           // whether we track the link cleaning
 }
 
-function setIcon(marker, toolbar)
-{
-	/* TODO: what is evdmki?
-	this.setIcon.last = marker;
-	if (marker == '~' && prefValues.evdmki)
-		marker = 0;
-	*/
-
-	browser.browserAction.setIcon({path: {
-		16: 'icons/16' + (marker || '') + '.png',
-		32: 'icons/32' + (marker || '') + '.png'
-	}})
-}
-
-
-function updateToolbarCleanCount(doc, count)
-{
-	/* TODO: this
-	if (!doc)
-		doc = this.getDocument();
-	*/
-
-	browserAction.setBadgeText(count)
-	setIcon((count || parseInt(doc.body.getAttribute(attr_cleaned_count))) && '!')
-}
-
-
-function blink(window, red) // visually display that the link was cleaned, red allows to vary from green to yellow
-{
-	if (prefValues.highlight)
-	{
-		let node;
-		if ((node = window.document.getElementById('urlbar')))
-		{
-			let originalBackground = node.style.background;
-			node.style.background = 'rgba(' + (red || 245) + ',240,0,0.6)';
-
-			// Reset after 300ms
-			if (this.ubgt)
-				window.clearTimeout(this.ubgt);
-			this.ubgt = window.setTimeout(function () node.style.background = originalBackground, 300);
-		}
-	}
-}
-
-
 function highlightLink(node, remove)
 {
 	// parse and apply ;-separated list of key:val style properties
