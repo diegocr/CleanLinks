@@ -20,6 +20,16 @@
 		"scripts": ["cleanlink.js", "background.js"]
 	},
 
+	"content_scripts": [
+		{
+			"matches": ["<all_urls>", "*://*/*", "file:///*"],
+			"js": ["cleanlink.js", "inject.js"],
+			"run_at": "document_end",
+			"match_about_blank": true,
+			"all_frames": true
+		}
+	],
+
 	"browser_action":
 	{
 		"default_icon": "icons/32.png"
