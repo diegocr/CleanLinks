@@ -234,6 +234,7 @@ function cleanLinksInDoc(doc)
 		// @onmousedown https://foo/ with https://google.com/url?...;url=https://foo/
 	}
 
+	browser.runtime.sendMessage({ 'cleaned': nCleanedLinks });
 	return nCleanedLinks;
 }
 

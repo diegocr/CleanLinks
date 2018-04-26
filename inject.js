@@ -115,8 +115,16 @@ function onClick(evt)
 					if (prefValues.highlight)
 						highlightLink(node);
 
-					// cannot blink the URL bar in web extensions anymore
+					// instead of blinking the URL bar, tell the background to show a notification.
+					browser.runtime.sendMessage({url: cleanedLink, orig: link});
 				}
+			}
+			else if(!textLink && node.hasAttribute(attr_cleaned_link))
+			{
+				browser.runtime.sendMessage({
+					url: evt.target.href,
+					orig: evt.target.getAttribute(attr_cleaned_link)
+				});
 			}
 		}
 	}
@@ -125,5 +133,4 @@ function onClick(evt)
 window.addEventListener('click', onClick);
 
 // NB. this script is injected in every frame, so no need for recursion
-var cleaned = cleanLinksInDoc(document);
-// TODO: show cleaned links count in icon
+cleanLinksInDoc(document);
