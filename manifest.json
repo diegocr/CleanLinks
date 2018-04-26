@@ -1,0 +1,29 @@
+{
+	"name": "Clean Links",
+	"description": "Converts obfuscated/nested links to genuine clean links",
+	"author": "Diego Casorran (creator), \nCimbali (contributor), \nEduard Braun (German translation), \nSimon Chan (Chinese and Taiwanese translations)",
+	"manifest_version": 2,
+	"version": "3.0-prealpha",
+	"homepage_url": "https://github.com/diegocr/CleanLinks",
+	"icons":
+	{
+		"48": "icon.png"
+	},
+
+	"permissions": [
+		"webRequest", "webRequestBlocking", "<all_urls>", "activeTab"
+	],
+
+	"browser_action":
+	{
+		"default_icon": "icons/32.png"
+	},
+
+	"applications":
+	{
+		"gecko":
+		{
+			"id": "clean-links@diegocr.github.com"
+		}
+	}
+}
