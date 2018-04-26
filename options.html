@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<style>
+		label {
+			display: block;
+			margin: 1ex 0;
+		}
+
+		label span {
+			display:inline-block;
+			min-width: 20em;
+		}
+
+		input[type=number] {
+			width: 5em;
+		}
+		input[type=text], textarea {
+			width:80%;
+		}
+		textarea {
+			height:10em;
+		}
+	</style>
+</head>
+
+<body>
+	<label i18n_title="skipwhen_tooltip"><span i18n_text="skipwhen_title"></span>
+		<br /><input type="text" name="skipwhen" value="" />
+	</label>
+	<label i18n_title="remove_tooltip"><span i18n_text="remove_title"></span>
+		<br /><input type="text" name="remove" value="" />
+	</label>
+	<label i18n_title="skipdoms_tooltip"><span i18n_text="skipdoms_title"></span>
+		<br /><textarea name="skipdoms"></textarea>
+	</label>
+	<label><span i18n_text="highlight_title"></span>
+		<input type="checkbox" name="highlight" value="" />
+	</label>
+	<label i18n_title="hlstyle_content"><span i18n_text="hlstyle_title"></span>
+		<br /><input type="text" name="hlstyle" i18n_title="hlstyle_emptytext" />
+	</label>
+	<label i18n_title="repdelay_tooltip"><span i18n_text="repdelay_title"></span>
+		<input type="number" name="repdelay" value="" />
+	</label>
+	<label i18n_title="evdm_tooltip"><span i18n_text="evdm_title"></span>
+		<input type="checkbox" name="evdm" value="" />
+	</label>
+	<label i18n_title="cbc_tooltip"><span i18n_text="cbc_title"></span>
+		<input type="checkbox" name="cbc" value="" />
+	</label>
+	<label i18n_title="progltr_tooltip"><span i18n_text="progltr_title"></span>
+		<input type="checkbox" name="progltr" value="" />
+	</label>
+	<label title="Setup an http on-modify-request listener for document_uri requests."><span>Use HTTP Observer</span>
+		<input type="checkbox" name="httpomr" value="" />
+	</label>
+	<label i18n_title="gotarget_tooltip"><span i18n_text="gotarget_title"></span>
+		<input type="checkbox" name="gotarget" value="" />
+	</label>
+	<label i18n_title="textcl_tooltip"><span i18n_text="textcl_title"></span>
+		<input type="checkbox" name="textcl" value="" />
+	</label>
+	<label i18n_title="ignhttp_tooltip"><span i18n_text="ignhttp_title"></span>
+		<input type="checkbox" name="ignhttp" value="" />
+	</label>
+	<label><span i18n_text="cltrack_title"></span>
+		<input type="checkbox" name="cltrack" />
+	</label>
+
+	<p><button name="cltrack" i18n_text="reset_label" i18n_title="reset_tooltip" /></p>
+
+	<script src="cleanlink.js"></script>
+	<script src="options.js"></script>
+</body>
+
+</html>
