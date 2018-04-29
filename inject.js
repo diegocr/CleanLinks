@@ -130,7 +130,10 @@ function onClick(evt)
 	}
 }
 
-window.addEventListener('click', onClick);
+loadOptions().then(() =>
+{
+	window.addEventListener('click', onClick);
 
-// NB. this script is injected in every frame, so no need for recursion
-cleanLinksInDoc(document);
+	// NB. this script is injected in every frame, so no need for recursion
+	cleanLinksInDoc(document);
+})

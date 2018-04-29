@@ -18,7 +18,7 @@ const attr_cleaned_link = 'data-cleanedlink';
 const str_cleanlink_touch = "\n\n- " + _("browser_touch");
 const version = browser.runtime.getManifest().version;
 
-/* TODO: store/load prefs */
+
 var prefValues = {
 	enabled   : true,
 	skipwhen  : new RegExp('/ServiceLogin|imgres\\?|searchbyimage\\?|watch%3Fv|auth\\?client_id|signup|bing\\.com/widget|'
@@ -44,6 +44,26 @@ var prefValues = {
 	ignhttp   : false,                                         // ignore non-http(s?) links
 	cltrack   : true                                           // whether we track the link cleaning
 }
+
+
+function loadOptions()
+{
+	// return the promise so it can be chained
+	return browser.storage.local.get('configuration').then(data =>
+	{
+		if ('configuration' in data) {
+			for (var param in data.configuration) {
+				if (typeof prefValues[param] != 'object')
+					prefValues[param] = data.configuration[param];
+				else if (prefValues[param] instanceof RegExp)
+					prefValues[param] = new RegExp(data.configuration[param]);
+				else if (Array.isArray(prefValues[param]))
+					prefValues[param] = data.configuration[param].split(',').map(s => s.trim()).filter(s => s.length > 0);
+			}
+		}
+	});
+}
+
 
 function highlightLink(node, remove)
 {

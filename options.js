@@ -12,6 +12,31 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+function save_options()
+{
+	var prefs = Array.from(document.querySelectorAll('input, textarea')).reduce((prefs, field) =>
+	{
+		prefs[field.name] = field.value || field.checked;
+		return prefs
+	}, {})
+
+	browser.storage.local.set({configuration: prefs})
+	browser.runtime.sendMessage({ 'options': Date.now() })
+}
+
+
+// for onKeyUp: save after 400ms of inactivity
+var delayed_save = (function()
+{
+	browser.alarms.onAlarm.addListener(save_options);
+	return function()
+	{
+		browser.alarms.clear('save');
+		browser.alarms.create('save', {when: Date.now() + 400});
+	}
+})();
+
+
 function populate_option_page()
 {
 	var list = document.querySelectorAll('[i18n_text]');
@@ -37,7 +62,10 @@ function populate_option_page()
 			input.value = value.source;
 		else if (Array.isArray(value))
 			input.value = value.join(',');
+
+		input.onchange = save_options
+		input.onkeyup = delayed_save
 	}
 }
 
-populate_option_page();
+loadOptions().then(() => populate_option_page());

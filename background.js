@@ -71,6 +71,11 @@ function handleMessage(message, sender)
 		cleanedPerTab[sender.tab.id] += message.cleaned;
 		browser.browserAction.setBadgeText({text: '' + cleanedPerTab[sender.tab.id], tabId: sender.tab.id});
 	}
+
+	else if ('options' in message)
+	{
+		loadOptions();
+	}
 }
 
 function handleAlarm(alarm)
@@ -85,5 +90,8 @@ function handleAlarm(alarm)
 browser.alarms.onAlarm.addListener(handleAlarm);
 browser.runtime.onMessage.addListener(handleMessage);
 
-/* Filtering requests approach, for links from outside */
-browser.webRequest.onBeforeRequest.addListener(cleanFollowedLink, { urls: ['<all_urls>'] }, ['blocking']);
+loadOptions().then(() =>
+{
+	/* Filtering requests approach, for links from outside */
+	browser.webRequest.onBeforeRequest.addListener(cleanFollowedLink, { urls: ['<all_urls>'] }, ['blocking']);
+});

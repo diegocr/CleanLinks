@@ -12,7 +12,7 @@
 	},
 
 	"permissions": [
-		"alarms", "webRequest", "webRequestBlocking", "<all_urls>", "activeTab", "notifications"
+		"alarms", "webRequest", "webRequestBlocking", "<all_urls>", "activeTab", "storage", "notifications"
 	],
 
 	"background":
