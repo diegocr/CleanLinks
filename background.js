@@ -15,6 +15,9 @@
 
 function cleanFollowedLink(details)
 {
+	if (!prefValues.enabled)
+		return;
+
 	var cleanUrl = cleanLink(details.url, details.originUrl);
 	if (cleanUrl != details.url) {
 		browser.runtime.sendMessage({ url: cleanUrl, orig: details.url });

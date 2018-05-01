@@ -128,12 +128,18 @@ function onClick(evt)
 			}
 		}
 	}
+
+	// Hack to handle ajax-loaded unclean clinks.
+	if (!prefValues.evdm && prefValues.repdelay)
+		setTimeout(cleanLinksInDoc, parseInt(prefValues.repdelay) * 1000);
 }
 
 loadOptions().then(() =>
 {
 	window.addEventListener('click', onClick, true);
 
+	// Not event mode: clean up document early
 	// NB. this script is injected in every frame, so no need for recursion
-	cleanLinksInDoc(document);
+	if (!prefValues.evdm)
+		cleanLinksInDoc(document);
 })
