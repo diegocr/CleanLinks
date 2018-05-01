@@ -37,6 +37,19 @@ var delayed_save = (function()
 })();
 
 
+function reset_options()
+{
+	// clear options storage, reload everything
+	browser.storage.local.clear().then(() =>
+		browser.runtime.getBackgroundPage().then(page =>
+		{
+			page.location.reload();
+			window.location.reload();
+		})
+	)
+}
+
+
 function populate_option_page()
 {
 	var list = document.querySelectorAll('[i18n_text]');
@@ -63,6 +76,8 @@ function populate_option_page()
 		input.onchange = save_options
 		input.onkeyup = delayed_save
 	}
+
+	document.querySelector('button[name="reset"]').onclick = reset_options
 }
 
 loadOptions().then(() => populate_option_page());
