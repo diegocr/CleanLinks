@@ -38,7 +38,9 @@
 
 	"browser_action":
 	{
-		"default_icon": "icons/32.png"
+		"browser_style": false,
+		"default_icon": "icons/32.png",
+		"default_popup": "popup.html"
 	},
 
 	"applications":

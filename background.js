@@ -59,6 +59,14 @@ function handleMessage(message, sender)
 		return new Promise.resolve(historyCleanedLinks);
 	}
 
+	else if (message == 'toggle')
+	{
+		prefValues.enabled = !prefValues.enabled;
+		browser.storage.local.set({configuration: serializeOptions()})
+
+		setIcon(prefValues.enabled ? icon_default : icon_disabled);
+	}
+
 	else if ('url' in message)
 	{
 		browser.notifications.create(message.url,
@@ -81,6 +89,14 @@ function handleMessage(message, sender)
 
 		cleanedPerTab[sender.tab.id] += message.cleaned;
 		browser.browserAction.setBadgeText({text: '' + cleanedPerTab[sender.tab.id], tabId: sender.tab.id});
+	}
+
+	else if ('whitelist' in message)
+	{
+		var entry = historyCleanedLinks.splice(message.whitelist, 1)[0];
+		var host = (new URL(entry.orig)).hostname;
+		prefValues.skipdoms.push(host);
+		browser.storage.local.set({configuration: serializeOptions()})
 	}
 
 	else if ('options' in message)
