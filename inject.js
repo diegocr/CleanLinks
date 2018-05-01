@@ -132,7 +132,7 @@ function onClick(evt)
 
 loadOptions().then(() =>
 {
-	window.addEventListener('click', onClick);
+	window.addEventListener('click', onClick, true);
 
 	// NB. this script is injected in every frame, so no need for recursion
 	cleanLinksInDoc(document);
