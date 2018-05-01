@@ -46,6 +46,22 @@ var prefValues = {
 }
 
 
+function serializeOptions()
+{
+	return Object.keys(prefValues).reduce((serializedVals, param) =>
+	{
+		if (prefValues[param] instanceof RegExp)
+			serializedVals[param] = prefValues[param].source;
+		else if (Array.isArray(prefValues[param]))
+			serializedVals[param] = prefValues[param].join(',');
+		else
+			serializedVals[param] = prefValues[param];
+
+		return serializedVals;
+	}, {});
+}
+
+
 function loadOptions()
 {
 	// return the promise so it can be chained

@@ -47,21 +47,18 @@ function populate_option_page()
 	for (var n = 0; n < list.length; n++)
 		list[n].setAttribute('title', _(list[n].getAttribute('i18n_title')));
 
-	for (var pref in prefValues)
+	var values = serializeOptions();
+	for (var pref in values)
 	{
 		var input = document.querySelector('[name=' + pref + ']');
 		if (!input)
 			continue;
 
-		var value = prefValues[pref];
+		var value = values[pref];
 		if (typeof value == 'boolean')
 			input.checked = value;
-		else if (typeof value == 'string' || typeof value == 'number')
-			input.value = prefValues[pref];
-		else if (value instanceof RegExp)
-			input.value = value.source;
-		else if (Array.isArray(value))
-			input.value = value.join(',');
+		else
+			input.value = value;
 
 		input.onchange = save_options
 		input.onkeyup = delayed_save
