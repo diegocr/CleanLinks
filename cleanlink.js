@@ -18,6 +18,11 @@ const attr_cleaned_link = 'data-cleanedlink';
 const str_cleanlink_touch = "\n\n- " + _("browser_touch");
 const version = browser.runtime.getManifest().version;
 
+const icon_default = '';
+const icon_disabled = '-';
+const icon_fire = '~';
+const icon_green = '!';
+
 
 var prefValues = {
 	enabled   : true,

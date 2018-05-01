@@ -31,8 +31,8 @@ function setIcon(marker)
 	{
 		path:
 		{
-			16: 'icons/16' + (marker || '') + '.png',
-			32: 'icons/32' + (marker || '') + '.png'
+			16: 'icons/16' + (marker || icon_default) + '.png',
+			32: 'icons/32' + (marker || icon_default) + '.png'
 		}
 	})
 }
