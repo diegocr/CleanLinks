@@ -46,9 +46,17 @@ browser.tabs.onUpdated.addListener((id, changeInfo, tab) => {
 	}
 });
 
+
+var historyCleanedLinks = [];
+
 function handleMessage(message, sender)
 {
-	if ('url' in message)
+	if (message == 'get_cleaned_list')
+	{
+		return new Promise.resolve(historyCleanedLinks);
+	}
+
+	else if ('url' in message)
 	{
 		browser.notifications.create(message.url,
 		{
@@ -60,7 +68,7 @@ function handleMessage(message, sender)
 		browser.alarms.create('clearNotification:' + message.url, {when: Date.now() + 800});
 
 		if (prefValues.cltrack)
-			// TODO: log message.orig => message.url in history, for whitelisting
+			historyCleanedLinks.push(Object.assign({}, message));
 	}
 
 	else if ('cleaned' in message)
@@ -74,7 +82,11 @@ function handleMessage(message, sender)
 
 	else if ('options' in message)
 	{
-		loadOptions();
+		return loadOptions().then(() =>
+		{
+			if (!prefValues.cltrack)
+				historyCleanedLinks.splice(0, historyCleanedLinks.length);
+		})
 	}
 }
 
