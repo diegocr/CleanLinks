@@ -46,7 +46,7 @@ var prefValues = {
 	evdmki    : true,                                          // (TODO: what's this?) Always true.
 	progltr   : false,                                         // (TODO) http-on-examine-response: clean links on Location: redirect headers?
 	httpomr   : false,                                         // (TODO) http-on-modify-request: skip redirects
-	cbc       : true,                                          // (TODO) something to do with clipboards?
+	cbc       : true,                                          // Context menus to clean links
 	gotarget  : false,                                         // style for highlighted cleaned links
 	repdelay  : 3,                                             // delay before we call recursiveCleanLinksInDoc again (to handle ajax links)
 	textcl    : false,                                         // search for & clean links in selected text

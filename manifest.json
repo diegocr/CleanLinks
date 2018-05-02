@@ -12,7 +12,15 @@
 	},
 
 	"permissions": [
-		"alarms", "webRequest", "webRequestBlocking", "<all_urls>", "activeTab", "storage", "notifications"
+		"clipboardWrite",
+		"contextMenus",
+		"alarms",
+		"webRequest",
+		"webRequestBlocking",
+		"<all_urls>",
+		"activeTab",
+		"storage",
+		"notifications"
 	],
 
 	"background":

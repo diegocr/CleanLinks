@@ -74,16 +74,45 @@ function eventDoClick(url)
 */
 
 
+/* This function must be called in a visible page, such as a browserAction popup or a content script.
+ * From MDN's examples: https://github.com/mdn/webextensions-examples/tree/master/context-menu-copy-link-with-types
+ * It *needs* to be run inside a page, not a background script, so we send the text link around the right-click
+ * position and wait for the copy to be resolved with the link to be copied.
+ */
+function copyToClipboard(text)
+{
+    function onCopy(event)
+	{
+		// Remove the handler as it is triggered.
+        document.removeEventListener("copy", onCopy, true);
+
+        event.stopImmediatePropagation();
+        event.preventDefault();
+
+        // Overwrite the clipboard content.
+        event.clipboardData.setData("text/plain", text);
+    }
+
+    // Add onCopy handler for copying and trigger an event
+    document.addEventListener("copy", onCopy, true);
+    document.execCommand("copy");
+}
+
+
 function onClick(evt)
 {
-	if (evt.button != 2)
+	let node = evt.target,
+		textLink = null;
+
+	if (node.nodeName != 'A' && !evt.altKey && prefValues.textcl)
+		textLink = textFindLink(node);
+
+	if (evt.button == 2 && prefValues.textcl)
 	{
-		let node = evt.target,
-			textLink = null;
-
-		if (node.nodeName != 'A' && !evt.altKey && prefValues.textcl)
-			textLink = textFindLink(node);
-
+		browser.runtime.sendMessage({rightClickLink: textLink}).then(reply => copyToClipboard(reply) );
+	}
+	else if (evt.button != 2)
+	{
 		if (node.nodeName != 'A' && !textLink)
 			do {
 				node = node.parentNode;

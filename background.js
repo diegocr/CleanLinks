@@ -51,6 +51,7 @@ browser.tabs.onUpdated.addListener((id, changeInfo, tab) => {
 
 
 var historyCleanedLinks = [];
+var lastRightClick = {textLink: null, reply: () => {}}
 
 function handleMessage(message, sender)
 {
@@ -107,6 +108,17 @@ function handleMessage(message, sender)
 				historyCleanedLinks.splice(0, historyCleanedLinks.length);
 		})
 	}
+
+	else if ('rightClickLink' in message)
+	{
+		return new Promise((resolve, rejecte) =>
+		{
+			lastRightClick = {
+				textLink: message.rightClickLink,
+				reply: resolve
+			}
+		})
+	}
 }
 
 function handleAlarm(alarm)
@@ -125,4 +137,32 @@ loadOptions().then(() =>
 {
 	/* Filtering requests approach, for links from outside */
 	browser.webRequest.onBeforeRequest.addListener(cleanFollowedLink, { urls: ['<all_urls>'] }, ['blocking']);
+
+	if (prefValues.cbc)
+	{
+		browser.contextMenus.create({
+			id: 'copy-clean-link',
+			title: 'Copy clean link',
+			contexts: ['link', 'selection', 'page']
+		});
+
+		browser.contextMenus.onClicked.addListener((info, tab) =>
+		{
+			var link;
+			if ('linkUrl' in info && info.linkUrl)
+				link = info.linkUrl;
+			else if ('selectionText' in info && info.selectionText)
+				link = info.selectionText;
+
+			// WARNING: potential race condition here (?) on right click we send a message to background,
+			// that populates rightClickLink[tab.id]. If the option (this listener) is triggered really fast,
+			// maybe it can happen before the link message gets here.
+			// In that case, we'll need to pre-make a promise, resolved by the message, and .then() it here.
+			else
+				link = lastRightClick.textLink;
+
+			// Clean & copy
+			lastRightClick.reply(cleanLink(link, tab.url))
+		});
+	}
 });
