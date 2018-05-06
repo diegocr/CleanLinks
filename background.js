@@ -110,6 +110,15 @@ function handleMessage(message, sender)
 		{
 			if (!prefValues.cltrack)
 				historyCleanedLinks.splice(0, historyCleanedLinks.length);
+
+			if (prefValues.cbc)
+				browser.contextMenus.create({
+					id: 'copy-clean-link',
+					title: 'Copy clean link',
+					contexts: ['link', 'selection', 'page']
+				});
+			else
+				browser.contextMenus.remove('copy-clean-link')
 		})
 	}
 
@@ -143,30 +152,28 @@ loadOptions().then(() =>
 	browser.webRequest.onBeforeRequest.addListener(cleanFollowedLink, { urls: ['<all_urls>'] }, ['blocking']);
 
 	if (prefValues.cbc)
-	{
 		browser.contextMenus.create({
 			id: 'copy-clean-link',
 			title: 'Copy clean link',
 			contexts: ['link', 'selection', 'page']
 		});
 
-		browser.contextMenus.onClicked.addListener((info, tab) =>
-		{
-			var link;
-			if ('linkUrl' in info && info.linkUrl)
-				link = info.linkUrl;
-			else if ('selectionText' in info && info.selectionText)
-				link = info.selectionText;
+	browser.contextMenus.onClicked.addListener((info, tab) =>
+	{
+		var link;
+		if ('linkUrl' in info && info.linkUrl)
+			link = info.linkUrl;
+		else if ('selectionText' in info && info.selectionText)
+			link = info.selectionText;
 
-			// WARNING: potential race condition here (?) on right click we send a message to background,
-			// that populates rightClickLink[tab.id]. If the option (this listener) is triggered really fast,
-			// maybe it can happen before the link message gets here.
-			// In that case, we'll need to pre-make a promise, resolved by the message, and .then() it here.
-			else
-				link = lastRightClick.textLink;
+		// WARNING: potential race condition here (?) on right click we send a message to background,
+		// that populates rightClickLink[tab.id]. If the option (this listener) is triggered really fast,
+		// maybe it can happen before the link message gets here.
+		// In that case, we'll need to pre-make a promise, resolved by the message, and .then() it here.
+		else
+			link = lastRightClick.textLink;
 
-			// Clean & copy
-			lastRightClick.reply(cleanLink(link, tab.url))
-		});
-	}
+		// Clean & copy
+		lastRightClick.reply(cleanLink(link, tab.url))
+	});
 });
