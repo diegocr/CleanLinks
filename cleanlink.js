@@ -47,7 +47,7 @@ var prefValues = {
 	progltr   : false,                                         // (TODO) http-on-examine-response: clean links on Location: redirect headers?
 	httpomr   : false,                                         // (TODO) http-on-modify-request: skip redirects
 	cbc       : true,                                          // Context menus to clean links
-	gotarget  : false,                                         // style for highlighted cleaned links
+	gotarget  : false,                                         // whether we respect target attributes on links that are being cleaned
 	repdelay  : 3,                                             // delay before we call recursiveCleanLinksInDoc again (to handle ajax links)
 	textcl    : false,                                         // search for & clean links in selected text
 	ignhttp   : false,                                         // ignore non-http(s?) links

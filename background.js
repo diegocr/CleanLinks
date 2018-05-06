@@ -63,14 +63,14 @@ function handleMessage(message, sender)
 	else if (message == 'toggle')
 	{
 		prefValues.enabled = !prefValues.enabled;
-		browser.storage.local.set({configuration: serializeOptions()})
 
 		setIcon(prefValues.enabled ? icon_default : icon_disabled);
+		return browser.storage.local.set({configuration: serializeOptions()})
 	}
 
 	else if ('url' in message)
 	{
-		browser.notifications.create(message.url,
+		var p = browser.notifications.create(message.url,
 		{
 			type: 'basic',
 			iconUrl: browser.extension.getURL('icon.png'),
@@ -81,6 +81,8 @@ function handleMessage(message, sender)
 
 		if (prefValues.cltrack)
 			historyCleanedLinks.push(Object.assign({}, message));
+
+		return p;
 	}
 
 	else if ('cleaned' in message)
@@ -90,6 +92,8 @@ function handleMessage(message, sender)
 
 		cleanedPerTab[sender.tab.id] += message.cleaned;
 		browser.browserAction.setBadgeText({text: '' + cleanedPerTab[sender.tab.id], tabId: sender.tab.id});
+
+		return new Promise.resolve(cleanedPerTab[sender.tab.id])
 	}
 
 	else if ('whitelist' in message)
@@ -97,7 +101,7 @@ function handleMessage(message, sender)
 		var entry = historyCleanedLinks.splice(message.whitelist, 1)[0];
 		var host = (new URL(entry.orig)).hostname;
 		prefValues.skipdoms.push(host);
-		browser.storage.local.set({configuration: serializeOptions()})
+		return browser.storage.local.set({configuration: serializeOptions()})
 	}
 
 	else if ('options' in message)
