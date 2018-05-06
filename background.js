@@ -57,7 +57,7 @@ function handleMessage(message, sender)
 {
 	if (message == 'get_cleaned_list')
 	{
-		return new Promise.resolve(historyCleanedLinks);
+		return Promise.resolve(historyCleanedLinks);
 	}
 
 	else if (message == 'toggle')
@@ -85,6 +85,16 @@ function handleMessage(message, sender)
 		return p;
 	}
 
+	else if ('openUrl' in message)
+	{
+		if (message.target == new_window)
+			return browser.windows.create({ url: message.openUrl });
+		else if (message.target == new_tab)
+			return browser.tabs.create({ url: message.openUrl, openerTabId: sender.tab.id });
+		else
+			return browser.tabs.update({ url: message.openUrl });
+	}
+
 	else if ('cleaned' in message)
 	{
 		if (!(sender.tab.id in cleanedPerTab))
@@ -93,7 +103,7 @@ function handleMessage(message, sender)
 		cleanedPerTab[sender.tab.id] += message.cleaned;
 		browser.browserAction.setBadgeText({text: '' + cleanedPerTab[sender.tab.id], tabId: sender.tab.id});
 
-		return new Promise.resolve(cleanedPerTab[sender.tab.id])
+		return Promise.resolve(cleanedPerTab[sender.tab.id])
 	}
 
 	else if ('whitelist' in message)
@@ -132,6 +142,8 @@ function handleMessage(message, sender)
 			}
 		})
 	}
+	else
+		return Promise.reject('Unexpected message: ' + String(message));
 }
 
 function handleAlarm(alarm)

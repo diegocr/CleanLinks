@@ -27,6 +27,9 @@ const icon_disabled = '-';
 const icon_fire = '~';
 const icon_green = '!';
 
+const same_tab = 0;
+const new_tab = 1;
+const new_window = 2;
 
 var prefValues = {
 	enabled   : true,

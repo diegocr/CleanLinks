@@ -43,24 +43,26 @@ function eventDoClick(url, node, evt)
 					wnd = Array.from(frames).find(f => f.name == target);
 			}
 
-			if (!wnd)
-				wnd = window;
+			if (wnd)
+			{
+				wnd.location = url;
+				return true;
+			}
 		}
 	}
 
-	try
-	{
-		wnd.location = url;
-		return true;
-	}
-	catch (e)
+	browser.runtime.sendMessage({
+		openUrl: url,
+		target: (evt.ctrlKey || evt.button == 1) ? new_tab : (evt.shiftKey ? new_window : same_tab)
+	}).catch(() =>
 	{
 		// Could not find a target window or assigning a location to it failed
 		node.setAttribute('href', url);
 		node.click();
-	}
 
-	// Alternately: window.content.location = url;
+		// Alternately: window.content.location = url;
+	});
+
 	return true;
 }
 
