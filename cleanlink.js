@@ -54,7 +54,8 @@ var prefValues = {
 	repdelay  : 3,                                             // delay before we call recursiveCleanLinksInDoc again (to handle ajax links)
 	textcl    : false,                                         // search for & clean links in selected text
 	ignhttp   : false,                                         // ignore non-http(s?) links
-	cltrack   : true                                           // whether we track the link cleaning
+	cltrack   : true,                                          // whether we track the link cleaning
+	switchToTab : true,                                        // Should be a copy of the browser preference: switch to a new tab when we open a link?
 }
 
 

@@ -90,7 +90,7 @@ function handleMessage(message, sender)
 		if (message.target == new_window)
 			return browser.windows.create({ url: message.openUrl });
 		else if (message.target == new_tab)
-			return browser.tabs.create({ url: message.openUrl, openerTabId: sender.tab.id });
+			return browser.tabs.create({ url: message.openUrl, active: prefValues.switchToTab, openerTabId: sender.tab.id });
 		else
 			return browser.tabs.update({ url: message.openUrl });
 	}
