@@ -288,6 +288,38 @@ function cleanLinksInDoc(doc)
 }
 
 
+function undoCleanLinksInDoc(doc)
+{
+	if (typeof doc == 'undefined')
+		doc = document;
+
+	if (typeof doc == 'undefined')
+		return;
+
+
+	let links = doc.getElementsByTagName('a'),
+		c = links.length;
+
+	for (let l = 0, link = links[l]; l < links.length; link = links[++l])
+	{
+		if (link.hasAttribute(attr_cleaned_link))
+		{
+			link.setAttribute('href', link.getAttribute(attr_cleaned_link));
+			link.setAttribute('title', link.getAttribute('title').replace(str_cleanlink_touch.replace(/^\s+/, ''), '').replace(/\s+$/, ''));
+			link.style.setProperty('border-bottom', '0px', 'important');
+
+			// remove highlight styling
+			if (prefValues.highlight)
+				highlightLink(link, true);
+		}
+	}
+
+	//doc.body.setAttribute(attr_cleaned_count, 0);
+	browser.runtime.sendMessage({ 'cleaned': 0 });
+	return 0;
+}
+
+
 function textFindLink(node)
 {
 	let pos, selection = node.ownerDocument && node.ownerDocument.defaultView.getSelection();

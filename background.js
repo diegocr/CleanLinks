@@ -129,6 +129,10 @@ function handleMessage(message, sender)
 				});
 			else
 				browser.contextMenus.remove('copy-clean-link')
+
+			browser.tabs.query({}).then(tabs => tabs.forEach(tab =>
+				browser.tabs.sendMessage(tab.id, 'reloadOptions')
+			));
 		})
 	}
 

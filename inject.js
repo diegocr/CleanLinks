@@ -174,3 +174,22 @@ loadOptions().then(() =>
 	if (!prefValues.evdm)
 		cleanLinksInDoc(document);
 })
+
+browser.runtime.onMessage.addListener(message =>
+{
+	if (message == 'reloadOptions')
+	{
+		var pre_evdm = prefValues.evdm;
+		return loadOptions().then(() =>
+		{
+			if (pre_evdm == prefValues.evdm)
+				return;
+			else if (!prefValues.evdm)
+				cleanLinksInDoc(document);
+			else
+				undoCleanLinksInDoc(document);
+		});
+	}
+	else
+		return Promise.reject('Unexpected message: ' + String(message));
+})
