@@ -365,3 +365,28 @@ function textFindLink(node)
 
 	return undefined;
 }
+
+
+function cleanRedirectHeaders(details)
+{
+	if (30 != parseInt(details.statusCode / 10) || 304 == details.statusCode)
+		return {};
+
+	var loc = details.responseHeaders.find(element => element.name.toLowerCase() == 'location')
+	if (!loc || !loc.value)
+		return {};
+
+	var dest = loc.value, cleanDest = cleanLink(dest, details.url);
+
+	/* NB.  XUL code seemed to mark redirected requests, due to infinite redirections on *.cox.net,
+	 * see #13 & 8c280b7. However it is not clear whether this is necessary nor how to do this in webexts.
+	 *
+	 * NB2. XUL code also protected against "The page isn't redirecting properly" errors with the following:
+
+	if (cleanDest != details.url)
+		return {}
+	*/
+
+	return (cleanDest == dest ? {} : {redirectUrl: cleanDest});
+}
+}

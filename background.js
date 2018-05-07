@@ -130,6 +130,11 @@ function handleMessage(message, sender)
 			else
 				browser.contextMenus.remove('copy-clean-link')
 
+			if (prefValues.progltr)
+				browser.webRequest.onHeadersReceived.addListener(cleanRedirectHeaders, { urls: ['<all_urls>'] }, ['blocking', 'responseHeaders']);
+			else
+				browser.webRequest.onHeadersReceived.removeListener(cleanRedirectHeaders);
+
 			browser.tabs.query({}).then(tabs => tabs.forEach(tab =>
 				browser.tabs.sendMessage(tab.id, 'reloadOptions')
 			));
@@ -166,6 +171,9 @@ loadOptions().then(() =>
 {
 	/* Filtering requests approach, for links from outside */
 	browser.webRequest.onBeforeRequest.addListener(cleanFollowedLink, { urls: ['<all_urls>'] }, ['blocking']);
+
+	if (prefValues.progltr)
+		browser.webRequest.onHeadersReceived.addListener(cleanRedirectHeaders, { urls: ['<all_urls>'] }, ['blocking', 'responseHeaders']);
 
 	if (prefValues.cbc)
 		browser.contextMenus.create({
