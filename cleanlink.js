@@ -389,4 +389,32 @@ function cleanRedirectHeaders(details)
 
 	return (cleanDest == dest ? {} : {redirectUrl: cleanDest});
 }
+
+
+function onRequest(details)
+{
+	var dest = details.url, curLink = details.originUrl, cleanDest = cleanLink(dest, curLink)
+
+	if (!cleanDest)
+		return {};
+
+	/* NB. XUL code allowed requests when destination is self, to protect against infinite loops (see 42106fd).
+
+	else if (cleanDest == curLink)
+		return {};
+	 */
+
+	/* NB? XUL code prevented iframe redirections back to top-level document (see 182e58e):
+	 * allow if top level frame, or loading to a different domain than the one in the top frame
+
+	else if (details.documentUrl === null || details.documentUrl === details.originUrl
+	 || new URL(details.documentUrl).host != new URL(cleanDest).host)
+		return (cleanDest == dest ? {} : {redirectUrl: cleanDest});
+
+	// Otherwise just cancel
+	else
+		return {cancel: true}
+	 */
+
+	return (cleanDest == dest ? {} : {redirectUrl: cleanDest});
 }

@@ -13,18 +13,6 @@
  * ***** END LICENSE BLOCK ***** */
 
 
-function cleanFollowedLink(details)
-{
-	if (!prefValues.enabled)
-		return;
-
-	var cleanUrl = cleanLink(details.url, details.originUrl);
-	if (cleanUrl != details.url) {
-		browser.runtime.sendMessage({ url: cleanUrl, orig: details.url });
-		details.url = cleanUrl;
-	}
-}
-
 function setIcon(marker)
 {
 	if (marker == '~')
@@ -135,6 +123,11 @@ function handleMessage(message, sender)
 			else
 				browser.webRequest.onHeadersReceived.removeListener(cleanRedirectHeaders);
 
+			if (prefValues.httpomr)
+				browser.webRequest.onBeforeRequest.addListener(onRequest, { urls: ['<all_urls>'] }, ['blocking']);
+			else
+				browser.webRequest.onBeforeRequest.removeListener(onRequest);
+
 			browser.tabs.query({}).then(tabs => tabs.forEach(tab =>
 				browser.tabs.sendMessage(tab.id, 'reloadOptions')
 			));
@@ -169,8 +162,11 @@ browser.runtime.onMessage.addListener(handleMessage);
 
 loadOptions().then(() =>
 {
-	/* Filtering requests approach, for links from outside */
-	browser.webRequest.onBeforeRequest.addListener(cleanFollowedLink, { urls: ['<all_urls>'] }, ['blocking']);
+	if (!prefValues.enabled)
+		return;
+
+	if (prefValues.httpomr)
+		browser.webRequest.onBeforeRequest.addListener(onRequest, { urls: ['<all_urls>'] }, ['blocking']);
 
 	if (prefValues.progltr)
 		browser.webRequest.onHeadersReceived.addListener(cleanRedirectHeaders, { urls: ['<all_urls>'] }, ['blocking', 'responseHeaders']);
