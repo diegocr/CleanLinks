@@ -167,7 +167,7 @@ function cleanLink(link, base)
 		origLink = link,
 		isYahooLink = /\.yahoo.com$/.test(base.host);
 
-	link.replace(/^javascript:.+(["'])(https?(?:\:|%3a).+?)\1/gi, function (a, base, c)(++s, link = c));
+	link = link.replace(/^javascript:.+(["'])(https?(?:\:|%3a).+?)\1.*/gi, (all, quote, quotedLink) => (++s, quotedLink));
 
 	if (/\b((?:aHR0|d3d3)[A-Z0-9+=\/]+)/gi.test(link))
 	{
