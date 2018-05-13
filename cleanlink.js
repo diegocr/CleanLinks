@@ -46,9 +46,8 @@ var prefValues = {
 	hlstyle   : 'background:rgba(252,252,0,0.6); color: #000', // style for highlighted cleaned links
 	evdm      : true,                                          // Event Delegation Mode: whether we clean on click
 															   // (vs. preventively/recursively cleaning all links)
-	evdmki    : true,                                          // (TODO: what's this?) Always true.
-	progltr   : false,                                         // (TODO) http-on-examine-response: clean links on Location: redirect headers?
-	httpomr   : false,                                         // (TODO) http-on-modify-request: skip redirects
+	progltr   : true,                                          // http-on-examine-response: clean links on Location: redirect headers?
+	httpomr   : true,                                          // http-on-modify-request: skip redirects
 	cbc       : true,                                          // Context menus to clean links
 	gotarget  : false,                                         // whether we respect target attributes on links that are being cleaned
 	repdelay  : 3,                                             // delay before we call recursiveCleanLinksInDoc again (to handle ajax links)
