@@ -1,10 +1,10 @@
 {
 	"name": "Clean Links",
 	"description": "__MSG_addon_description__",
-	"author": "Diego Casorran (creator), \nCimbali (contributor), \nEduard Braun (German translation), \nSimon Chan (Chinese and Taiwanese translations)",
+	"author": "Cimbali (maintainer), \nDiego Casorran (creator), \nEduard Braun (German translation), \nSimon Chan (Chinese and Taiwanese translations)",
 	"manifest_version": 2,
-	"version": "3.0-alpha",
-	"homepage_url": "https://github.com/diegocr/CleanLinks",
+	"version": "3.0b1",
+	"homepage_url": "https://github.com/Cimbali/CleanLinks",
 	"default_locale": "en_US",
 	"icons":
 	{
@@ -55,7 +55,7 @@
 	{
 		"gecko":
 		{
-			"id": "clean-links@diegocr.github.com"
+			"id": "clean-links@Cimbali.github.com"
 		}
 	}
 }
