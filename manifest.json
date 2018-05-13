@@ -8,7 +8,7 @@
 	"default_locale": "en_US",
 	"icons":
 	{
-		"48": "icon.png"
+		"64": "icon.png"
 	},
 
 	"permissions": [
