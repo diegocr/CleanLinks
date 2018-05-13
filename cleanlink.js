@@ -56,6 +56,13 @@ var prefValues = {
 	ignhttp   : false,                                         // ignore non-http(s?) links
 	cltrack   : true,                                          // whether we track the link cleaning
 	switchToTab : true,                                        // Should be a copy of the browser preference: switch to a new tab when we open a link?
+	debug     : false
+}
+
+
+function log()
+{
+	if (prefValues.debug) console.log.call(arguments)
 }
 
 
@@ -108,7 +115,10 @@ function highlightLink(node, remove)
 function cleanLink(link, base)
 {
 	if (!link || link.startsWith("view-source:") || (prefValues.skipwhen && prefValues.skipwhen.test(link)))
+	{
+		log('not cleaning', link, ': empty, source, or matches skipwhen');
 		return link;
+	}
 
 	if (typeof base == 'undefined')
 	{
@@ -132,18 +142,27 @@ function cleanLink(link, base)
 			linkURL = new URL(link, 'href' in base ? base.href : base);
 
 			if (prefValues.skipdoms.indexOf(linkURL.host) !== -1)
+			{
+				log('not cleaning', link, ': host in skipdoms');
 				return link;
+			}
 		}
 		catch (e) {}
 	}
 
 	if (prefValues.ignhttp && !(/^https?:/.test(typeof linkURL != 'undefined' ? linkURL.href : link)))
+	{
+		log('not cleaning', link, ': ignoring non-http(s) links');
 		return link;
+	}
 
 	if (/\.google\.[a-z.]+\/search\?(?:.+&)?q=http/i.test(link)
 		|| /^https?:\/\/www\.amazon\.[\w.]+\/.*\/voting\/cast\//.test(link)
 	)
+	{
+		log('not cleaning', link, ': google search/amazon vote')
 		return link;
+	}
 
 	let s = 0,
 		origLink = link,
@@ -165,7 +184,7 @@ function cleanLink(link, base)
 		}
 		catch (e)
 		{
-			// log('Invalid base64 data for "' + link + '" at "' + (base && base.href) + '"\n> ' + e);
+			log('Invalid base64 data in link', link, ':' , r, '-- error is', e);
 		}
 	}
 	else
@@ -196,6 +215,7 @@ function cleanLink(link, base)
 		if ((pos = link.indexOf('&')) !== -1)
 			link = link.substr(0, pos);
 		link = decodeURIComponent(link);
+		console.log('decoded URI Component =', link)
 
 		if ((pos = link.indexOf('html&')) !== -1 || (pos = link.indexOf('html%')) !== -1)
 			link = link.substr(0, pos + 4);
@@ -218,9 +238,7 @@ function cleanLink(link, base)
 		}
 		catch (e)
 		{
-			/* TODO: debugLog
-			debugLog('Got an invalid URL: ' + link);
-			*/
+			log('not cleaning', origLink, ': yielded invalid link :', link)
 			link = origLink;
 		}
 	}
@@ -239,6 +257,7 @@ function cleanLink(link, base)
 			+ (ht && /^[\w\/#!-]+$/.test(ht) ? ht : (this.cleanOnClick ? '' : '#'));
 	}
 
+	log('cleaning', origLink, ':', link)
 	return link;
 }
 

@@ -43,6 +43,8 @@ var lastRightClick = {textLink: null, reply: () => {}}
 
 function handleMessage(message, sender)
 {
+	log('received message :', JSON.stringify(message))
+
 	if (message == 'get_cleaned_list')
 	{
 		return Promise.resolve(historyCleanedLinks);
