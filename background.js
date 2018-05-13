@@ -53,7 +53,7 @@ function handleMessage(message, sender)
 		prefValues.enabled = !prefValues.enabled;
 
 		setIcon(prefValues.enabled ? icon_default : icon_disabled);
-		return browser.storage.local.set({configuration: serializeOptions()})
+		return browser.storage.local.set({configuration: serializeOptions()}).then(() => handleMessage({options: Date.now()}))
 	}
 
 	else if ('url' in message)
@@ -109,7 +109,7 @@ function handleMessage(message, sender)
 			if (!prefValues.cltrack)
 				historyCleanedLinks.splice(0, historyCleanedLinks.length);
 
-			if (prefValues.cbc)
+			if (prefValues.enabled && prefValues.cbc)
 				browser.contextMenus.create({
 					id: 'copy-clean-link',
 					title: 'Copy clean link',
@@ -118,12 +118,12 @@ function handleMessage(message, sender)
 			else
 				browser.contextMenus.remove('copy-clean-link')
 
-			if (prefValues.progltr)
+			if (prefValues.enabled && prefValues.progltr)
 				browser.webRequest.onHeadersReceived.addListener(cleanRedirectHeaders, { urls: ['<all_urls>'] }, ['blocking', 'responseHeaders']);
 			else
 				browser.webRequest.onHeadersReceived.removeListener(cleanRedirectHeaders);
 
-			if (prefValues.httpomr)
+			if (prefValues.enabled && prefValues.httpomr)
 				browser.webRequest.onBeforeRequest.addListener(onRequest, { urls: ['<all_urls>'] }, ['blocking']);
 			else
 				browser.webRequest.onBeforeRequest.removeListener(onRequest);
@@ -162,22 +162,7 @@ browser.runtime.onMessage.addListener(handleMessage);
 
 loadOptions().then(() =>
 {
-	if (!prefValues.enabled)
-		return;
-
-	if (prefValues.httpomr)
-		browser.webRequest.onBeforeRequest.addListener(onRequest, { urls: ['<all_urls>'] }, ['blocking']);
-
-	if (prefValues.progltr)
-		browser.webRequest.onHeadersReceived.addListener(cleanRedirectHeaders, { urls: ['<all_urls>'] }, ['blocking', 'responseHeaders']);
-
-	if (prefValues.cbc)
-		browser.contextMenus.create({
-			id: 'copy-clean-link',
-			title: 'Copy clean link',
-			contexts: ['link', 'selection', 'page']
-		});
-
+	// Always add the listener, even if CleanLinks is disabled. Only add the menu item on enabled.
 	browser.contextMenus.onClicked.addListener((info, tab) =>
 	{
 		var link;
@@ -196,4 +181,20 @@ loadOptions().then(() =>
 		// Clean & copy
 		lastRightClick.reply(cleanLink(link, tab.url))
 	});
+
+	if (!prefValues.enabled)
+		return;
+
+	if (prefValues.httpomr)
+		browser.webRequest.onBeforeRequest.addListener(onRequest, { urls: ['<all_urls>'] }, ['blocking']);
+
+	if (prefValues.progltr)
+		browser.webRequest.onHeadersReceived.addListener(cleanRedirectHeaders, { urls: ['<all_urls>'] }, ['blocking', 'responseHeaders']);
+
+	if (prefValues.cbc)
+		browser.contextMenus.create({
+			id: 'copy-clean-link',
+			title: 'Copy clean link',
+			contexts: ['link', 'selection', 'page']
+		});
 });
