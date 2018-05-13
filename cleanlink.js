@@ -37,7 +37,7 @@ var prefValues = {
 		+ 'oauth|openid\\.ns|\\.mcstatic\\.com|sVidLoc|[Ll]ogout|submit\\?url=|magnet:'),
 	remove    : /(?:ref|aff)\\w*|utm_\\w+|(?:merchant|programme|media)ID/,
 	skipdoms  : ['accounts.google.com', 'docs.google.com', 'translate.google.com',
-				'login.live.com', 'plus.google.com', 'www.facebook.com', 'twitter.com',
+				'login.live.com', 'plus.google.com', 'twitter.com',
 				'static.ak.facebook.com', 'www.linkedin.com', 'www.virustotal.com',
 				'account.live.com', 'admin.brightcove.com', 'www.mywot.com',
 				'webcache.googleusercontent.com', 'web.archive.org', 'accounts.youtube.com',
