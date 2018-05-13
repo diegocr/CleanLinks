@@ -387,7 +387,11 @@ function cleanRedirectHeaders(details)
 		return {}
 	*/
 
-	return (cleanDest == dest ? {} : {redirectUrl: cleanDest});
+	if (cleanDest == dest)
+		return {};
+
+	handleMessage({ url: cleanDest, orig: dest });
+	return {redirectUrl: cleanDest};
 }
 
 
@@ -416,5 +420,9 @@ function onRequest(details)
 		return {cancel: true}
 	 */
 
-	return (cleanDest == dest ? {} : {redirectUrl: cleanDest});
+	if (cleanDest == dest)
+		return {};
+
+	handleMessage({ url: cleanDest, orig: dest });
+	return {redirectUrl: cleanDest};
 }
