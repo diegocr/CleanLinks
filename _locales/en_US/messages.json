@@ -1,0 +1,190 @@
+{
+"addon_description": {
+	"message": "Converts obfuscated/nested links to genuine clean links",
+	"description": ""
+},
+"browser_status": {
+	"message": "Status:\u0020",
+	"description": ""
+},
+"browser_enabled": {
+	"message": "Enabled",
+	"description": ""
+},
+"browser_disabled": {
+	"message": "Disabled",
+	"description": ""
+},
+"browser_enable": {
+	"message": "enable",
+	"description": ""
+},
+"browser_disable": {
+	"message": "disable",
+	"description": ""
+},
+"browser_cleanedlinks": {
+	"message": "Cleaned Links:\u0020",
+	"description": ""
+},
+"browser_clicktheicon": {
+	"message": "Click the icon to\u0020",
+	"description": ""
+},
+"browser_regexerr": {
+	"message": "Error Processing CleanLinks Pattern\u0020",
+	"description": ""
+},
+"browser_touch": {
+	"message": "CleanLinks Touch!",
+	"description": ""
+},
+"browser_hashtag": {
+	"message": "#",
+	"description": ""
+},
+"bootstrap_listheader_original": {
+	"message": "Original Link",
+	"description": ""
+},
+"bootstrap_listheader_cleaned": {
+	"message": "Cleaned Link",
+	"description": ""
+},
+"bootstrap_whitelist_button": {
+	"message": "Whitelist Selection",
+	"description": ""
+},
+"bootstrap_whitelist_description": {
+	"message": "This is a current-session list for the cleaned links and the original they came from, for ease whitelisting. Please note you will be whitelisting whole websites, while sometimes it is good just picking a tag of the URL to add it to the \"matching\" option.",
+	"description": ""
+},
+"skipwhen_title": {
+	"message": "Skip Links matching with:",
+	"description": ""
+},
+"skipwhen_tooltip": {
+	"message": "This is a REGEXP Pattern urls will be checked against so that links to sharing platforms and such will not get broken. case-sensitive.",
+	"description": ""
+},
+"remove_title": {
+	"message": "Remove From Links:",
+	"description": ""
+},
+"remove_tooltip": {
+	"message": "This is a regexp pattern which will be applied over links to remove tracking tags and such. case-insensitive.",
+	"description": ""
+},
+"skipdoms_title": {
+	"message": "Skip Domains:",
+	"description": ""
+},
+"skipdoms_tooltip": {
+	"message": "Comma-separated list of domains whose links won't be cleared.",
+	"description": ""
+},
+"highlight_title": {
+	"message": "Highlight Cleaned Links?",
+	"description": ""
+},
+"hlstyle_emptytext": {
+	"message": "E.g. background:rgba(252,252,0,0.7); color: #000",
+	"description": ""
+},
+"hlstyle_title": {
+	"message": "Highlight Style",
+	"description": ""
+},
+"hlstyle_content": {
+	"message": "Apply this CSS Style to cleaned links.",
+	"description": ""
+},
+"repdelay_title": {
+	"message": "Replay Delay",
+	"description": ""
+},
+"repdelay_tooltip": {
+	"message": "Reapply cleaning of links after the specified number of seconds. This is for non-Delegation Mode only, set it to 0 to disable it.",
+	"description": ""
+},
+"evdm_title": {
+	"message": "Event Delegation Mode?",
+	"description": ""
+},
+"evdm_tooltip": {
+	"message": "This is a less intrusive mode by just listening to click events. Note that real-time highlighting and counters will not work then, even though the performance should be much better.",
+	"description": ""
+},
+"cbc_title": {
+	"message": "Copy clean links from the context menu",
+	"description": ""
+},
+"cbc_tooltip": {
+	"message": "This extendes the context-menu with a Copy Clean Link entry to clear links before being copied to the clipboard.",
+	"description": ""
+},
+"progltr_title": {
+	"message": "Use Redirect Watcher?",
+	"description": ""
+},
+"progltr_tooltip": {
+	"message": "Set up a HTTP Observer to catch 3xx redirections. For example, this should make possible to clear links hidden behind shortened URLs.",
+	"description": ""
+},
+"gotarget_title": {
+	"message": "Follow Target Attribute?",
+	"description": ""
+},
+"gotarget_tooltip": {
+	"message": "Whether the target attribute on links should be checked and respected.",
+	"description": ""
+},
+"reset_tooltip": {
+	"message": "Reset options to their default values.",
+	"description": ""
+},
+"reset_label": {
+	"message": "Reset Options",
+	"description": ""
+},
+"ignhttp_title": {
+	"message": "Ignore non-http/s links",
+	"description": ""
+},
+"ignhttp_tooltip": {
+	"message": "This options causes non-http/s links to be ignored when checking for nested urls on them.",
+	"description": ""
+},
+"textcl_title": {
+	"message": "Catch Text Links",
+	"description": ""
+},
+"textcl_tooltip": {
+	"message": "Allows clicking on non-clickable text-links to open them as normal links - Requires Event Delegation Mode.",
+	"description": ""
+},
+"cltrack_title": {
+	"message": "Link Tracking",
+	"description": ""
+},
+"cltrack_content": {
+	"message": "Enabling this option will perform tracking of cleaned links to easily whitelist their domains by right-clicking the toolbar button.",
+	"description": ""
+},
+"httpomr_title": {
+	"message": "Clean outgoing HTTP requests",
+	"description": ""
+},
+"httpomr_tootltip": {
+	"message": "Setup an http request listener that can clean links from outside firefox, or initiated automatically by a page such as refreshes.",
+	"description": ""
+},
+"switchToTab_title": {
+	"message": "Switch to tabs opened by clicking links?",
+	"description": ""
+},
+"switchToTab_tooltip": {
+	"message": "When you open a link in a new tab, switch to it immediately. This copies the same-named browser preference, that can not be accessed at present.",
+	"description": ""
+}
+}

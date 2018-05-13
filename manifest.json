@@ -1,0 +1,61 @@
+{
+	"name": "Clean Links",
+	"description": "__MSG_addon_description__",
+	"author": "Cimbali (maintainer), \nDiego Casorran (creator), \nEduard Braun (German translation), \nSimon Chan (Chinese and Taiwanese translations)",
+	"manifest_version": 2,
+	"version": "3.0b1",
+	"homepage_url": "https://github.com/Cimbali/CleanLinks",
+	"default_locale": "en_US",
+	"icons":
+	{
+		"64": "icon.png"
+	},
+
+	"permissions": [
+		"clipboardWrite",
+		"contextMenus",
+		"alarms",
+		"webRequest",
+		"webRequestBlocking",
+		"<all_urls>",
+		"activeTab",
+		"storage",
+		"notifications"
+	],
+
+	"background":
+	{
+		"scripts": ["cleanlink.js", "background.js"]
+	},
+
+	"content_scripts": [
+		{
+			"matches": ["<all_urls>", "*://*/*", "file:///*"],
+			"js": ["cleanlink.js", "inject.js"],
+			"run_at": "document_end",
+			"match_about_blank": true,
+			"all_frames": true
+		}
+	],
+
+	"options_ui":
+	{
+		"page": "options.html",
+		"browser_style": true
+	},
+
+	"browser_action":
+	{
+		"browser_style": false,
+		"default_icon": "icons/32.png",
+		"default_popup": "popup.html"
+	},
+
+	"applications":
+	{
+		"gecko":
+		{
+			"id": "clean-links@Cimbali.github.com"
+		}
+	}
+}

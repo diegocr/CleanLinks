@@ -1,0 +1,174 @@
+{
+"addon_description": {
+	"message": "将加密/内嵌链接还原为直接链接。",
+	"description": ""
+},
+"browser_status": {
+	"message": "状态：",
+	"description": ""
+},
+"browser_enabled": {
+	"message": "已启用",
+	"description": ""
+},
+"browser_disabled": {
+	"message": "已禁用",
+	"description": ""
+},
+"browser_enable": {
+	"message": "启用",
+	"description": ""
+},
+"browser_disable": {
+	"message": "禁用",
+	"description": ""
+},
+"browser_cleanedlinks": {
+	"message": "已处理链接数：",
+	"description": ""
+},
+"browser_clicktheicon": {
+	"message": "点击图标以",
+	"description": ""
+},
+"browser_regexerr": {
+	"message": "处理规则时遇到错误：",
+	"description": ""
+},
+"browser_touch": {
+	"message": "CleanLinks Touch!",
+	"description": ""
+},
+"browser_hashtag": {
+	"message": "#",
+	"description": ""
+},
+"bootstrap_listheader_original": {
+	"message": "原始链接",
+	"description": ""
+},
+"bootstrap_listheader_cleaned": {
+	"message": "直接链接",
+	"description": ""
+},
+"bootstrap_whitelist_button": {
+	"message": "添加到白名单",
+	"description": ""
+},
+"bootstrap_whitelist_description": {
+	"message": "此列表显示了本次浏览器会话中已处理的链接和它们的原始链接，您可以方便地将某个域名添加到白名单中。请注意白名单会对整个域名生效，因此有时您可能需要找到链接的模式并将它们添加到“忽略链接规则”选项中。",
+	"description": ""
+},
+"skipwhen_title": {
+	"message": "忽略链接规则：",
+	"description": ""
+},
+"skipwhen_tooltip": {
+	"message": "符合本正则表达式的链接将被忽略以防止误处理。区分大小写。",
+	"description": ""
+},
+"remove_title": {
+	"message": "匹配链接规则：",
+	"description": ""
+},
+"remove_tooltip": {
+	"message": "符合本正则表达式的链接将被移除跳转或追踪。区分大小写",
+	"description": ""
+},
+"skipdoms_title": {
+	"message": "忽略域名规则：",
+	"description": ""
+},
+"skipdoms_tooltip": {
+	"message": "匹配的域名上的链接将被忽略。使用逗号分隔多个域名。",
+	"description": ""
+},
+"highlight_title": {
+	"message": "高亮已处理链接",
+	"description": ""
+},
+"hlstyle_emptytext": {
+	"message": "例如：background:rgba(252,252,0,0.7); color: #000",
+	"description": ""
+},
+"hlstyle_title": {
+	"message": "高亮样式",
+	"description": ""
+},
+"hlstyle_content": {
+	"message": "本样式将被应用到经过处理的链接标签上",
+	"description": ""
+},
+"repdelay_title": {
+	"message": "重复处理间隔",
+	"description": ""
+},
+"repdelay_tooltip": {
+	"message": "在指定秒之后再次处理网页上的链接。只在不使用事件委托模式时有效，设置为 0 即禁用。",
+	"description": ""
+},
+"evdm_title": {
+	"message": "使用事件委托模式",
+	"description": ""
+},
+"evdm_tooltip": {
+	"message": "监听点击事件处理链接。本模式下实时高亮和计数器将会无效。",
+	"description": ""
+},
+"cbc_title": {
+	"message": "接管复制链接地址菜单",
+	"description": ""
+},
+"cbc_tooltip": {
+	"message": "使用自定义的 cmd_copyLink 控制器接管 复制链接地址 右键菜单，将经过处理的链接复制到剪贴板。",
+	"description": ""
+},
+"progltr_title": {
+	"message": "使用跳转监听器",
+	"description": ""
+},
+"progltr_tooltip": {
+	"message": "使用 HTTP 监听器捕捉 3xx 跳转。例如将短链接还原成长链接。",
+	"description": ""
+},
+"gotarget_title": {
+	"message": "遵守 target 属性",
+	"description": ""
+},
+"gotarget_tooltip": {
+	"message": "是否检查并遵守链接的 target 属性。",
+	"description": ""
+},
+"reset_tooltip": {
+	"message": "还原所有设置到默认值",
+	"description": ""
+},
+"reset_label": {
+	"message": "重置设置",
+	"description": ""
+},
+"ignhttp_title": {
+	"message": "忽略非 HTTP(s) 协议链接",
+	"description": ""
+},
+"ignhttp_tooltip": {
+	"message": "此选项将使本扩展忽略所有非 HTTP/HTTPS 协议的链接。",
+	"description": ""
+},
+"textcl_title": {
+	"message": "转换文本链接",
+	"description": ""
+},
+"textcl_tooltip": {
+	"message": "将文本状态的链接转换成可直接点击的链接。需要事件委托模式。",
+	"description": ""
+},
+"cltrack_title": {
+	"message": "追踪链接",
+	"description": ""
+},
+"cltrack_content": {
+	"message": "将会记录所有经过处理的链接，可以在工具栏按钮上右键以快速将域名添加到白名单。",
+	"description": ""
+}
+}

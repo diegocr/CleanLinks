@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<style>
+		html {
+			background: white;
+		}
+		select {
+			display: block;
+			width: 100%;
+			padding: 0;
+		}
+		select option[value="-1"] {
+			font-weight: bold;
+			color: white;
+		}
+		select option[value="-1"] span {
+			border: white thin solid;
+			padding: 2px 5px;
+			margin: 0;
+		}
+		option span {
+			display: inline-block;
+			width: 50%;
+			margin: 2px 5px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			background-right: white thin solid;
+		}
+		#icon {
+			float: left;
+			margin: 15px;
+		}
+		#desc {
+			clear: both;
+		}
+		#toggle {
+			float: right;
+		}
+		#title, #homepage, #copyright {
+			margin: 0;
+		}
+		#whitelist {
+			display: block;
+			margin: 5px 0;
+			float: right;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="icon">
+		<img src="icon.png" />
+	</div>
+	<div>
+		<button id="toggle"></button>
+		<h3 id="title"> &mdash; <span id="status"></span></h3>
+		<p id="copyright"></p>
+		<p id="homepage"></p>
+	</div>
+
+	<p id="desc" i18n_text="bootstrap_whitelist_description"></p>
+
+	<select size="11"></select>
+
+	<button id="whitelist" i18n_text="bootstrap_whitelist_button" />
+
+	<script src="cleanlink.js"></script>
+	<script src="popup.js"></script>
+</body>
+
+</html>
