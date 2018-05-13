@@ -116,11 +116,11 @@
 	"description": ""
 },
 "cbc_title": {
-	"message": "CopyLink Controller?",
+	"message": "Copy clean links from the context menu",
 	"description": ""
 },
 "cbc_tooltip": {
-	"message": "This installs a cmd_copyLink controller to catch context-menu's Copy Link Location calls to clear links before being copied to the clipboard.",
+	"message": "This extendes the context-menu with a Copy Clean Link entry to clear links before being copied to the clipboard.",
 	"description": ""
 },
 "progltr_title": {
@@ -169,6 +169,22 @@
 },
 "cltrack_content": {
 	"message": "Enabling this option will perform tracking of cleaned links to easily whitelist their domains by right-clicking the toolbar button.",
+	"description": ""
+},
+"httpomr_title": {
+	"message": "Clean outgoing HTTP requests",
+	"description": ""
+},
+"httpomr_tootltip": {
+	"message": "Setup an http request listener that can clean links from outside firefox, or initiated automatically by a page such as refreshes.",
+	"description": ""
+},
+"switchToTab_title": {
+	"message": "Switch to tabs opened by clicking links?",
+	"description": ""
+},
+"switchToTab_tooltip": {
+	"message": "When you open a link in a new tab, switch to it immediately. This copies the same-named browser preference, that can not be accessed at present.",
 	"description": ""
 }
 }
